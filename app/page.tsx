@@ -12,29 +12,14 @@ const outfit = Outfit({
 export default function Home() {
   return (
     <div
-      className={`${outfit.className} flex flex-1 flex-col items-center justify-center text-center px-6`}
-      style={{ backgroundColor: "#0A0E1A" }}
+      className={`${outfit.className} flex flex-1 flex-col items-center justify-center bg-bg px-6 text-center`}
     >
       <h1
-        className={cormorant.className}
-        style={{
-          color: "#B51E5A",
-          fontSize: "clamp(2.5rem, 6vw, 4.5rem)",
-          fontWeight: 600,
-          letterSpacing: "-0.01em",
-          margin: 0,
-        }}
+        className={`${cormorant.className} text-magenta font-semibold tracking-tight text-5xl sm:text-6xl md:text-7xl`}
       >
         The MillionHeiress BABE&trade;
       </h1>
-      <p
-        style={{
-          color: "#C9A96E",
-          fontSize: "clamp(1rem, 2vw, 1.375rem)",
-          marginTop: "1.25rem",
-          letterSpacing: "0.02em",
-        }}
-      >
+      <p className="text-gold mt-5 text-lg sm:text-xl tracking-wide">
         Pattern recognition for women who are done guessing
       </p>
     </div>
