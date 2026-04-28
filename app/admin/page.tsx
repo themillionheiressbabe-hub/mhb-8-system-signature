@@ -1,7 +1,5 @@
 import { Outfit } from "next/font/google";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { createSupabaseServerClient } from "@/lib/supabase-server";
 
 const outfit = Outfit({ subsets: ["latin"] });
 
@@ -19,26 +17,7 @@ const NAV_LINKS = [
   { href: "/admin/products", label: "Products" },
 ];
 
-export default async function AdminPage() {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/login");
-  }
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  if (profile?.role !== "admin") {
-    redirect("/dashboard");
-  }
-
+export default function AdminPage() {
   return (
     <div
       className={`${outfit.className} flex flex-1 flex-col items-center bg-bg text-gold px-6 py-16`}
