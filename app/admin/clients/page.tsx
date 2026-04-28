@@ -55,7 +55,7 @@ export default async function AdminClientsPage() {
 
   return (
     <div
-      className={`${outfit.className} flex flex-1 flex-col items-center bg-bg text-gold px-6 py-16`}
+      className={`${outfit.className} flex flex-1 flex-col items-center bg-transparent text-gold px-6 py-16`}
     >
       <div className="w-full max-w-3xl">
         <div className="flex items-center justify-between mb-8">

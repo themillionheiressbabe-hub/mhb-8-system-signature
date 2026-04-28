@@ -37,9 +37,9 @@ export default async function SignupPage({ searchParams }: Props) {
 
   return (
     <div
-      className={`${outfit.className} flex flex-1 flex-col items-center justify-center bg-bg text-gold px-6`}
+      className={`${outfit.className} flex flex-1 flex-col items-center justify-center bg-transparent text-gold px-6`}
     >
-      <div className="w-full max-w-sm">
+      <div className="w-full max-w-sm bg-navy border border-gold/30 rounded-lg p-8">
         <h1 className="text-magenta text-3xl font-semibold text-center mb-8">
           Create your account
         </h1>

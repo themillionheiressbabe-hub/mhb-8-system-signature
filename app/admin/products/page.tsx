@@ -64,7 +64,7 @@ export default async function AdminProductsPage({ searchParams }: Props) {
 
   return (
     <div
-      className={`${outfit.className} flex flex-1 flex-col items-center bg-bg text-gold px-6 py-16`}
+      className={`${outfit.className} flex flex-1 flex-col items-center bg-transparent text-gold px-6 py-16`}
     >
       <div className="w-full max-w-3xl">
         <h1 className="text-magenta text-4xl font-semibold mb-6">Products</h1>

@@ -1,5 +1,7 @@
 import { Cormorant_Garamond, Outfit } from "next/font/google";
 import Link from "next/link";
+import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -25,46 +27,24 @@ const FREE_TOOLS = [
   },
 ];
 
+const ORBIT_NODES = [
+  { dir: "n", symbol: "☀" },
+  { dir: "ne", symbol: "☽" },
+  { dir: "e", symbol: "↑" },
+  { dir: "se", symbol: "★" },
+  { dir: "s", symbol: "♥" },
+  { dir: "sw", symbol: "◈" },
+  { dir: "w", symbol: "∞" },
+  { dir: "nw", symbol: "☯" },
+];
+
 export default function Home() {
   return (
     <div className={`${outfit.className} flex-1`}>
-      {/* NAVBAR */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-navy/70 backdrop-blur-md border-b border-gold/20">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
-          <Link
-            href="/"
-            className={`${cormorant.className} text-magenta text-lg sm:text-2xl font-semibold`}
-          >
-            The MillionHeiress BABE&trade;
-          </Link>
-          <div className="flex items-center gap-4 sm:gap-6">
-            <Link href="/" className="text-gold text-sm hidden sm:inline-block">
-              Home
-            </Link>
-            <Link
-              href="/about"
-              className="text-gold text-sm hidden sm:inline-block"
-            >
-              About
-            </Link>
-            <Link
-              href="/shop"
-              className="text-gold text-sm hidden sm:inline-block"
-            >
-              Shop
-            </Link>
-            <Link
-              href="/signup"
-              className="bg-magenta text-bg rounded-full px-4 sm:px-5 py-2 text-sm font-semibold inline-block"
-            >
-              Get Started
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* HERO */}
-      <section className="starfield relative bg-navy min-h-screen flex flex-col items-center justify-center px-6 text-center overflow-hidden">
+      <section className="relative min-h-screen flex flex-col items-center justify-center px-6 text-center overflow-hidden">
         <div className="relative z-10 max-w-4xl">
           <h1
             className={`${cormorant.className} text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold leading-tight`}
@@ -74,6 +54,43 @@ export default function Home() {
           <p className="text-gold text-xl mt-8 max-w-2xl mx-auto">
             Multi-system pattern recognition for women who are done guessing.
           </p>
+
+          <div className="orbit mx-auto my-12">
+            <div className="orbit-rotator">
+              <div className="orbit-track" />
+              {ORBIT_NODES.map((node) => (
+                <div
+                  key={`line-${node.dir}`}
+                  className={`orbit-line orbit-line-${node.dir}`}
+                />
+              ))}
+              {ORBIT_NODES.map((node) => (
+                <div
+                  key={node.dir}
+                  className={`orbit-node orbit-node-${node.dir}`}
+                >
+                  <span className="orbit-node-symbol" aria-hidden="true">
+                    {node.symbol}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div className="orbit-center">
+              <span
+                aria-hidden="true"
+                className={`${cormorant.className} italic absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[60px] leading-none orbit-heart-back`}
+              >
+                &hearts;
+              </span>
+              <span
+                aria-hidden="true"
+                className={`${cormorant.className} italic absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[52px] leading-none orbit-heart-front`}
+              >
+                &hearts;
+              </span>
+            </div>
+          </div>
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
             <Link
               href="/shop"
@@ -92,7 +109,7 @@ export default function Home() {
       </section>
 
       {/* THE SYSTEM */}
-      <section className="bg-bg py-24 px-6">
+      <section className="py-24 px-6">
         <div className="max-w-3xl mx-auto bg-navy border border-gold/30 rounded-lg p-10 sm:p-14 text-center">
           <h2
             className={`${cormorant.className} text-magenta text-3xl sm:text-4xl md:text-5xl font-semibold leading-tight mb-6`}
@@ -139,7 +156,7 @@ export default function Home() {
       </section>
 
       {/* FREE TOOLS */}
-      <section className="bg-bg py-24 px-6">
+      <section className="py-24 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {FREE_TOOLS.map((card) => (
@@ -167,37 +184,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="bg-navy py-16 px-6 text-center">
-        <div className="max-w-3xl mx-auto flex flex-col items-center gap-6">
-          <p
-            className={`${cormorant.className} text-magenta text-2xl font-semibold`}
-          >
-            The MillionHeiress BABE&trade;
-          </p>
-          <p className="text-gray-500 text-xs leading-relaxed max-w-2xl">
-            This platform is for personal development and pattern recognition
-            only. It is not therapy, medical advice, or diagnosis. If your lived
-            experience disagrees with anything here, trust your lived
-            experience.
-          </p>
-          <div className="flex flex-wrap gap-6 justify-center text-sm">
-            <Link href="/privacy" className="text-gold">
-              Privacy Policy
-            </Link>
-            <Link href="/terms" className="text-gold">
-              Terms
-            </Link>
-            <Link href="/contact" className="text-gold">
-              Contact
-            </Link>
-          </div>
-          <p className="text-gray-500 text-xs">
-            &copy; {new Date().getFullYear()} The MillionHeiress BABE. All
-            rights reserved.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

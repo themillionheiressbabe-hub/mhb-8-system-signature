@@ -16,7 +16,7 @@ export default async function DashboardPage() {
 
   return (
     <div
-      className={`${outfit.className} flex flex-1 flex-col items-center justify-center bg-bg text-gold px-6 text-center`}
+      className={`${outfit.className} flex flex-1 flex-col items-center justify-center bg-transparent text-gold px-6 text-center`}
     >
       <h1 className="text-magenta text-4xl font-semibold mb-4">
         Welcome to your dashboard
