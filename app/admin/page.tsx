@@ -1,14 +1,8 @@
 import { Outfit } from "next/font/google";
 import Link from "next/link";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 
 const outfit = Outfit({ subsets: ["latin"] });
-
-const STATS = [
-  { label: "Total Clients", value: 0 },
-  { label: "Total Orders", value: 0 },
-  { label: "Total Reports", value: 0 },
-  { label: "Pending Reports", value: 0 },
-];
 
 const NAV_LINKS = [
   { href: "/admin/clients", label: "Clients" },
@@ -17,7 +11,25 @@ const NAV_LINKS = [
   { href: "/admin/products", label: "Products" },
 ];
 
-export default function AdminPage() {
+export default async function AdminPage() {
+  const [clientsRes, ordersRes, reportsRes, pendingReportsRes] =
+    await Promise.all([
+      supabaseAdmin.from("clients").select("*", { count: "exact", head: true }),
+      supabaseAdmin.from("orders").select("*", { count: "exact", head: true }),
+      supabaseAdmin.from("reports").select("*", { count: "exact", head: true }),
+      supabaseAdmin
+        .from("reports")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "draft"),
+    ]);
+
+  const stats = [
+    { label: "Total Clients", value: clientsRes.count ?? 0 },
+    { label: "Total Orders", value: ordersRes.count ?? 0 },
+    { label: "Total Reports", value: reportsRes.count ?? 0 },
+    { label: "Pending Reports", value: pendingReportsRes.count ?? 0 },
+  ];
+
   return (
     <div
       className={`${outfit.className} flex flex-1 flex-col items-center bg-bg text-gold px-6 py-16`}
@@ -26,7 +38,7 @@ export default function AdminPage() {
         <h1 className="text-magenta text-4xl font-semibold mb-10">Admin</h1>
 
         <div className="grid grid-cols-2 gap-4 mb-10">
-          {STATS.map((stat) => (
+          {stats.map((stat) => (
             <div
               key={stat.label}
               className="bg-navy border border-gold rounded p-6 flex flex-col gap-2"
