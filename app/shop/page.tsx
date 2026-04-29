@@ -128,6 +128,12 @@ function formatPrice(pence: number) {
   return `£${pounds.toFixed(2)}`;
 }
 
+const FREE_TOOL_ROUTE: Record<string, string> = {
+  "daily-frequency-free": "/tools/daily-frequency",
+  "birthprint-snapshot": "/tools/birthprint-snapshot",
+  "your-babe-year-free": "/tools/your-babe-year",
+};
+
 function BirthTimeNote() {
   return (
     <div className="flex items-center gap-2">
@@ -200,7 +206,7 @@ function FreeCard({ product }: { product: ProductRow }) {
       <p className="text-gold font-bold text-lg">Free</p>
       <div className="flex-1" />
       <Link
-        href="/tools"
+        href={FREE_TOOL_ROUTE[product.slug] ?? "/shop"}
         className="border border-gold text-gold rounded-full px-5 py-2 text-sm font-semibold inline-block self-start"
       >
         Try Free

@@ -29,6 +29,12 @@ const MONTHLY_SLUGS = new Set([
   "babe-52-week-journey-monthly",
 ]);
 
+const FREE_TOOL_ROUTE: Record<string, string> = {
+  "daily-frequency-free": "/tools/daily-frequency",
+  "birthprint-snapshot": "/tools/birthprint-snapshot",
+  "your-babe-year-free": "/tools/your-babe-year",
+};
+
 type ProductRow = {
   id: string;
   slug: string;
@@ -126,7 +132,7 @@ export default async function ProductDetailPage({ params }: Props) {
                 {product.is_free ? (
                   <>
                     <Link
-                      href="/tools"
+                      href={FREE_TOOL_ROUTE[product.slug] ?? "/shop"}
                       className="border border-gold text-gold rounded-full px-6 py-3 text-base font-semibold inline-block text-center"
                     >
                       Try it free

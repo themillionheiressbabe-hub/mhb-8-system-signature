@@ -16,14 +16,17 @@ const FREE_TOOLS = [
   {
     title: "Daily Frequency",
     body: "See which card is active today.",
+    href: "/tools/daily-frequency",
   },
   {
     title: "Birthprint Snapshot",
     body: "Get a 5-lens preview of your pattern.",
+    href: "/tools/birthprint-snapshot",
   },
   {
     title: "Your BABE Year",
     body: "Find out what this year is asking of you.",
+    href: "/tools/your-babe-year",
   },
 ];
 
@@ -99,7 +102,7 @@ export default function Home() {
               Read My Pattern
             </Link>
             <Link
-              href="/tools"
+              href="#free-tools"
               className="border border-gold text-gold rounded-full px-6 py-3 text-base font-semibold inline-block"
             >
               Try a Free Tool
@@ -156,7 +159,7 @@ export default function Home() {
       </section>
 
       {/* FREE TOOLS */}
-      <section className="py-24 px-6">
+      <section id="free-tools" className="py-24 px-6 scroll-mt-24">
         <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {FREE_TOOLS.map((card) => (
@@ -173,7 +176,7 @@ export default function Home() {
                   {card.body}
                 </p>
                 <Link
-                  href="/tools"
+                  href={card.href}
                   className="bg-emerald text-white rounded-full px-5 py-2 text-sm font-semibold inline-block self-start"
                 >
                   Try it free
