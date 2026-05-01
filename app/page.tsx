@@ -1,191 +1,294 @@
-import { Cormorant_Garamond, Outfit } from "next/font/google";
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { Orbit } from "@/components/Orbit";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
+const SUIT_DISPLAY: Record<string, { symbol: string; className: string }> = {
+  hearts: { symbol: "♥", className: "text-suit-hearts" },
+  diamonds: { symbol: "♦", className: "text-suit-diamonds" },
+  clubs: { symbol: "♣", className: "text-suit-clubs" },
+  spades: { symbol: "♠", className: "text-suit-spades" },
+  joker: { symbol: "★", className: "text-cream" },
+};
 
-const outfit = Outfit({
-  subsets: ["latin"],
-});
+type FeaturedCard = {
+  card_name: string;
+  suit: string;
+  value: string;
+  core_theme: string | null;
+  daily_energy_heading: string | null;
+  daily_energy_body: string | null;
+  daily_energy_cta: string | null;
+};
 
-const FREE_TOOLS = [
-  {
-    title: "Daily Frequency",
-    body: "See which card is active today.",
-    href: "/tools/daily-frequency",
-  },
-  {
-    title: "Birthprint Snapshot",
-    body: "Get a 5-lens preview of your pattern.",
-    href: "/tools/birthprint-snapshot",
-  },
-  {
-    title: "Your BABE Year",
-    body: "Find out what this year is asking of you.",
-    href: "/tools/your-babe-year",
-  },
-];
+export default async function Home() {
+  const today = new Date();
+  const month = today.getUTCMonth() + 1;
+  const day = today.getUTCDate();
 
-const ORBIT_NODES = [
-  { dir: "n", symbol: "☀" },
-  { dir: "ne", symbol: "☽" },
-  { dir: "e", symbol: "↑" },
-  { dir: "se", symbol: "★" },
-  { dir: "s", symbol: "♥" },
-  { dir: "sw", symbol: "◈" },
-  { dir: "w", symbol: "∞" },
-  { dir: "nw", symbol: "☯" },
-];
+  const { data: lookup } = await supabaseAdmin
+    .from("daily_card_lookup")
+    .select("card_code")
+    .eq("month", month)
+    .eq("day", day)
+    .single<{ card_code: string }>();
 
-export default function Home() {
+  let featuredCard: FeaturedCard | null = null;
+  if (lookup) {
+    const { data: cardData } = await supabaseAdmin
+      .from("card_library")
+      .select(
+        "card_name, suit, value, core_theme, daily_energy_heading, daily_energy_body, daily_energy_cta",
+      )
+      .eq("card_code", lookup.card_code)
+      .single<FeaturedCard>();
+    featuredCard = cardData;
+  }
+
+  const cardTitle = featuredCard
+    ? featuredCard.card_name.replace(/\s*\(.*$/, "")
+    : null;
+  const suit = featuredCard ? SUIT_DISPLAY[featuredCard.suit] : null;
+  const cardValue = featuredCard
+    ? featuredCard.value === "Joker"
+      ? "★"
+      : featuredCard.value
+    : null;
+
   return (
-    <div className={`${outfit.className} flex-1`}>
+    <div className="flex-1">
       <Navbar />
 
-      {/* HERO */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center px-6 text-center overflow-hidden">
-        <div className="relative z-10 max-w-4xl">
-          <h1
-            className={`${cormorant.className} text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold leading-tight`}
-          >
-            You are not the problem. Your pattern is just unread.
-          </h1>
-          <p className="text-gold text-xl mt-8 max-w-2xl mx-auto">
-            Multi-system pattern recognition for women who are done guessing.
-          </p>
+      <main>
+        {/* HERO */}
+        <section className="hero min-h-[calc(100vh-76px)] flex items-center pt-20 pb-10 relative">
+          <div className="container text-center">
+            <p className="eyebrow mb-5">The MillionHeiress BABE&trade;</p>
+            <h1 className="serif text-[clamp(2.75rem,5vw,4.25rem)] leading-[1.06] max-w-[920px] mx-auto mb-6">
+              Seven Lenses.{" "}
+              <span className="text-magenta">One Truth.</span>
+              <br />
+              <em className="serif-it text-gold">Yours.</em>
+            </h1>
+            <p className="muted text-[17px] max-w-[560px] mx-auto mb-11 leading-relaxed">
+              Pattern recognition for women who are done being explained to.
+              When seven independent systems confirm the same pattern, that is
+              not coincidence. That is your Birthprint.
+            </p>
 
-          <div className="orbit mx-auto my-12">
-            <div className="orbit-rotator">
-              <div className="orbit-track" />
-              {ORBIT_NODES.map((node) => (
-                <div
-                  key={`line-${node.dir}`}
-                  className={`orbit-line orbit-line-${node.dir}`}
-                />
-              ))}
-              {ORBIT_NODES.map((node) => (
-                <div
-                  key={node.dir}
-                  className={`orbit-node orbit-node-${node.dir}`}
-                >
-                  <span className="orbit-node-symbol" aria-hidden="true">
-                    {node.symbol}
-                  </span>
-                </div>
-              ))}
+            <div className="flex justify-center mb-14">
+              <Orbit />
             </div>
-            <div className="orbit-center">
-              <span
-                aria-hidden="true"
-                className={`${cormorant.className} italic absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[60px] leading-none orbit-heart-back`}
+
+            <div className="flex gap-4 justify-center flex-wrap">
+              <Link
+                href="/tools/daily-frequency"
+                className="btn btn-primary"
               >
-                &hearts;
-              </span>
-              <span
-                aria-hidden="true"
-                className={`${cormorant.className} italic absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[52px] leading-none orbit-heart-front`}
-              >
-                &hearts;
-              </span>
+                Try Card of the Day, Free
+              </Link>
+              <Link href="#system" className="btn btn-outline">
+                See How It Works
+              </Link>
             </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
-            <Link
-              href="/shop"
-              className="bg-magenta text-bg rounded-full px-6 py-3 text-base font-semibold inline-block"
-            >
-              Read My Pattern
-            </Link>
-            <Link
-              href="#free-tools"
-              className="border border-gold text-gold rounded-full px-6 py-3 text-base font-semibold inline-block"
-            >
-              Try a Free Tool
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* THE SYSTEM */}
-      <section className="py-24 px-6">
-        <div className="max-w-3xl mx-auto bg-navy border border-gold/30 rounded-lg p-10 sm:p-14 text-center">
-          <h2
-            className={`${cormorant.className} text-magenta text-3xl sm:text-4xl md:text-5xl font-semibold leading-tight mb-6`}
-          >
-            One birthdate. Eight lenses. One clear picture.
-          </h2>
-          <p className="text-white text-lg leading-relaxed">
-            Most systems give you one angle. We use eight independent
-            frameworks, cross-referenced, to find what actually repeats across
-            your data. A pattern only makes it into your report when three or
-            more lenses confirm it. No guessing. No generalising. Just what is
-            actually there.
-          </p>
-        </div>
-      </section>
-
-      {/* THE PROBLEM */}
-      <section className="bg-[#1a1f2e] py-24 px-6">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-          <h2
-            className={`${cormorant.className} text-gold text-3xl sm:text-4xl md:text-5xl font-semibold leading-tight`}
-          >
-            You have tried to figure yourself out.
-          </h2>
-          <div className="flex flex-col gap-5 text-white text-base sm:text-lg leading-relaxed">
-            <p>
-              You have taken the tests. You have read the books. You have tried
-              every new framework that promised to finally explain why you do
-              what you do.
-            </p>
-            <p>
-              Some of it stuck. Most of it gave you vocabulary, not clarity. You
-              came away with new words, but the same questions about why the
-              same things keep happening.
-            </p>
-            <p>
-              You do not need another label. You need a read on the actual
-              pattern that runs through your work, your relationships, and the
-              decisions you keep making at three in the morning. The one that
-              repeats no matter what you call it.
+            <p className="text-[11px] text-text-faint mt-8 tracking-[0.06em]">
+              Pattern recognition for personal development. Non-predictive.
+              Non-diagnostic.
             </p>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* FREE TOOLS */}
-      <section id="free-tools" className="py-24 px-6 scroll-mt-24">
-        <div className="max-w-5xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {FREE_TOOLS.map((card) => (
-              <div
-                key={card.title}
-                className="bg-navy border border-gold rounded-lg p-8 flex flex-col gap-4"
-              >
-                <h3
-                  className={`${cormorant.className} text-magenta text-2xl font-semibold`}
-                >
-                  {card.title}
-                </h3>
-                <p className="text-white text-base leading-relaxed flex-1">
-                  {card.body}
+        {/* THE SYSTEM */}
+        <section
+          id="system"
+          className="section bg-[rgba(15,20,40,0.55)] border-t border-b border-[rgba(201,169,110,0.18)] scroll-mt-24"
+        >
+          <div className="container max-w-[880px] text-center">
+            <p className="eyebrow mb-5">The System</p>
+            <h2 className="serif text-[clamp(1.75rem,3vw,2.5rem)] leading-tight">
+              Seven independent systems,{" "}
+              <em className="serif-it text-gold">triangulated.</em>
+            </h2>
+            <p className="text-[17px] muted mt-6 leading-relaxed">
+              1 lens is a signal. 2 is a pattern. 3+ is structure. Only patterns
+              confirmed by three or more systems make the report. Receipts, not
+              vibes.
+            </p>
+          </div>
+        </section>
+
+        {/* THE PROBLEM */}
+        <section className="section">
+          <div className="container">
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_1.4fr] gap-12 md:gap-20 items-start">
+              <div>
+                <p className="eyebrow mb-5">The Problem</p>
+                <h2 className="serif text-[2.25rem] leading-tight text-gold">
+                  You already <em className="serif-it">know.</em>
+                  <br />
+                  You just want it confirmed.
+                </h2>
+              </div>
+              <div className="text-base leading-[1.75] text-cream/85 pt-3.5 flex flex-col gap-5">
+                <p>
+                  You have been to the therapists. Read the books. Done the
+                  breathwork. Bought the courses. You can name your patterns
+                  better than most people running the workshops.
                 </p>
+                <p>
+                  What you do not need is another framework explaining who you
+                  are. You need a mirror that will not blink.
+                </p>
+                <p>
+                  Seven lenses. Triangulated. The pattern stops being your
+                  imagination the third time it shows up.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* FREE TOOLS */}
+        <section
+          id="free-tools"
+          className="section bg-[rgba(15,20,40,0.55)] border-t border-b border-[rgba(201,169,110,0.18)] scroll-mt-24"
+        >
+          <div className="container">
+            <div className="flex items-end justify-between mb-10 flex-wrap gap-4">
+              <div>
+                <p className="eyebrow mb-3.5">Free Tools</p>
+                <h2 className="serif text-[2.25rem]">Start with a daily read.</h2>
+              </div>
+              <Link href="/tools/daily-frequency" className="btn btn-ghost btn-sm">
+                All free tools &rarr;
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-[1.4fr_1fr] gap-5">
+              {/* Featured: Card of the Day */}
+              <Link
+                href="/tools/daily-frequency"
+                className="card lift block p-8 bg-gradient-to-br from-[#11172B] to-[#0B1020] border-[1.5px] border-[rgba(181,30,90,0.35)] no-underline min-h-[420px] flex flex-col"
+              >
+                <p className="eyebrow eyebrow-mag mb-4">Card of the Day &middot; Free</p>
+                <h3 className="serif text-[1.85rem] leading-tight mb-3">
+                  Today&apos;s Frequency Read
+                </h3>
+                <p className="muted text-sm leading-relaxed">
+                  A single Cardology pull, three lenses cross-referencing.
+                  Daily, no signup needed.
+                </p>
+
+                {/* Card art preview */}
+                <div className="mt-auto pt-8 flex items-center gap-6 flex-wrap">
+                  {featuredCard && cardValue && suit ? (
+                    <>
+                      <div className="relative w-[130px] h-[190px] rounded-[12px] border border-[rgba(201,169,110,0.4)] bg-gradient-to-b from-[#1A1428] to-[#0F1428] flex-shrink-0 shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_28px_rgba(181,30,90,0.25)]">
+                        <span className="serif-it absolute top-3 left-3.5 text-gold text-[22px] leading-none">
+                          {cardValue}
+                        </span>
+                        <span
+                          className={`absolute top-3.5 right-3.5 text-[22px] leading-none ${suit.className}`}
+                          aria-hidden="true"
+                        >
+                          {suit.symbol}
+                        </span>
+                        <span
+                          className={`absolute inset-0 flex items-center justify-center text-[64px] opacity-85 ${suit.className}`}
+                          aria-hidden="true"
+                        >
+                          {suit.symbol}
+                        </span>
+                        <span className="serif-it absolute bottom-3 left-3.5 text-gold text-[22px] leading-none rotate-180">
+                          {cardValue}
+                        </span>
+                        <span
+                          className={`absolute bottom-3.5 right-3.5 text-[22px] leading-none rotate-180 ${suit.className}`}
+                          aria-hidden="true"
+                        >
+                          {suit.symbol}
+                        </span>
+                      </div>
+                      <div className="flex-1 min-w-[180px]">
+                        <p className={`eyebrow mb-2 ${suit.className}`}>
+                          {featuredCard.suit} &middot; {featuredCard.value}
+                        </p>
+                        {featuredCard.core_theme ? (
+                          <p className="serif-it text-gold text-[22px] leading-tight mb-2.5">
+                            {featuredCard.core_theme}
+                          </p>
+                        ) : null}
+                        {featuredCard.daily_energy_heading ? (
+                          <p className="text-cream/75 text-[13px] leading-snug">
+                            {featuredCard.daily_energy_heading}
+                          </p>
+                        ) : null}
+                      </div>
+                    </>
+                  ) : (
+                    <p className="muted text-sm">
+                      Pull today&apos;s card on the full page.
+                    </p>
+                  )}
+                </div>
+              </Link>
+
+              {/* Right column: 2 small cards stacked */}
+              <div className="flex flex-col gap-5">
                 <Link
-                  href={card.href}
-                  className="bg-emerald text-white rounded-full px-5 py-2 text-sm font-semibold inline-block self-start"
+                  href="/tools/birthprint-snapshot"
+                  className="card lift no-underline p-7 border-l-[3px] border-l-emerald flex flex-col gap-2.5"
                 >
-                  Try it free
+                  <p className="eyebrow text-emerald">Free &middot; Quick</p>
+                  <h4 className="serif text-[1.35rem] leading-tight">
+                    Birthprint Snapshot
+                  </h4>
+                  <p className="muted text-[13px] leading-snug">
+                    Drop your date and time. Get a 5-lens preview of your
+                    pattern. Zero fluff.
+                  </p>
+                  <span className="text-gold text-[13px] mt-auto">
+                    Take it &rarr;
+                  </span>
+                </Link>
+
+                <Link
+                  href="/tools/your-babe-year"
+                  className="card lift no-underline p-7 border-l-[3px] border-l-violet flex flex-col gap-2.5"
+                >
+                  <p className="eyebrow text-violet">Free &middot; Year</p>
+                  <h4 className="serif text-[1.35rem] leading-tight">
+                    Your BABE Year
+                  </h4>
+                  <p className="muted text-[13px] leading-snug">
+                    Find out what this year is asking of you. One date in, one
+                    year ahead.
+                  </p>
+                  <span className="text-gold text-[13px] mt-auto">
+                    Read it &rarr;
+                  </span>
                 </Link>
               </div>
-            ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+        {/* TESTIMONIAL */}
+        <section className="section">
+          <div className="container max-w-[880px] text-center">
+            <p className="eyebrow mb-6">Receipts</p>
+            <div className="serif text-[86px] leading-none text-magenta opacity-45 -mb-4">
+              &ldquo;
+            </div>
+            <blockquote className="serif-it text-[clamp(1.5rem,2.4vw,2rem)] leading-snug text-cream m-0">
+              She named a pattern I have been swimming in for ten years and
+              called it what it was: Checked Out. I cried. Then I got to work.
+            </blockquote>
+            <p className="eyebrow mt-7 text-gold">A.O., coach</p>
+          </div>
+        </section>
+      </main>
 
       <Footer />
     </div>
