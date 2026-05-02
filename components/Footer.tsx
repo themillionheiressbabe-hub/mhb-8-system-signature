@@ -46,7 +46,7 @@ export function Footer() {
               </span>
             </Link>
             <p className="muted text-xs leading-relaxed max-w-xs">
-              Seven Lenses. One Truth. Yours. Pattern recognition for women
+              Eight Lenses. One Truth. Yours. Pattern recognition for women
               who are done being explained to.
             </p>
           </div>
@@ -100,7 +100,7 @@ export function Footer() {
           </div>
         </div>
 
-        <hr className="rule-gold mb-8" />
+        <hr className="rule-gold mb-10" />
 
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
           <p className="muted text-[11px] leading-relaxed max-w-2xl">

@@ -20,37 +20,220 @@ const inputClass =
   "w-full bg-transparent border border-gold text-gold rounded-lg p-3 mt-2";
 const labelClass = "text-gold text-sm flex flex-col";
 
+const SUIT_DISPLAY: Record<string, { symbol: string; className: string }> = {
+  hearts: { symbol: "♥", className: "text-rose-400" },
+  diamonds: { symbol: "♦", className: "text-yellow-400" },
+  clubs: { symbol: "♣", className: "text-emerald-400" },
+  spades: { symbol: "♠", className: "text-violet-400" },
+  joker: { symbol: "★", className: "text-cream" },
+};
+
+const SUIT_LABEL: Record<string, string> = {
+  hearts: "Hearts",
+  diamonds: "Diamonds",
+  clubs: "Clubs",
+  spades: "Spades",
+  joker: "Joker",
+};
+
+type SnapshotResult = {
+  snapshot: string;
+  cardCode: string;
+  cardName: string;
+  suit: string;
+  lifePath: number;
+  expressionNumber: number;
+  chosenName: string | null;
+  chosenNameExpression: number | null;
+  sunSign: string;
+  animal: string;
+  element: string;
+  yinYang: string;
+};
+
+type Status = "idle" | "loading" | "result" | "error";
+
+function paragraphsFrom(text: string): string[] {
+  return text
+    .split(/(?<=[.!?])\s+/)
+    .reduce((acc: string[][], sentence: string, i: number) => {
+      if (i % 2 === 0) acc.push([sentence]);
+      else acc[acc.length - 1].push(sentence);
+      return acc;
+    }, [])
+    .map((group) => group.join(" "));
+}
+
 function SnapshotForm() {
   const searchParams = useSearchParams();
-  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState<Status>("idle");
+  const [result, setResult] = useState<SnapshotResult | null>(null);
+  const [firstName, setFirstName] = useState("");
   const [fullName, setFullName] = useState("");
+  const [chosenName, setChosenName] = useState("");
   const [dob, setDob] = useState(() => searchParams.get("dob") ?? "");
-  const [tob, setTob] = useState("");
-  const [pob, setPob] = useState("");
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setSubmitted(true);
+    if (!fullName || !dob) return;
+    setStatus("loading");
+
+    const displayFirst = (chosenName.trim() || fullName.trim().split(/\s+/)[0]).trim();
+    setFirstName(displayFirst);
+
+    try {
+      const res = await fetch("/api/birthprint-snapshot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fullName, chosenName, dob }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setStatus("error");
+        return;
+      }
+      setResult(data as SnapshotResult);
+      setStatus("result");
+    } catch {
+      setStatus("error");
+    }
   }
 
-  if (submitted) {
+  function retry() {
+    setStatus("idle");
+    setResult(null);
+  }
+
+  if (status === "loading") {
+    return (
+      <p
+        className={`${cormorant.className} italic text-gold text-2xl text-center mt-8`}
+      >
+        Reading your patterns...
+      </p>
+    );
+  }
+
+  if (status === "error") {
     return (
       <div className="max-w-md mx-auto text-center flex flex-col items-center gap-6">
-        <h2
-          className={`${cormorant.className} text-white text-2xl`}
+        <p className="text-gold">Something went wrong. Please try again.</p>
+        <button
+          type="button"
+          onClick={retry}
+          className="border border-gold text-gold rounded-full px-6 py-3 text-base font-semibold"
         >
-          Your snapshot is being prepared.
-        </h2>
-        <p className="text-gold">
-          This tool is coming soon. Enter your details to be notified when it
-          launches.
+          Try again
+        </button>
+      </div>
+    );
+  }
+
+  if (status === "result" && result) {
+    const suitDisplay = SUIT_DISPLAY[result.suit] ?? SUIT_DISPLAY.joker;
+    const paragraphs = paragraphsFrom(result.snapshot);
+
+    return (
+      <div className="max-w-2xl mx-auto">
+        <p
+          className={`${cormorant.className} italic text-gold text-2xl text-center`}
+        >
+          {firstName}
         </p>
-        <Link
-          href="/shop"
-          className="border border-gold text-gold rounded-full px-6 py-3 text-base font-semibold inline-block"
+        <h2
+          className={`${cormorant.className} text-white text-3xl text-center mt-2`}
         >
-          Explore the Shop
-        </Link>
+          Your Birthprint Snapshot
+        </h2>
+        <hr className="border-0 border-t border-gold/40 my-10" />
+
+        <div className="mb-10">
+          {paragraphs.map((paragraph, index) => (
+            <p
+              key={index}
+              className={`text-white/85 text-base leading-relaxed ${
+                index === paragraphs.length - 1 ? "" : "mb-4"
+              }`}
+            >
+              {paragraph}
+            </p>
+          ))}
+        </div>
+
+        <div className="bg-navy border border-gold rounded-2xl p-6 max-w-md mx-auto">
+          <p className="text-gold uppercase text-xs tracking-widest text-center mb-4">
+            Your Data
+          </p>
+          <div className="flex flex-col gap-3">
+            <div className="flex items-baseline justify-between gap-4">
+              <span className="text-gold/60 text-xs uppercase tracking-wide">
+                Birth Card
+              </span>
+              <span className="text-white text-sm">
+                {result.cardName}{" "}
+                <span className={suitDisplay.className} aria-hidden="true">
+                  {suitDisplay.symbol}
+                </span>
+                <span className="sr-only">
+                  {" "}
+                  {SUIT_LABEL[result.suit] ?? result.suit}
+                </span>
+              </span>
+            </div>
+            <div className="flex items-baseline justify-between gap-4">
+              <span className="text-gold/60 text-xs uppercase tracking-wide">
+                Life Path
+              </span>
+              <span className="text-white text-sm">{result.lifePath}</span>
+            </div>
+            <div className="flex items-baseline justify-between gap-4">
+              <span className="text-gold/60 text-xs uppercase tracking-wide">
+                Name Frequency
+              </span>
+              {result.chosenNameExpression !== null &&
+              result.chosenNameExpression !== result.expressionNumber ? (
+                <span className="text-white text-sm flex flex-col items-end">
+                  <span>Birth name: Expression {result.expressionNumber}</span>
+                  <span>
+                    Chosen name: Expression {result.chosenNameExpression}
+                  </span>
+                </span>
+              ) : (
+                <span className="text-white text-sm">
+                  Expression {result.expressionNumber}
+                </span>
+              )}
+            </div>
+            <div className="flex items-baseline justify-between gap-4">
+              <span className="text-gold/60 text-xs uppercase tracking-wide">
+                Sun Sign
+              </span>
+              <span className="text-white text-sm">{result.sunSign}</span>
+            </div>
+            <div className="flex items-baseline justify-between gap-4">
+              <span className="text-gold/60 text-xs uppercase tracking-wide">
+                Chinese Zodiac
+              </span>
+              <span className="text-white text-sm">
+                {result.yinYang} {result.element} {result.animal}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="text-center mt-8 flex flex-col items-center gap-3">
+          <Link
+            href="/shop"
+            className="bg-magenta text-white rounded-full px-6 py-3 text-base font-semibold inline-block"
+          >
+            Get Your Full Read
+          </Link>
+          <p
+            className={`${cormorant.className} italic text-gold text-sm max-w-sm`}
+          >
+            This is a 5-lens preview. Your full Birthprint runs across all 8 systems.
+          </p>
+        </div>
       </div>
     );
   }
@@ -61,14 +244,27 @@ function SnapshotForm() {
       className="max-w-md mx-auto flex flex-col gap-4"
     >
       <label className={labelClass}>
-        <span>Full name</span>
+        <span>Full name (as it appears on your birth certificate)</span>
         <input
           type="text"
           required
+          placeholder="First, middle, last"
           value={fullName}
           onChange={(event) => setFullName(event.target.value)}
           className={inputClass}
         />
+      </label>
+      <label className={labelClass}>
+        <span>Chosen name (optional)</span>
+        <input
+          type="text"
+          value={chosenName}
+          onChange={(event) => setChosenName(event.target.value)}
+          className={inputClass}
+        />
+        <span className="text-gold text-xs mt-1">
+          The name you actually go by, if different.
+        </span>
       </label>
       <label className={labelClass}>
         <span>Date of birth</span>
@@ -80,27 +276,6 @@ function SnapshotForm() {
           className={inputClass}
         />
       </label>
-      <label className={labelClass}>
-        <span>Time of birth (optional)</span>
-        <input
-          type="time"
-          value={tob}
-          onChange={(event) => setTob(event.target.value)}
-          className={inputClass}
-        />
-      </label>
-      <label className={labelClass}>
-        <span>Place of birth (optional)</span>
-        <input
-          type="text"
-          value={pob}
-          onChange={(event) => setPob(event.target.value)}
-          className={inputClass}
-        />
-      </label>
-      <p className="text-gold text-xs">
-        Time and place of birth improve accuracy but are not required.
-      </p>
       <button
         type="submit"
         className="w-full bg-magenta text-white rounded-full px-6 py-3 text-base font-semibold mt-2"

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Orbit } from "@/components/Orbit";
+import CardArt from "@/components/CardArt";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
 const SUIT_DISPLAY: Record<string, { symbol: string; className: string }> = {
@@ -66,14 +67,14 @@ export default async function Home() {
           <div className="container text-center">
             <p className="eyebrow mb-5">The MillionHeiress BABE&trade;</p>
             <h1 className="serif text-[clamp(2.75rem,5vw,4.25rem)] leading-[1.06] max-w-[920px] mx-auto mb-6">
-              Seven Lenses.{" "}
+              Eight Lenses.{" "}
               <span className="text-magenta">One Truth.</span>
               <br />
               <em className="serif-it text-gold">Yours.</em>
             </h1>
             <p className="muted text-[17px] max-w-[560px] mx-auto mb-11 leading-relaxed">
               Pattern recognition for women who are done being explained to.
-              When seven independent systems confirm the same pattern, that is
+              When eight independent systems confirm the same pattern, that is
               not coincidence. That is your Birthprint.
             </p>
 
@@ -107,7 +108,7 @@ export default async function Home() {
           <div className="container max-w-[880px] text-center">
             <p className="eyebrow mb-5">The System</p>
             <h2 className="serif text-[clamp(1.75rem,3vw,2.5rem)] leading-tight">
-              Seven independent systems,{" "}
+              Eight independent systems,{" "}
               <em className="serif-it text-gold">triangulated.</em>
             </h2>
             <p className="text-[17px] muted mt-6 leading-relaxed">
@@ -141,7 +142,7 @@ export default async function Home() {
                   are. You need a mirror that will not blink.
                 </p>
                 <p>
-                  Seven lenses. Triangulated. The pattern stops being your
+                  Eight lenses. Triangulated. The pattern stops being your
                   imagination the third time it shows up.
                 </p>
               </div>
@@ -184,32 +185,11 @@ export default async function Home() {
                 <div className="mt-auto pt-8 flex items-center gap-6 flex-wrap">
                   {featuredCard && cardValue && suit ? (
                     <>
-                      <div className="relative w-[130px] h-[190px] rounded-[12px] border border-[rgba(201,169,110,0.4)] bg-gradient-to-b from-[#1A1428] to-[#0F1428] flex-shrink-0 shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_28px_rgba(181,30,90,0.25)]">
-                        <span className="serif-it absolute top-3 left-3.5 text-gold text-[22px] leading-none">
-                          {cardValue}
-                        </span>
-                        <span
-                          className={`absolute top-3.5 right-3.5 text-[22px] leading-none ${suit.className}`}
-                          aria-hidden="true"
-                        >
-                          {suit.symbol}
-                        </span>
-                        <span
-                          className={`absolute inset-0 flex items-center justify-center text-[64px] opacity-85 ${suit.className}`}
-                          aria-hidden="true"
-                        >
-                          {suit.symbol}
-                        </span>
-                        <span className="serif-it absolute bottom-3 left-3.5 text-gold text-[22px] leading-none rotate-180">
-                          {cardValue}
-                        </span>
-                        <span
-                          className={`absolute bottom-3.5 right-3.5 text-[22px] leading-none rotate-180 ${suit.className}`}
-                          aria-hidden="true"
-                        >
-                          {suit.symbol}
-                        </span>
-                      </div>
+                      <CardArt
+                        value={cardValue}
+                        suit={featuredCard.suit}
+                        size="sm"
+                      />
                       <div className="flex-1 min-w-[180px]">
                         <p className={`eyebrow mb-2 ${suit.className}`}>
                           {featuredCard.suit} &middot; {featuredCard.value}

@@ -15,49 +15,59 @@ const outfit = Outfit({
   subsets: ["latin"],
 });
 
-const YEAR_MEANINGS: Record<number, string> = {
-  1: "A year of new beginnings. What you start now sets the pattern for the next 9 years. Plant seeds with intention.",
-  2: "A year of patience and partnership. What you are building needs time. Collaboration matters more than solo effort right now.",
-  3: "A year of expression and expansion. Your voice is the tool. Create, communicate, and let yourself be seen.",
-  4: "A year of foundations and discipline. Build the structure. What gets laid down now will hold weight for years.",
-  5: "A year of change and freedom. Expect the unexpected. Stay flexible and move with the shifts rather than against them.",
-  6: "A year of responsibility and love. Home, family, and relationships take centre stage. Service is the theme.",
-  7: "A year of reflection and inner work. Go deep, not wide. What you learn about yourself this year changes everything.",
-  8: "A year of power and harvest. What you have built is ready to produce results. Step into the authority.",
-  9: "A year of completion and release. Let go of what is finished. Clear the ground for the new cycle ahead.",
-  11: "A Master Year of spiritual awakening and illumination. Heightened sensitivity. Trust the inner knowing.",
-  22: "A Master Year of building at scale. What you create this year has the potential to last beyond you.",
+type YearResult = {
+  personalYear: number;
+  yearLabel: string;
+  yearRead: string;
+  cyclePosition: number | null;
+  isMaster: boolean;
+  currentYear: number;
+  nextShiftDate: string;
 };
 
-function reduce(value: number): number {
-  if (value === 11 || value === 22) return value;
-  if (value < 10) return value;
-  let sum = 0;
-  let temp = value;
-  while (temp > 0) {
-    sum += temp % 10;
-    temp = Math.floor(temp / 10);
-  }
-  return reduce(sum);
-}
+type Status = "idle" | "loading" | "result" | "error";
 
-function calculatePersonalYear(dob: string): number {
-  const [, monthStr, dayStr] = dob.split("-");
-  const month = parseInt(monthStr, 10);
-  const day = parseInt(dayStr, 10);
-  const currentYear = new Date().getFullYear();
-
-  return reduce(reduce(month) + reduce(day) + reduce(currentYear));
+function paragraphsFrom(text: string): string[] {
+  return text
+    .split(/(?<=[.!?])\s+/)
+    .reduce((acc: string[][], sentence: string, i: number) => {
+      if (i % 2 === 0) acc.push([sentence]);
+      else acc[acc.length - 1].push(sentence);
+      return acc;
+    }, [])
+    .map((group) => group.join(" "));
 }
 
 export default function YourBabeYearPage() {
   const [dob, setDob] = useState("");
-  const [result, setResult] = useState<number | null>(null);
+  const [status, setStatus] = useState<Status>("idle");
+  const [result, setResult] = useState<YearResult | null>(null);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!dob) return;
-    setResult(calculatePersonalYear(dob));
+    setStatus("loading");
+    try {
+      const res = await fetch("/api/babe-year", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ dob }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setStatus("error");
+        return;
+      }
+      setResult(data as YearResult);
+      setStatus("result");
+    } catch {
+      setStatus("error");
+    }
+  }
+
+  function retry() {
+    setStatus("idle");
+    setResult(null);
   }
 
   return (
@@ -82,7 +92,7 @@ export default function YourBabeYearPage() {
             Find out what this year is asking of you.
           </p>
 
-          {result === null ? (
+          {status === "idle" ? (
             <form
               onSubmit={handleSubmit}
               className="max-w-md mx-auto flex flex-col gap-4"
@@ -104,35 +114,122 @@ export default function YourBabeYearPage() {
                 Find My Year
               </button>
             </form>
-          ) : (
-            <>
-              <div className="bg-navy border border-gold rounded-2xl max-w-md mx-auto p-8 text-center">
-                <p className="text-gold text-xs uppercase tracking-widest">
-                  Personal Year
-                </p>
-                <p
-                  className={`${cormorant.className} text-white text-6xl font-semibold mt-2`}
-                >
-                  {result}
-                </p>
-                <p className="text-white text-base leading-relaxed mt-4">
-                  {YEAR_MEANINGS[result] ?? ""}
-                </p>
-              </div>
-              <div className="text-center mt-8">
-                <Link
-                  href="/shop"
-                  className="bg-magenta text-white rounded-full px-6 py-3 text-base font-semibold inline-block"
-                >
-                  Get My Full Year Map
-                </Link>
-              </div>
-            </>
-          )}
+          ) : null}
+
+          {status === "loading" ? (
+            <p
+              className={`${cormorant.className} italic text-gold text-2xl text-center mt-8`}
+            >
+              Reading your year...
+            </p>
+          ) : null}
+
+          {status === "error" ? (
+            <div className="max-w-md mx-auto text-center flex flex-col items-center gap-6">
+              <p className="text-gold">
+                Something went wrong. Please try again.
+              </p>
+              <button
+                type="button"
+                onClick={retry}
+                className="border border-gold text-gold rounded-full px-6 py-3 text-base font-semibold"
+              >
+                Try again
+              </button>
+            </div>
+          ) : null}
+
+          {status === "result" && result ? (
+            <YearResultView result={result} />
+          ) : null}
         </div>
       </main>
 
       <Footer />
+    </div>
+  );
+}
+
+function YearResultView({ result }: { result: YearResult }) {
+  const paragraphs = paragraphsFrom(result.yearRead);
+  const cycleLabel = result.isMaster
+    ? "Master Year"
+    : `Year ${result.cyclePosition} of 9`;
+
+  return (
+    <div className="max-w-2xl mx-auto">
+      <p className="text-gold uppercase text-xs tracking-widest text-center">
+        Personal Year
+      </p>
+      <p
+        className={`${cormorant.className} text-white text-7xl font-semibold text-center mt-2 leading-none`}
+      >
+        {result.personalYear}
+      </p>
+      <p
+        className={`${cormorant.className} italic text-gold text-xl text-center mt-3`}
+      >
+        {result.yearLabel}
+      </p>
+
+      <hr className="border-0 border-t border-gold/40 my-10" />
+
+      <div className="mb-10">
+        {paragraphs.map((paragraph, index) => (
+          <p
+            key={index}
+            className={`text-white/85 text-base leading-relaxed ${
+              index === paragraphs.length - 1 ? "" : "mb-4"
+            }`}
+          >
+            {paragraph}
+          </p>
+        ))}
+      </div>
+
+      <hr className="border-0 border-t border-gold/40 my-10" />
+
+      <div className="bg-navy border border-gold rounded-2xl p-6 max-w-sm mx-auto">
+        <p className="text-gold uppercase text-xs tracking-widest text-center mb-4">
+          Your Year At A Glance
+        </p>
+        <div className="flex flex-col gap-3">
+          <div className="flex items-baseline justify-between gap-4">
+            <span className="text-gold/60 text-xs uppercase tracking-wide">
+              Personal Year
+            </span>
+            <span className="text-magenta text-sm font-semibold">
+              {result.personalYear}
+            </span>
+          </div>
+          <div className="flex items-baseline justify-between gap-4">
+            <span className="text-gold/60 text-xs uppercase tracking-wide">
+              Cycle
+            </span>
+            <span className="text-white text-sm">{cycleLabel}</span>
+          </div>
+          <div className="flex items-baseline justify-between gap-4">
+            <span className="text-gold/60 text-xs uppercase tracking-wide">
+              Energy shifts
+            </span>
+            <span className="text-gold text-sm">{result.nextShiftDate}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="text-center mt-8 flex flex-col items-center gap-3">
+        <Link
+          href="/shop"
+          className="bg-magenta text-white rounded-full px-6 py-3 text-base font-semibold inline-block"
+        >
+          Get Your Full Year Map
+        </Link>
+        <p
+          className={`${cormorant.className} italic text-gold text-sm max-w-sm`}
+        >
+          This is a numerology preview. Your full year map runs across 4 timing lenses.
+        </p>
+      </div>
     </div>
   );
 }

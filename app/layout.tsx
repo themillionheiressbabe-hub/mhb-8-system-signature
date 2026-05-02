@@ -17,9 +17,9 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "The MillionHeiress BABE™ — Seven Lenses. One Truth. Yours.",
+  title: "The MillionHeiress BABE™ — Eight Lenses. One Truth. Yours.",
   description:
-    "Pattern recognition for women who are done being explained to. Seven independent systems, cross-referenced. Receipts, not vibes.",
+    "Pattern recognition for women who are done being explained to. Eight independent systems, cross-referenced. Receipts, not vibes.",
 };
 
 export default function RootLayout({

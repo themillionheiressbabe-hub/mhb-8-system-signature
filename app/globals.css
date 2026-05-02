@@ -505,3 +505,32 @@ html {
   transform: scale(1.02);
   box-shadow: 0 0 24px var(--gold);
 }
+
+.cosmic-moon {
+  position: fixed;
+  top: 12%;
+  right: 8%;
+  width: 70px;
+  height: 70px;
+  opacity: 0.55;
+  z-index: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 0 12px rgba(232, 213, 163, 0.5));
+  animation: cosmic-moon-drift 20s ease-in-out infinite;
+}
+
+@keyframes cosmic-moon-drift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cosmic-moon {
+    animation: none;
+  }
+}

@@ -110,11 +110,11 @@ function detailRows(p: ProductRow): { label: string; value: string }[] {
   } else if (p.slug === "babe-52-week-journey-monthly") {
     rows.push({ label: "Delivery", value: "Weekly, 52 releases" });
     rows.push({ label: "Format", value: "Portal modules" });
-    rows.push({ label: "Lenses", value: "Seven, woven through" });
+    rows.push({ label: "Lenses", value: "Eight, woven through" });
   } else if (SIGNATURE_SLUGS.has(p.slug)) {
     rows.push({ label: "Delivery", value: "10 business days" });
     rows.push({ label: "Format", value: "PDF + voice walkthrough" });
-    rows.push({ label: "Lenses", value: "All seven, cross-referenced" });
+    rows.push({ label: "Lenses", value: "All eight, cross-referenced" });
   } else {
     rows.push({ label: "Delivery", value: "5 business days" });
     rows.push({ label: "Format", value: "PDF + voice notes" });
@@ -198,7 +198,7 @@ export default async function ProductDetailPage({ params }: Props) {
                   {product.name}
                 </h1>
 
-                <hr className="rule-gold mb-8" />
+                <hr className="rule-gold mb-10" />
 
                 {product.description ? (
                   <div className="text-base leading-[1.75] text-cream/85">
@@ -244,7 +244,7 @@ export default async function ProductDetailPage({ params }: Props) {
                     {ctaLabel}
                   </Link>
 
-                  <hr className="rule-gold my-6" />
+                  <hr className="rule-gold my-10" />
 
                   <div className="flex flex-col gap-3.5 text-[13px]">
                     {details.map((row) => (
@@ -260,7 +260,7 @@ export default async function ProductDetailPage({ params }: Props) {
                     ))}
                   </div>
 
-                  <hr className="rule-gold my-6" />
+                  <hr className="rule-gold my-10" />
 
                   <p className="text-[11px] text-text-faint leading-[1.6]">
                     Pattern recognition for personal development.

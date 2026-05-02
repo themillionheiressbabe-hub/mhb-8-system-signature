@@ -2,6 +2,9 @@ import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { supabase } from "@/lib/supabase";
+import FilterTabs from "./FilterTabs";
+import ProductCard from "./ProductCard";
+import SignatureCard from "./SignatureCard";
 
 type ProductRow = {
   id: string;
@@ -131,6 +134,13 @@ const MONTHLY_SLUGS = new Set([
   "babe-52-week-journey-monthly",
 ]);
 
+const ACCENT_HEX: Record<AccentName, { hex: string; rgb: string }> = {
+  magenta: { hex: "#B51E5A", rgb: "181,30,90" },
+  gold: { hex: "#C9A96E", rgb: "201,169,110" },
+  emerald: { hex: "#2D9B6E", rgb: "45,155,110" },
+  violet: { hex: "#A78BFA", rgb: "167,139,250" },
+};
+
 const ACCENT_CLASS: Record<
   AccentName,
   { border: string; text: string; price: string }
@@ -187,72 +197,6 @@ function BirthTimeNote() {
   );
 }
 
-function StandardCard({
-  product,
-  accent,
-  sectionLabel,
-}: {
-  product: ProductRow;
-  accent: AccentName;
-  sectionLabel: string;
-}) {
-  const a = ACCENT_CLASS[accent];
-  const price = priceLabel(product);
-  return (
-    <Link
-      href={cardHref(product)}
-      className={`card lift block p-6 border-l-4 ${a.border} no-underline flex flex-col`}
-    >
-      <p className={`eyebrow ${a.text} mb-2.5`}>
-        {sectionLabel} &middot; {price}
-      </p>
-      <h4 className="serif-it text-[1.4rem] leading-tight mb-2.5">
-        {product.name}
-      </h4>
-      {product.description ? (
-        <p className="muted text-[13px] leading-[1.6] line-clamp-3">
-          {product.description}
-        </p>
-      ) : null}
-      {product.requires_time_of_birth ? <BirthTimeNote /> : null}
-      <p className={`${a.price} font-bold text-lg mt-auto pt-4`}>{price}</p>
-    </Link>
-  );
-}
-
-function SignatureCard({ product }: { product: ProductRow }) {
-  const accent = SIGNATURE_ACCENT[product.slug] ?? "magenta";
-  const a = ACCENT_CLASS[accent];
-  const price = priceLabel(product);
-  return (
-    <Link
-      href={`/shop/${product.slug}`}
-      className={`card lift block p-8 border-l-4 ${a.border} no-underline grid grid-cols-[1fr_auto] gap-7 items-start`}
-    >
-      <div>
-        <p className={`eyebrow ${a.text} mb-3`}>The Signature &middot; Flagship</p>
-        <h3 className="serif text-[1.6rem] leading-tight mb-2.5">
-          {product.name}
-        </h3>
-        {product.description ? (
-          <p className="muted text-sm leading-[1.65] mb-4 line-clamp-4">
-            {product.description}
-          </p>
-        ) : null}
-        {product.requires_time_of_birth ? <BirthTimeNote /> : null}
-      </div>
-      <div className="text-right">
-        <p
-          className={`${a.price} text-[32px] font-bold leading-none whitespace-nowrap`}
-        >
-          {price}
-        </p>
-        <p className="eyebrow mt-2">Flagship</p>
-      </div>
-    </Link>
-  );
-}
-
 function renderSection(section: SectionDef, products: ProductRow[]) {
   if (products.length === 0) return null;
 
@@ -262,14 +206,22 @@ function renderSection(section: SectionDef, products: ProductRow[]) {
     case "free":
       body = (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {products.map((p) => (
-            <StandardCard
-              key={p.id}
-              product={p}
-              accent={section.accent}
-              sectionLabel={section.tabLabel}
-            />
-          ))}
+          {products.map((p) => {
+            const accent = ACCENT_HEX[section.accent];
+            return (
+              <ProductCard
+                key={p.id}
+                name={p.name}
+                description={p.description}
+                priceLabel={priceLabel(p)}
+                href={cardHref(p)}
+                accentColour={accent.hex}
+                accentRgb={accent.rgb}
+                categoryLabel={section.tabLabel}
+                requiresBirthTime={p.requires_time_of_birth}
+              />
+            );
+          })}
         </div>
       );
       break;
@@ -279,7 +231,19 @@ function renderSection(section: SectionDef, products: ProductRow[]) {
           {SIGNATURE_SLUGS.map((slug) => {
             const p = products.find((x) => x.slug === slug);
             if (!p) return null;
-            return <SignatureCard key={p.id} product={p} />;
+            const accent = ACCENT_HEX[SIGNATURE_ACCENT[p.slug] ?? "magenta"];
+            return (
+              <SignatureCard
+                key={p.id}
+                name={p.name}
+                description={p.description}
+                priceLabel={priceLabel(p)}
+                href={`/shop/${p.slug}`}
+                accentColour={accent.hex}
+                accentRgb={accent.rgb}
+                requiresBirthTime={p.requires_time_of_birth}
+              />
+            );
           })}
         </div>
       );
@@ -288,14 +252,22 @@ function renderSection(section: SectionDef, products: ProductRow[]) {
     case "journey":
       body = (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {products.map((p) => (
-            <StandardCard
-              key={p.id}
-              product={p}
-              accent={section.accent}
-              sectionLabel={section.tabLabel}
-            />
-          ))}
+          {products.map((p) => {
+            const accent = ACCENT_HEX[section.accent];
+            return (
+              <ProductCard
+                key={p.id}
+                name={p.name}
+                description={p.description}
+                priceLabel={priceLabel(p)}
+                href={cardHref(p)}
+                accentColour={accent.hex}
+                accentRgb={accent.rgb}
+                categoryLabel={section.tabLabel}
+                requiresBirthTime={p.requires_time_of_birth}
+              />
+            );
+          })}
         </div>
       );
       break;
@@ -335,14 +307,22 @@ function renderSection(section: SectionDef, products: ProductRow[]) {
                   {g.label}
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {g.products.map((p) => (
-                    <StandardCard
-                      key={p.id}
-                      product={p}
-                      accent={g.accent}
-                      sectionLabel={g.label}
-                    />
-                  ))}
+                  {g.products.map((p) => {
+                    const accent = ACCENT_HEX[g.accent];
+                    return (
+                      <ProductCard
+                        key={p.id}
+                        name={p.name}
+                        description={p.description}
+                        priceLabel={priceLabel(p)}
+                        href={cardHref(p)}
+                        accentColour={accent.hex}
+                        accentRgb={accent.rgb}
+                        categoryLabel={g.label}
+                        requiresBirthTime={p.requires_time_of_birth}
+                      />
+                    );
+                  })}
                 </div>
               </div>
             ))}
@@ -409,7 +389,7 @@ export default async function ShopPage({ searchParams }: Props) {
               <span className="block text-magenta mt-1">Pick your way in.</span>
             </h1>
             <p className="muted text-base max-w-[620px] mt-5 leading-[1.65]">
-              Every report runs the same seven-lens verification. The tier sets
+              Every report runs the same eight-lens verification. The tier sets
               the depth, not the rigour.
             </p>
           </div>
@@ -418,20 +398,7 @@ export default async function ShopPage({ searchParams }: Props) {
         {/* FILTER PILLS */}
         <section className="pb-8 sticky top-[68px] z-40 bg-[rgba(10,14,26,0.72)] backdrop-blur-[20px] border-b border-[rgba(201,169,110,0.12)]">
           <div className="container py-3 shop-tabs overflow-x-auto">
-            <div className="flex gap-2.5 w-max">
-              {TABS.map((tab) => {
-                const isSelected = selectedSlug === tab.slug;
-                return (
-                  <Link
-                    key={tab.slug}
-                    href={tab.href}
-                    className={`btn btn-sm whitespace-nowrap ${isSelected ? "btn-primary" : "btn-outline"}`}
-                  >
-                    {tab.label}
-                  </Link>
-                );
-              })}
-            </div>
+            <FilterTabs tabs={TABS} selectedSlug={selectedSlug} />
           </div>
         </section>
 

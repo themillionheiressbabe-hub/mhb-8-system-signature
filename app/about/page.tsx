@@ -1,11 +1,14 @@
+import Image from "next/image";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 
 const BODY_PARAGRAPHS = [
-  "I'm a multi-lens reader. That means I don't pick one system and force everything through it. I run seven, and I only report the patterns three or more confirm. The rest is interesting. The rest is not the report.",
-  "I made this for the women who already know. The therapists, the coaches, the founders, the mothers who've been the unofficial reader for everyone in their orbit. The ones who are tired of being explained to in workshops they could be teaching.",
-  "You don't need another framework. You need a mirror that won't blink. That's what BABE is.",
-  "I built it because I needed it, and because the women I love kept asking me to read for them, and reading for one woman at a time wasn't going to scale. Now seven systems do the heavy lifting and I do the writing. Receipts, not vibes.",
+  "I am Yemi Truth. I built a pattern recognition system for women who are done waiting for someone outside themselves to name what they already know is there.",
+  "I did not plan to build a system. I found tarot first. That felt like a gift arriving rather than something I went looking for. Then came astrology, then the Destiny Cards, and before I understood what was happening I was thirteen years deep into frameworks that were answering questions I did not even know how to ask yet.",
+  "I was standing in the middle of my own wounds for a long time. Not broken. Just carrying things I had not yet named. The work of learning these systems was also the work of learning myself. And what I kept finding was that no single system said everything. But when several of them started saying the same thing, that was when I knew something real was there.",
+  "So I built the thing. The system I needed did not exist. Eight independent frameworks, cross-referenced. A pattern only makes it into your read when three or more confirm it. Not because one system is wrong, but because one system alone is not enough. Eight do the heavy lifting. I do the writing. Receipts, not vibes.",
+  "I built this for every woman who has felt something true about herself that she could not quite prove. The ones who have done the workshops, read the books, and still felt like something was missing. The therapists doing their own work. The coaches who need their own mirror. The founders building alone. The mothers who have been the unofficial reader for everyone in their orbit for years. The ones who are tired of being explained to in rooms they could be teaching.",
+  "You do not need a saviour outside of yourself. You need a mirror that will not blink. That is what this is.",
 ];
 
 const METHOD = [
@@ -54,23 +57,23 @@ export default function AboutPage() {
         <section className="pt-32 pb-24">
           <div className="container">
             <div className="grid grid-cols-1 md:grid-cols-[1fr_1.2fr] gap-12 md:gap-20 items-start">
-              {/* LEFT: photo placeholder */}
+              {/* LEFT: founder portrait */}
               <div className="md:sticky md:top-28">
-                <div className="relative aspect-[4/5] rounded-2xl border border-[rgba(201,169,110,0.25)] overflow-hidden bg-gradient-to-b from-[#1A1428] via-[#0D1220] to-[#0A0E1A]">
-                  {/* Soft glow accents */}
-                  <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_35%,rgba(232,189,176,0.18),transparent_60%),radial-gradient(ellipse_40%_30%_at_50%_70%,rgba(181,30,90,0.22),transparent_65%)]" />
+                <div className="relative aspect-[4/5] rounded-2xl border border-[rgba(201,169,110,0.25)] overflow-hidden">
+                  <Image
+                    src="/yemi-truth.jpg"
+                    alt="Yemi Truth, founder of The MillionHeiress BABE"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 40vw"
+                    className="object-cover"
+                    priority
+                  />
 
                   {/* Corner marks */}
                   <div className="absolute top-5 left-5 w-[18px] h-[18px] border-t border-l border-gold" />
                   <div className="absolute top-5 right-5 w-[18px] h-[18px] border-t border-r border-gold" />
                   <div className="absolute bottom-5 left-5 w-[18px] h-[18px] border-b border-l border-gold" />
                   <div className="absolute bottom-5 right-5 w-[18px] h-[18px] border-b border-r border-gold" />
-
-                  {/* Caption */}
-                  <div className="absolute bottom-6 left-6 right-6">
-                    <p className="eyebrow mb-1.5">Photo · Yemi Truth</p>
-                    <p className="muted text-xs">Founder portrait</p>
-                  </div>
                 </div>
               </div>
 
@@ -81,10 +84,10 @@ export default function AboutPage() {
                   Yemi Truth
                 </h1>
                 <p className="serif-it text-[1.5rem] text-magenta mb-9 leading-[1.4]">
-                  Built BABE because nobody else was reading the receipts.
+                  Thirteen years in. Still learning. Still reading.
                 </p>
 
-                <hr className="rule-gold mb-9" />
+                <hr className="rule-gold mb-10" />
 
                 <div className="text-base leading-[1.8] text-cream/88 flex flex-col gap-5">
                   {BODY_PARAGRAPHS.map((p, i) => (
