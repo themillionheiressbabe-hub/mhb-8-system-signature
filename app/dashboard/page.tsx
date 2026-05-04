@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { DailyCardWidget } from "@/components/DailyCardWidget";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
@@ -228,56 +229,11 @@ export default async function DashboardPage() {
                   <span className="pill pill-pending">3+ Confirmed</span>
                 </div>
 
-                {card && suit ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-6 items-center">
-                    {/* Mini card art */}
-                    <div className="relative aspect-[140/200] w-full max-w-[140px] mx-auto sm:mx-0 rounded-xl border border-[rgba(201,169,110,0.45)] bg-gradient-to-b from-[#1A1428] to-[#0F1428] shadow-[0_8px_28px_rgba(0,0,0,0.5)]">
-                      <span className="serif-it absolute top-3 left-3.5 text-gold text-[22px] leading-none">
-                        {cardValueDisplay}
-                      </span>
-                      <span
-                        className={`absolute top-3.5 right-3.5 text-[22px] leading-none ${suit.className}`}
-                        aria-hidden="true"
-                      >
-                        {suit.symbol}
-                      </span>
-                      <span
-                        className={`absolute inset-0 flex items-center justify-center text-[64px] ${suit.className}`}
-                        aria-hidden="true"
-                      >
-                        {suit.symbol}
-                      </span>
-                      <span className="serif-it absolute bottom-3 right-3.5 text-gold text-[22px] leading-none rotate-180">
-                        {cardValueDisplay}
-                      </span>
-                    </div>
-
-                    {/* Meaning */}
-                    <div>
-                      <p className={`eyebrow mb-2 ${suit.className}`}>
-                        {suit.name} · {card.value}
-                      </p>
-                      {card.core_theme ? (
-                        <p className="serif-it text-[1.4rem] text-gold mb-3 leading-tight">
-                          {card.core_theme}
-                        </p>
-                      ) : null}
-                      {card.daily_energy_heading ? (
-                        <p className="muted text-[13px] leading-[1.6] mb-4">
-                          {card.daily_energy_heading}
-                        </p>
-                      ) : null}
-                      <Link
-                        href="/tools/daily-frequency"
-                        className="btn btn-outline btn-sm"
-                      >
-                        Read full pull
-                      </Link>
-                    </div>
-                  </div>
-                ) : (
-                  <p className="muted text-sm">No card data for today yet.</p>
-                )}
+                <DailyCardWidget
+                  variant="compact"
+                  ctaHref="/dashboard/daily-cards"
+                  ctaLabel="Read full pull"
+                />
               </div>
 
               {/* RIGHT: Birthprint (placeholder + CTA) */}
@@ -293,7 +249,39 @@ export default async function DashboardPage() {
 
                 <div className="flex flex-col gap-3 mb-5">
                   <Link
-                    href="/tools/daily-frequency"
+                    href="/dashboard/cosmic-weather"
+                    className="flex items-center gap-3 px-3.5 py-3 border border-[rgba(201,169,110,0.18)] rounded-lg border-l-[3px] border-l-amber no-underline hover:border-gold/40 transition-colors"
+                  >
+                    <span className="w-7 h-7 rounded-full bg-[rgba(245,158,11,0.15)] text-amber inline-flex items-center justify-center text-xs font-semibold serif">
+                      C
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-cream text-[13px] font-medium">
+                        Cosmic Weather
+                      </p>
+                      <p className="muted text-xs">
+                        Today&rsquo;s planets and collective card
+                      </p>
+                    </div>
+                  </Link>
+                  <Link
+                    href="/dashboard/daily-cards"
+                    className="flex items-center gap-3 px-3.5 py-3 border border-[rgba(201,169,110,0.18)] rounded-lg border-l-[3px] border-l-magenta no-underline hover:border-gold/40 transition-colors"
+                  >
+                    <span className="w-7 h-7 rounded-full bg-[rgba(181,30,90,0.15)] text-magenta inline-flex items-center justify-center text-xs font-semibold serif">
+                      M
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-cream text-[13px] font-medium">
+                        Daily Cards
+                      </p>
+                      <p className="muted text-xs">
+                        Destiny + tarot + journal
+                      </p>
+                    </div>
+                  </Link>
+                  <Link
+                    href="/dashboard/daily-cards"
                     className="flex items-center gap-3 px-3.5 py-3 border border-[rgba(201,169,110,0.18)] rounded-lg border-l-[3px] border-l-emerald no-underline hover:border-gold/40 transition-colors"
                   >
                     <span className="w-7 h-7 rounded-full bg-[rgba(45,155,110,0.15)] text-emerald inline-flex items-center justify-center text-xs font-semibold serif">

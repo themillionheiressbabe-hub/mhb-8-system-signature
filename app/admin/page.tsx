@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { AdminSidebar } from "@/components/AdminSidebar";
+import { DailyCardWidget } from "@/components/DailyCardWidget";
 
 const WEEKDAYS = [
   "Sunday",
@@ -141,30 +143,7 @@ export default async function AdminPage() {
 
   return (
     <div className="min-h-screen bg-[#111827] grid grid-cols-1 md:grid-cols-[240px_1fr]">
-      {/* SIDEBAR */}
-      <aside className="bg-[#0D1220] border-r border-[rgba(201,169,110,0.15)] py-7 px-[18px] md:sticky md:top-0 md:h-screen md:overflow-y-auto">
-        <div className="serif italic text-cream text-lg mb-6 px-3">
-          BABE <span className="text-magenta">HQ</span>
-        </div>
-
-        <nav className="flex flex-col">
-          <SidebarLink href="/admin" label="Overview" dot="gold" active />
-          <SidebarLink href="/admin/clients" label="Clients" dot="cream" />
-
-          <SidebarGroup>Catalog</SidebarGroup>
-          <SidebarLink href="/admin/products" label="Products" />
-
-          <SidebarGroup>Activity</SidebarGroup>
-          <SidebarLink href="/admin/orders" label="Orders" />
-          <SidebarLink href="/admin/reports" label="Reports" />
-
-          <SidebarGroup>Reads</SidebarGroup>
-          <SidebarLink href="/tools/daily-frequency" label="Card of the Day" />
-
-          <SidebarGroup>System</SidebarGroup>
-          <SidebarLink href="/" label="Public site" />
-        </nav>
-      </aside>
+      <AdminSidebar activeHref="/admin" />
 
       {/* MAIN */}
       <main className="p-6 sm:p-9">
@@ -221,6 +200,24 @@ export default async function AdminPage() {
             </p>
             <p className="text-emerald text-xs mt-1.5">{ordersCount} orders all-time</p>
           </div>
+        </div>
+
+        {/* Today's collective read — content seeds */}
+        <div className="card-admin mb-[18px]">
+          <div className="flex justify-between items-end mb-5 flex-wrap gap-3">
+            <div>
+              <p className="eyebrow mb-2">Today&rsquo;s Content Seeds</p>
+              <h2 className="serif text-magenta text-[1.4rem]">
+                Today&rsquo;s Collective Read
+              </h2>
+            </div>
+          </div>
+          <DailyCardWidget
+            variant="full"
+            ctaHref="/tools/daily-frequency"
+            ctaLabel="Open the full read"
+            showCopySeed
+          />
         </div>
 
         {/* Two-col main */}
@@ -397,47 +394,3 @@ export default async function AdminPage() {
   );
 }
 
-function SidebarLink({
-  href,
-  label,
-  dot,
-  active = false,
-}: {
-  href: string;
-  label: string;
-  dot?: "gold" | "magenta" | "cream";
-  active?: boolean;
-}) {
-  const baseClasses =
-    "flex items-center gap-2.5 px-3 py-2.5 text-[13px] no-underline rounded-lg mb-0.5 transition-colors";
-  const stateClasses = active
-    ? "bg-[rgba(201,169,110,0.08)] text-gold"
-    : "text-cream/70 hover:bg-[rgba(201,169,110,0.08)] hover:text-gold";
-  const dotColor =
-    dot === "gold"
-      ? "bg-gold"
-      : dot === "magenta"
-        ? "bg-magenta"
-        : dot === "cream"
-          ? "bg-cream/40"
-          : "";
-  return (
-    <Link href={href} className={`${baseClasses} ${stateClasses}`}>
-      {dot ? (
-        <span
-          className={`w-1.5 h-1.5 rounded-full inline-block ${dotColor}`}
-          aria-hidden="true"
-        />
-      ) : null}
-      {label}
-    </Link>
-  );
-}
-
-function SidebarGroup({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="text-[10px] tracking-[0.25em] uppercase text-cream/40 px-3 pt-4 pb-2">
-      {children}
-    </p>
-  );
-}

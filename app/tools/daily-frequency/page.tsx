@@ -1,46 +1,23 @@
-import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import CardArt from "@/components/CardArt";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import {
+  getDailyNumerology,
+  getDailySunSign,
+  getMoonData,
+} from "@/lib/astrology/daily-collective";
 import { DayInteractionForm } from "./DayInteractionForm";
-
-function getUkDateIso(): { iso: string; month: number; day: number } {
-  const now = new Date();
-  const iso = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Europe/London",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(now);
-  const [, month, day] = iso.split("-").map(Number);
-  return { iso, month, day };
-}
-
-const MONTHS_SHORT = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
 
 const SUIT_DISPLAY: Record<
   string,
-  { symbol: string; className: string; name: string }
+  { className: string; name: string }
 > = {
-  hearts: { symbol: "♥", className: "text-suit-hearts", name: "Hearts" },
-  diamonds: { symbol: "♦", className: "text-suit-diamonds", name: "Diamonds" },
-  clubs: { symbol: "♣", className: "text-suit-clubs", name: "Clubs" },
-  spades: { symbol: "♠", className: "text-suit-spades", name: "Spades" },
-  joker: { symbol: "★", className: "text-cream", name: "Joker" },
+  hearts: { className: "text-suit-hearts", name: "Hearts" },
+  diamonds: { className: "text-suit-diamonds", name: "Diamonds" },
+  clubs: { className: "text-suit-clubs", name: "Clubs" },
+  spades: { className: "text-suit-spades", name: "Spades" },
+  joker: { className: "text-cream", name: "Joker" },
 };
 
 const VALUE_NAME: Record<string, string> = {
@@ -60,41 +37,58 @@ const VALUE_NAME: Record<string, string> = {
   Joker: "Joker",
 };
 
-const MORE_TOOLS = [
-  {
-    href: "/tools/birthprint-snapshot",
-    eyebrow: "Free",
-    eyebrowColor: "text-emerald",
-    border: "border-l-emerald",
-    title: "Birthprint Snapshot",
-    body: "Drop your date and time. Get a 5-lens preview of your dominant frequency.",
-  },
-  {
-    href: "/tools/your-babe-year",
-    eyebrow: "Free · Year",
-    eyebrowColor: "text-violet",
-    border: "border-l-violet",
-    title: "Your BABE Year",
-    body: "Find out which personal year you are in and what it is asking of you.",
-  },
-];
+function getUkDateParts(): {
+  iso: string;
+  month: number;
+  day: number;
+  formatted: string;
+} {
+  const now = new Date();
+  const iso = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/London",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(now);
+  const [, month, day] = iso.split("-").map(Number);
+  const formatted = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/London",
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(now);
+  return { iso, month, day, formatted };
+}
+
+function toParagraphs(text: string | null | undefined): string[] {
+  if (!text) return [];
+  if (/\n{2,}/.test(text)) {
+    return text
+      .split(/\n{2,}/)
+      .map((p) => p.trim())
+      .filter(Boolean);
+  }
+  const sentences = text.split(/(?<=[.!?])\s+/).filter(Boolean);
+  const paragraphs: string[][] = [];
+  sentences.forEach((sentence, i) => {
+    if (i % 2 === 0) paragraphs.push([sentence]);
+    else paragraphs[paragraphs.length - 1].push(sentence);
+  });
+  return paragraphs.map((group) => group.join(" "));
+}
 
 type CardLibrary = {
   card_name: string;
   suit: string;
   value: string;
-  core_theme: string | null;
-  locked_in_summary: string | null;
-  checked_out_summary: string | null;
   daily_energy_heading: string | null;
   daily_energy_body: string | null;
-  daily_energy_cta: string | null;
 };
 
 export default async function DailyFrequencyPage() {
-  const { iso: cacheDate, month, day } = getUkDateIso();
-
-  const dateLabel = `${day} ${MONTHS_SHORT[month - 1]}`;
+  const { iso: cacheDate, month, day, formatted: formattedDate } =
+    getUkDateParts();
 
   const { data: lookup } = await supabaseAdmin
     .from("daily_card_lookup")
@@ -108,12 +102,17 @@ export default async function DailyFrequencyPage() {
     const { data: cardData } = await supabaseAdmin
       .from("card_library")
       .select(
-        "card_name, suit, value, core_theme, locked_in_summary, checked_out_summary, daily_energy_heading, daily_energy_body, daily_energy_cta",
+        "card_name, suit, value, daily_energy_heading, daily_energy_body",
       )
       .eq("card_code", lookup.card_code)
       .single<CardLibrary>();
     card = cardData;
   }
+
+  const ukNoon = new Date(`${cacheDate}T12:00:00Z`);
+  const moon = getMoonData(ukNoon);
+  const numerology = getDailyNumerology(ukNoon);
+  const sunSign = getDailySunSign(ukNoon);
 
   const suit = card ? SUIT_DISPLAY[card.suit] : null;
   const valueName = card ? VALUE_NAME[card.value] ?? card.value : null;
@@ -122,118 +121,103 @@ export default async function DailyFrequencyPage() {
       ? "★"
       : card.value
     : null;
-
-  let dailyRead = "";
-  if (card) {
-    const { data: cached } = await supabaseAdmin
-      .from("daily_reads_cache")
-      .select("daily_read")
-      .eq("cache_date", cacheDate)
-      .maybeSingle<{ daily_read: string }>();
-    dailyRead = cached?.daily_read ?? card.daily_energy_body ?? "";
-  }
-
-  const paragraphs = dailyRead
-    .split(/(?<=[.!?])\s+/)
-    .reduce((acc: string[][], sentence: string, i: number) => {
-      if (i % 2 === 0) acc.push([sentence]);
-      else acc[acc.length - 1].push(sentence);
-      return acc;
-    }, [])
-    .map((group) => group.join(" "));
+  const paragraphs = toParagraphs(card?.daily_energy_body);
+  const cardName = card ? card.card_name.replace(/\s*\(.*$/, "") : "";
 
   return (
     <div className="flex-1">
       <Navbar />
 
-      <main>
-        <section className="pt-32 pb-24">
-          <div className="container max-w-[880px]">
-            <p className="eyebrow text-center mb-4">Free · Daily</p>
-            <h1 className="serif text-[clamp(2rem,4vw,3rem)] text-center leading-[1.1] mb-3.5">
+      <main className="pt-24 pb-24 px-6">
+        <div className="max-w-[900px] mx-auto">
+          {/* Page heading */}
+          <header className="text-center mb-12">
+            <h1 className="serif text-white text-4xl font-light">
               Card of the Day
             </h1>
-            <p className="serif-it text-[1.25rem] text-gold text-center mb-14">
+            <p className="text-gold text-sm mt-1">{formattedDate}</p>
+            <p className="text-white/60 text-sm mt-1">
               One pull. Three lenses. No signup.
             </p>
+          </header>
 
-            {card && suit ? (
-              <>
-                {/* Card centerpiece */}
-                <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-10 md:gap-14 items-center">
-                  {/* Card art */}
-                  <div className="flex justify-center">
-                    <CardArt value={cardValue!} suit={card.suit} size="lg" />
-                  </div>
-
-                  {/* Card meaning */}
-                  <div>
-                    <p className={`eyebrow ${suit.className} mb-2.5`}>
-                      {suit.name} · {valueName} · {dateLabel}
-                    </p>
-                    <h2 className="serif-it text-[2rem] text-gold leading-snug mb-5">
-                      {card.core_theme ?? card.card_name.replace(/\s*\(.*$/, "")}
-                    </h2>
-                    {paragraphs.map((paragraph, index) => (
-                      <p
-                        key={index}
-                        className={`text-white/85 text-base leading-relaxed ${
-                          index === paragraphs.length - 1 ? "" : "mb-4"
-                        }`}
-                      >
-                        {paragraph}
-                      </p>
-                    ))}
-                    {card.daily_energy_cta ? (
-                      <p className="eyebrow text-gold mb-6">
-                        {card.daily_energy_cta}
-                      </p>
-                    ) : null}
-
-                  </div>
-                </div>
-
-                {/* Day-interaction form */}
-                <div className="mt-16">
-                  <DayInteractionForm
-                    todayCardCode={lookup!.card_code}
-                    todayCardName={card.card_name.replace(/\s*\(.*$/, "")}
-                    todayCardSuit={card.suit}
-                    todayCardValue={card.value}
+          {card && suit ? (
+            <>
+              {/* Two-column main display */}
+              <section className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-10 md:gap-14 items-start">
+                <div className="flex justify-center md:justify-start">
+                  <CardArt
+                    value={cardValue!}
+                    suit={card.suit}
+                    size="lg"
                   />
                 </div>
 
-                <hr className="rule-gold my-20" />
+                <div>
+                  <p
+                    className={`${suit.className} uppercase text-xs tracking-widest`}
+                  >
+                    {suit.name} &middot; {valueName} &middot; {cardName}
+                  </p>
 
-                {/* More free tools */}
-                <p className="eyebrow text-center mb-6">More free tools</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  {MORE_TOOLS.map((tool) => (
-                    <Link
-                      key={tool.href}
-                      href={tool.href}
-                      className={`card lift no-underline p-6 border-l-[3px] ${tool.border}`}
-                    >
-                      <p className={`eyebrow ${tool.eyebrowColor} mb-2`}>
-                        {tool.eyebrow}
-                      </p>
-                      <h4 className="serif-it text-[1.25rem] mb-2 leading-tight">
-                        {tool.title}
-                      </h4>
-                      <p className="muted text-[13px] leading-[1.55]">
-                        {tool.body}
-                      </p>
-                    </Link>
-                  ))}
+                  {card.daily_energy_heading ? (
+                    <h2 className="serif-it text-white text-2xl leading-tight mt-3">
+                      {card.daily_energy_heading}
+                    </h2>
+                  ) : null}
+
+                  {paragraphs.length > 0 ? (
+                    <div className="mt-3">
+                      {paragraphs.map((paragraph, index) => (
+                        <p
+                          key={index}
+                          className={`text-white/80 text-base leading-relaxed ${
+                            index === paragraphs.length - 1 ? "" : "mb-4"
+                          }`}
+                        >
+                          {paragraph}
+                        </p>
+                      ))}
+                    </div>
+                  ) : null}
+
+                  <p className="text-gold uppercase text-xs tracking-widest mt-4">
+                    Today&rsquo;s Invitation
+                  </p>
                 </div>
-              </>
-            ) : (
-              <p className="text-gold text-center text-lg">
-                No card data found for today
-              </p>
-            )}
-          </div>
-        </section>
+              </section>
+
+              {/* Slim info row */}
+              <div className="mt-10 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm">
+                <span className="text-gold">
+                  {moon.emoji} {moon.phase}
+                </span>
+                <span className="text-gold/40">&middot;</span>
+                <span className="text-white/60">{moon.sign}</span>
+                <span className="text-gold/40">&middot;</span>
+                <span className="text-white/60">
+                  Numerology Day {numerology.number}
+                </span>
+                <span className="text-gold/40">&middot;</span>
+                <span className="text-white/60">{sunSign.sign} season</span>
+              </div>
+
+              {/* DayInteractionForm */}
+              <section id="interact" className="mt-16 scroll-mt-24">
+                <DayInteractionForm
+                  todayCardCode={lookup!.card_code}
+                  todayCardName={cardName}
+                  todayCardSuit={card.suit}
+                  todayCardValue={card.value}
+                />
+              </section>
+            </>
+          ) : (
+            <p className="text-gold text-center text-lg">
+              No card data found for today
+            </p>
+          )}
+        </div>
       </main>
 
       <Footer />
