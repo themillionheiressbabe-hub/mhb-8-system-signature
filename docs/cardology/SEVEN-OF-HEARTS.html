@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seven of Hearts — MHB Card Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blush: #F5EDE6;
+    --parchment: #FAF6F1;
+    --magenta: #B5406A;
+    --gold: #C9A96E;
+    --gold-light: #E8D5A3;
+    --emerald: #3D7A6F;
+    --text-dark: #2C2420;
+    --text-mid: #5C4A44;
+    --text-soft: #8C7A74;
+    --hearts-red: #A63248;
+    --card-bg: #FFFAF7;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--parchment);
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-dark);
+    min-height: 100vh;
+    padding: 48px 24px;
+  }
+
+  .page { max-width: 820px; margin: 0 auto; }
+
+  .header {
+    text-align: center;
+    margin-bottom: 56px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--gold-light);
+  }
+
+  .suit-tag {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 52px;
+    font-weight: 300;
+    color: var(--hearts-red);
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+
+  .card-title span { font-style: italic; }
+
+  .birth-date {
+    font-size: 13px;
+    color: var(--text-soft);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 12px;
+  }
+
+  .card-symbol {
+    font-size: 48px;
+    margin: 16px 0 8px;
+    opacity: 0.85;
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--gold-light);
+  }
+
+  .output-block {
+    background: var(--card-bg);
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    padding: 36px 40px;
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  .output-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--magenta);
+    border-radius: 2px 0 0 2px;
+  }
+
+  .output-type {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--magenta);
+    margin-bottom: 16px;
+  }
+
+  .output-block h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+
+  .output-block p {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text-mid);
+    margin-bottom: 14px;
+  }
+
+  .output-block p:last-child { margin-bottom: 0; }
+
+  .energy-block { background: var(--hearts-red); border: none; }
+  .energy-block::before { background: var(--gold); }
+  .energy-block .output-type { color: var(--gold-light); }
+  .energy-block h3 { color: white; font-size: 30px; }
+  .energy-block p { color: rgba(255,255,255,0.88); font-size: 16px; }
+
+  .energy-cta {
+    display: inline-block;
+    margin-top: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    border-bottom: 1px solid var(--gold);
+    padding-bottom: 2px;
+  }
+
+  .hooks-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .hook-item {
+    background: var(--blush);
+    border-radius: 2px;
+    padding: 20px;
+  }
+
+  .hook-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--magenta);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .hook-item p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-dark);
+    margin: 0;
+  }
+
+  .spread-section { margin-bottom: 24px; }
+
+  .spread-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    overflow: hidden;
+    background: var(--card-bg);
+  }
+
+  .spread-cell {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--gold-light);
+    border-right: 1px solid var(--gold-light);
+  }
+
+  .spread-cell:nth-child(even) { border-right: none; }
+  .spread-cell:nth-last-child(-n+2) { border-bottom: none; }
+
+  .spread-key {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .spread-val {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    color: var(--text-dark);
+    font-weight: 500;
+  }
+
+  .connections-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .connection-block {
+    background: var(--card-bg);
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .connection-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .connection-cards {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .card-pill {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--magenta);
+    background: var(--blush);
+    border-radius: 2px;
+    padding: 4px 12px;
+  }
+
+  .states-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .state-block { padding: 24px; border-radius: 2px; }
+
+  .state-locked {
+    background: rgba(61, 122, 111, 0.08);
+    border: 1px solid rgba(61, 122, 111, 0.25);
+  }
+
+  .state-unattended {
+    background: rgba(181, 64, 106, 0.06);
+    border: 1px solid rgba(181, 64, 106, 0.2);
+  }
+
+  .state-title {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .state-locked .state-title { color: var(--emerald); }
+  .state-unattended .state-title { color: var(--magenta); }
+
+  .state-block ul { list-style: none; padding: 0; }
+
+  .state-block ul li {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-mid);
+    padding: 4px 0;
+    padding-left: 14px;
+    position: relative;
+  }
+
+  .state-locked ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--emerald);
+    font-size: 12px;
+  }
+
+  .state-unattended ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--magenta);
+    font-size: 12px;
+  }
+
+  .prc-note {
+    background: var(--blush);
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    padding: 14px 20px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: var(--text-mid);
+    line-height: 1.6;
+  }
+
+  .prc-note strong { color: var(--magenta); font-weight: 600; }
+
+  .footer {
+    text-align: center;
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--gold-light);
+  }
+
+  .footer p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    font-style: italic;
+    color: var(--text-soft);
+  }
+
+  @media (max-width: 600px) {
+    .hooks-grid, .states-grid, .connections-grid { grid-template-columns: 1fr; }
+    .spread-grid { grid-template-columns: 1fr; }
+    .spread-cell { border-right: none !important; }
+    .card-title { font-size: 38px; }
+    .output-block { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <span class="suit-tag">Hearts Suit — Relationships, Love & Emotional Inheritance</span>
+    <div class="card-symbol">♥</div>
+    <h1 class="card-title"><span>Seven</span> of Hearts</h1>
+    <p class="birth-date">September 30th &nbsp;·&nbsp; October 28th &nbsp;·&nbsp; November 26th &nbsp;·&nbsp; December 24th &nbsp;·&nbsp; The Mystic Heart</p>
+  </div>
+
+  <!-- ENERGY OF THE DAY -->
+  <div class="section-label">Energy of the Day</div>
+  <div class="output-block energy-block">
+    <div class="output-type">Daily Card Feature</div>
+    <h3>What are you holding onto that was never yours to keep?</h3>
+    <p>Seven of Hearts energy is deep, searching, and spiritually charged. Today the frequency is less about doing and more about releasing. Something you've been carrying in love, in expectation, in the story you've told yourself about how things should go, is ready to be put down. Not abandoned. Released. There's a difference.</p>
+    <p>The gift this card brings today is the ability to see people and situations with unusual clarity. Use it. Just don't use it to confirm your suspicions. Use it to find the truth.</p>
+    <span class="energy-cta">Today's invitation: give without keeping score</span>
+  </div>
+
+  <!-- REPORT DESCRIPTION -->
+  <div class="section-label">Report Description</div>
+  <div class="output-block">
+    <div class="output-type">For use inside BABE Signature Reports</div>
+    <h3>The Spiritual Love Card</h3>
+
+    <p>The Seven of Hearts is not a young soul card. There are no young souls here. If this is your Birthprint, you came into this life carrying accumulated experience across many cycles, and the theme that runs through all of it is love. Not love as romance only. Love as a spiritual practice. Love as the question your entire life is trying to answer.</p>
+
+    <p>The quest this card carries is for the truth about love and relationships. Not the comfortable version. The actual truth. What love requires. What it costs. What it asks you to let go of. That quest is woven into everything this Birthprint does, even when it doesn't look like it on the surface. The restlessness at work, the hunger for depth in relationships, the sense that ordinary never quite satisfies — all of it traces back to this central thread.</p>
+
+    <p>The two nines in this card's Life Path are significant. Nines are completion energy. They represent the end of a cycle, the shedding of what has been outgrown, and the transition into something larger. The Seven of Hearts is here to complete something at soul level. That shows up in life as a recurring pattern of letting go. Relationships that end when the lesson is complete. Chapters that close cleanly once their purpose has been served. It can feel like loss. The pattern says it is progression.</p>
+
+    <p>On the side of this card that is working well: extraordinary empathy. The ability to read what is happening in another person's heart before they have said a word. Natural magnetism that draws people in without effort. A genuine capacity for sacrifice and service that, when channelled well, produces real impact in the world. Teaching and consulting sit particularly well here. The Seven of Hearts has something to give that cannot be manufactured.</p>
+
+    <p>On the side of this card that needs watching: the same sensitivity that makes her perceptive can tip into suspicion and jealousy when she is off-centre. The ability to read emotional undercurrents means she can also misread them, projecting her own fears onto situations that don't warrant it. The pattern here is to notice when the reading of others is actually a reflection of something unresolved internally.</p>
+
+    <p>Work needs to mean something for this card. Stimulating, purposeful, and worthy are non-negotiable. She will not stay in work that bores her or that she cannot connect to a larger purpose, regardless of the financial incentive. Partnerships and harmonious working relationships become increasingly important with time. The older this card gets the more clearly it sees that nothing of real value gets built alone.</p>
+
+    <p>Many Seven of Hearts women leave the place they were born and make their home somewhere else entirely. The pull toward distance, toward water, toward environments that match the depth of the inner life, is real and worth following rather than managing.</p>
+
+    <div class="states-grid">
+      <div class="state-block state-locked">
+        <span class="state-title">Locked In</span>
+        <ul>
+          <li>Gives love, knowledge, and support without tracking what comes back</li>
+          <li>Uses deep emotional perceptiveness as a tool for genuine connection</li>
+          <li>Releases relationships and chapters that have completed their purpose without clinging</li>
+          <li>Channels the spiritual drive into work that serves something larger than herself</li>
+          <li>Builds partnerships based on truth rather than what she hopes will be true</li>
+        </ul>
+      </div>
+      <div class="state-block state-unattended">
+        <span class="state-title">Unattended</span>
+        <ul>
+          <li>Turns emotional sensitivity inward and lets suspicion and jealousy run the relationship</li>
+          <li>Holds on past the point where letting go is clearly the move</li>
+          <li>Gives to others while quietly keeping score and wondering why it doesn't feel like enough</li>
+          <li>Stays in unstimulating work because the practical reasons feel safer than the pull toward purpose</li>
+          <li>Mistakes the completion of a cycle for failure and grieves what was always meant to end</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT GENERATOR -->
+  <div class="section-label">Content Generator</div>
+  <div class="output-block">
+    <div class="output-type">Angles, Hooks & Avatar Connections</div>
+    <h3>Content Angles</h3>
+    <div class="hooks-grid">
+      <div class="hook-item">
+        <span class="hook-label">Hook 1 — The Old Soul Pattern</span>
+        <p>There are no young souls with this card. If you're a Seven of Hearts, you didn't arrive here empty. You arrived carrying something. The work isn't to acquire more. It's to figure out what you came here to complete and what you need to release to do it.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 2 — Giving Without Keeping Score</span>
+        <p>The Seven of Hearts is built to give. The shadow version keeps a quiet tally. Gives love and waits for the return. Gives time and notes who doesn't reciprocate. The card says: the peace you're looking for is on the other side of giving with no ledger.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 3 — The Jealousy Pattern</span>
+        <p>The Seven of Hearts is one of the most emotionally perceptive cards in the deck. That same sensitivity, when it goes Unattended, turns into suspicion. What you're reading in the other person is often a reflection of what's unresolved in you. That's not a comfortable truth. It is a useful one.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 4 — When the Chapter Ends</span>
+        <p>The Seven of Hearts completes cycles. Relationships end. Chapters close. People move on. For most cards this can feel like loss. For this one, it's often the soul doing exactly what it came to do. The question isn't why did this end. It's what did this complete?</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 5 — Four Birthdays, One Frequency</span>
+        <p>September 30th. October 28th. November 26th. December 24th. Four very different days carrying the same deep, searching, spiritually charged Seven of Hearts energy. Christmas Eve and the last day of September sitting in the same soul frequency. That's worth sitting with.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 6 — The Work Has to Mean Something</span>
+        <p>The Seven of Hearts will not stay in work it cannot connect to a purpose. Not for long. The financial incentive is never enough on its own. If you've been wondering why you keep leaving jobs that look good on paper, this might be why. The card needs the work to be worthy.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 28px;">
+      <div class="section-label">Avatar Resonance</div>
+      <div class="hooks-grid">
+        <div class="hook-item">
+          <span class="hook-label">Pauline — The Grief Reckoner</span>
+          <p>The Seven of Hearts is built to complete cycles. The loss of a mother is one of the deepest cycle completions there is. Pauline is living the pattern of this card. The question the card asks her is not how do I get over this but what is this completing and what does the next cycle ask of me.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Grace — The Religious Deconstructor</span>
+          <p>The spiritual drive in this card is structural, not optional. Grace leaving religion doesn't mean she leaves her quest for truth. The Seven of Hearts will find its spiritual container one way or another. The work now is choosing it consciously rather than falling into the next available structure.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Diane — The Recently Divorced</span>
+          <p>A marriage ending for the Seven of Hearts is often a cycle completing rather than a failure occurring. Diane needs to hear that distinction. The card says: what did this relationship complete in you? Start there before you decide what the ending means.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Nicole — The Hollow Success</span>
+          <p>The Seven of Hearts cannot sustain work that isn't worthy. Nicole has been doing impressive work that doesn't connect to anything she actually cares about. The card is very specific about what happens when you ignore that signal for long enough. She's already living it.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Amara — The Between-Two-Worlds Woman</span>
+          <p>Many Seven of Hearts women leave where they were born and build a life at a distance. For Amara, the relocation isn't displacement. It may be exactly what the card was always pointing toward. The pull toward elsewhere is worth examining before it gets dismissed as impractical.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Carmen — The Woman at 60 Rebuilding</span>
+          <p>The Seven of Hearts is told its golden years are blessed. Not because life gets easier but because at this stage the card finally stops fighting the pattern and starts working with it. Carmen at 60 is right on schedule. The giving without expectation, the depth of wisdom, all of it becomes available when she stops trying to hold on to what has already completed.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIFE SPREAD -->
+  <div class="section-label">Life Spread</div>
+  <div class="spread-section">
+    <div class="prc-note">
+      <strong>PRC Note:</strong> Four Planetary Ruling Cards apply to this birth card. September 30th — 5 of Spades. October 28th — Jack of Hearts + King of Diamonds. November 26th — 9 of Clubs. December 24th — 9 of Spades.
+    </div>
+    <div class="spread-grid">
+      <div class="spread-cell">
+        <span class="spread-key">Birth Card (BC)</span>
+        <span class="spread-val">Seven of Hearts</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Planetary Ruling Card (PRC)</span>
+        <span class="spread-val">5♠ / J♥ + K♦ / 9♣ / 9♠</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Personality Card</span>
+        <span class="spread-val">—</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Moon</span>
+        <span class="spread-val">Ace of Spades</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Mercury</span>
+        <span class="spread-val">7 of Diamonds</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Venus</span>
+        <span class="spread-val">5 of Spades</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Mars</span>
+        <span class="spread-val">Jack of Hearts</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Jupiter</span>
+        <span class="spread-val">9 of Clubs</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Saturn</span>
+        <span class="spread-val">9 of Spades</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Uranus</span>
+        <span class="spread-val">2 of Hearts</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Neptune</span>
+        <span class="spread-val">King of Hearts</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Pluto</span>
+        <span class="spread-val">King of Diamonds</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Result</span>
+        <span class="spread-val">6 of Hearts</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Cosmic Lesson</span>
+        <span class="spread-val">4 of Clubs</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONNECTIONS -->
+  <div class="section-label">Connections</div>
+  <div class="connections-grid">
+    <div class="connection-block">
+      <span class="connection-label">Karma Cards</span>
+      <div class="connection-cards">
+        <span class="card-pill">8♥</span>
+        <span class="card-pill">A♠</span>
+      </div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Karma Cousins</span>
+      <div class="connection-cards">
+        <span class="card-pill">7♠</span>
+        <span class="card-pill">2♣</span>
+      </div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Past Life Cards</span>
+      <div class="connection-cards">
+        <span class="card-pill">6♥</span>
+        <span class="card-pill">8♥</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <p>The MillionHeiress BABE™ Card Library &nbsp;·&nbsp; Internal Reference Document</p>
+  </div>
+
+</div>
+</body>
+</html>

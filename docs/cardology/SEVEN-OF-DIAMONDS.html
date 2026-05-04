@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seven of Diamonds — MHB Card Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --blush: #F5F0E8; --parchment: #FAF7F1; --magenta: #B5406A; --gold: #C9A96E; --gold-light: #E8D5A3; --emerald: #3D7A6F; --text-dark: #261E0F; --text-mid: #4A3E2C; --text-soft: #8A7A5E; --diamonds-amber: #8B6914; --diamonds-mid: #A07D1C; --card-bg: #FDFAF4; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--parchment); font-family: 'Outfit', sans-serif; color: var(--text-dark); min-height: 100vh; padding: 48px 24px; }
+  .page { max-width: 820px; margin: 0 auto; }
+  .header { text-align: center; margin-bottom: 56px; padding-bottom: 32px; border-bottom: 1px solid var(--gold-light); }
+  .suit-tag { font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; display: block; }
+  .card-title { font-family: 'Cormorant Garamond', serif; font-size: 52px; font-weight: 300; color: var(--diamonds-amber); line-height: 1.1; margin-bottom: 8px; }
+  .card-title span { font-style: italic; }
+  .birth-date { font-size: 13px; color: var(--text-soft); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 12px; line-height: 1.8; }
+  .card-symbol { font-size: 48px; margin: 16px 0 8px; opacity: 0.85; color: var(--diamonds-amber); }
+  .section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--gold-light); }
+  .output-block { background: var(--card-bg); border: 1px solid var(--gold-light); border-radius: 2px; padding: 36px 40px; margin-bottom: 24px; position: relative; }
+  .output-block::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--diamonds-amber); border-radius: 2px 0 0 2px; }
+  .output-type { font-size: 10px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--diamonds-mid); margin-bottom: 16px; }
+  .output-block h3 { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 400; color: var(--text-dark); margin-bottom: 16px; line-height: 1.2; }
+  .output-block p { font-size: 15px; line-height: 1.75; color: var(--text-mid); margin-bottom: 14px; }
+  .output-block p:last-child { margin-bottom: 0; }
+  .energy-block { background: var(--diamonds-amber); border: none; }
+  .energy-block::before { background: var(--gold); }
+  .energy-block .output-type { color: var(--gold-light); }
+  .energy-block h3 { color: white; font-size: 30px; }
+  .energy-block p { color: rgba(255,255,255,0.88); font-size: 16px; }
+  .energy-cta { display: inline-block; margin-top: 20px; font-size: 12px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold-light); border-bottom: 1px solid var(--gold-light); padding-bottom: 2px; }
+  .hooks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+  .hook-item { background: var(--blush); border-radius: 2px; padding: 20px; }
+  .hook-label { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--diamonds-mid); margin-bottom: 8px; display: block; }
+  .hook-item p { font-size: 14px; line-height: 1.6; color: var(--text-dark); margin: 0; }
+  .spread-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--gold-light); border-radius: 2px; overflow: hidden; background: var(--card-bg); }
+  .spread-cell { padding: 12px 20px; border-bottom: 1px solid var(--gold-light); border-right: 1px solid var(--gold-light); }
+  .spread-cell:nth-child(even) { border-right: none; }
+  .spread-cell:nth-last-child(-n+2) { border-bottom: none; }
+  .spread-key { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-soft); display: block; margin-bottom: 3px; }
+  .spread-val { font-family: 'Cormorant Garamond', serif; font-size: 17px; color: var(--text-dark); font-weight: 500; }
+  .connections-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .connection-block { background: var(--card-bg); border: 1px solid var(--gold-light); border-radius: 2px; padding: 20px; text-align: center; }
+  .connection-label { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-soft); display: block; margin-bottom: 10px; }
+  .connection-cards { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .card-pill { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 500; color: var(--diamonds-amber); background: var(--blush); border-radius: 2px; padding: 4px 12px; }
+  .states-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+  .state-block { padding: 24px; border-radius: 2px; }
+  .state-locked { background: rgba(61,122,111,0.08); border: 1px solid rgba(61,122,111,0.25); }
+  .state-unattended { background: rgba(181,64,106,0.06); border: 1px solid rgba(181,64,106,0.2); }
+  .state-title { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 12px; display: block; }
+  .state-locked .state-title { color: var(--emerald); }
+  .state-unattended .state-title { color: var(--magenta); }
+  .state-block ul { list-style: none; padding: 0; }
+  .state-block ul li { font-size: 14px; line-height: 1.6; color: var(--text-mid); padding: 4px 0; padding-left: 14px; position: relative; }
+  .state-locked ul li::before { content: '\2192'; position: absolute; left: 0; color: var(--emerald); font-size: 12px; }
+  .state-unattended ul li::before { content: '\2192'; position: absolute; left: 0; color: var(--magenta); font-size: 12px; }
+  .prc-note { background: var(--blush); border: 1px solid var(--gold-light); border-radius: 2px; padding: 14px 20px; margin-bottom: 16px; font-size: 13px; color: var(--text-mid); line-height: 1.6; }
+  .prc-note strong { color: var(--diamonds-mid); font-weight: 600; }
+  .seven-note { background: rgba(139,105,20,0.08); border: 1px solid rgba(139,105,20,0.25); border-radius: 2px; padding: 14px 20px; margin-bottom: 16px; font-size: 13px; color: var(--text-mid); line-height: 1.6; }
+  .seven-note strong { color: var(--diamonds-amber); font-weight: 600; }
+  .footer { text-align: center; margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--gold-light); }
+  .footer p { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-style: italic; color: var(--text-soft); }
+  @media (max-width: 600px) { .hooks-grid, .states-grid, .connections-grid { grid-template-columns: 1fr; } .spread-grid { grid-template-columns: 1fr; } .card-title { font-size: 38px; } .output-block { padding: 24px 20px; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <span class="suit-tag">Diamonds Suit &mdash; Money, Worth &amp; Material Inheritance</span>
+    <div class="card-symbol">&#9830;</div>
+    <h1 class="card-title"><span>Seven</span> of Diamonds</h1>
+    <p class="birth-date">January 20th &nbsp;&middot;&nbsp; February 18th &nbsp;&middot;&nbsp; March 16th &nbsp;&middot;&nbsp; April 14th &nbsp;&middot;&nbsp; May 12th &nbsp;&middot;&nbsp; June 10th<br>July 8th &nbsp;&middot;&nbsp; August 6th &nbsp;&middot;&nbsp; September 4th &nbsp;&middot;&nbsp; October 2nd</p>
+  </div>
+
+  <div class="section-label">Energy of the Day</div>
+  <div class="output-block energy-block">
+    <div class="output-type">Daily Card Feature</div>
+    <h3>Money or love? Today, practise holding both without ranking them.</h3>
+    <p>Seven of Diamonds energy is spiritually intelligent and financially aware in equal and sometimes competing measure. Today the frequency is asking for non-attachment rather than detachment. The money matters. So does the love. The specific invitation is to let both be present without letting either one demand the other as its price. That is the lifelong practice of this card and today is a good day to practise it deliberately.</p>
+    <p>Watch the restlessness. The Seven of Diamonds can make frequent changes when the inner tension between financial ambition and relational depth is not being consciously held. Today, check whether the impulse to change direction is genuine guidance or avoidance of the tension.</p>
+    <span class="energy-cta">Today's invitation: put money in its place without removing it from the picture</span>
+  </div>
+
+  <div class="section-label">Report Description</div>
+  <div class="output-block">
+    <div class="output-type">For use inside BABE Signature Reports</div>
+    <h3>The Card of Spiritual Values</h3>
+
+    <p>The Seven of Diamonds belongs to the special family of Seven cards. The source material is specific about what this means: these cards operate on a different frequency from the other 46. The ideas and values the Seven of Diamonds carries can feel alien to the people around them because genuinely understanding this card's experience requires the same frequency, which most people do not have. Only the six other cards in the Seven family can truly share what it is to live from this level. That is not isolation. It is a specific quality of the life path that changes everything about how the Seven of Diamonds relates to belonging.</p>
+
+    <p>The central question of this Birthprint is money or love. Not as a one-time decision but as a lifelong practice of harmonisation. The Nine of Hearts as Karma Card brings the energy of universal love into constant relationship with the financial focus of the Diamonds suit. The Seven of Diamonds can make significant wealth and lack the love it wants. Or it can have the most precious relationships and financial instability. The work is learning to hold both without sacrificing one for the other, and understanding that the non-attached attitude toward money is what unlocks the actual financial abundance rather than closing it off.</p>
+
+    <p>The non-attachment principle is specific and practical for this card. Non-attachment is not indifference. It is not pretending money does not matter. It is understanding that when money becomes the primary measure of worth and success, the specific satisfaction this card is capable of stays out of reach. When money is put in its proper place, kept in perspective alongside the spiritual values the card genuinely holds, the source material says wealth tends to arrive or be inherited. The Seven of Diamonds that chases money as the answer tends to find it elusive. The one that pursues the right values tends to find money follows.</p>
+
+    <p>Close relationships are the other primary avenue through which this card's life lessons come. Family, friends, and lovers are all deeply important to the Seven of Diamonds. The ties are close, the emotional investment is real, and the sharing in the trials of loved ones is genuine and consistent. The love life tends to involve sacrifice and disappointment until the card learns to let others be as they are rather than holding them to the standard the Seven of Diamonds holds for itself. That is a specific and ongoing practice rather than a lesson learned once.</p>
+
+    <p>The psychic gift and the desire for higher knowledge are strong in this Birthprint. The spiritual studies provide something specific and important: inner validation for the intuition that has been operating all along. Once the card is on the spiritual path, the source material says everything in the life comes into proper perspective. The restlessness, the financial fluctuation, the relational complexity, all of it becomes readable as part of a larger pattern rather than as random instability. Caution is specifically noted around contracts and legal matters. Signing carefully and avoiding lawsuits wherever possible is a documented pattern for this card.</p>
+
+    <div class="states-grid">
+      <div class="state-block state-locked">
+        <span class="state-title">Locked In</span>
+        <ul>
+          <li>Maintains a non-attached attitude toward money and watches the actual wealth become more available</li>
+          <li>Holds the money or love question as a lifelong practice of harmonisation rather than a forced choice</li>
+          <li>Pursues spiritual studies as the specific channel through which the intuition gets validated and the life makes sense</li>
+          <li>Lets loved ones be as they are rather than holding them to the standard the card holds for itself</li>
+          <li>Takes care with contracts and avoids legal disputes wherever possible</li>
+        </ul>
+      </div>
+      <div class="state-block state-unattended">
+        <span class="state-title">Unattended</span>
+        <ul>
+          <li>Makes money the primary measure and watches it stay elusive or unstable in proportion to the attachment</li>
+          <li>Sacrifices relationships for financial ambition or abandons financial stability for love and lives the extremes without integrating them</li>
+          <li>Lets the restlessness produce constant change without examining what the change is actually for</li>
+          <li>Holds loved ones to a standard they cannot meet and experiences the disappointment as confirmation that love and money cannot coexist</li>
+          <li>Signs contracts carelessly or engages in legal disputes and encounters the specific pattern this card is warned against</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Content Generator</div>
+  <div class="output-block">
+    <div class="output-type">Angles, Hooks &amp; Avatar Connections</div>
+    <h3>Content Angles</h3>
+    <div class="hooks-grid">
+      <div class="hook-item">
+        <span class="hook-label">Hook 1 &mdash; Money or Love</span>
+        <p>The Seven of Diamonds central question is money or love. Not once. Continuously. The card that makes money the primary measure finds love elusive. The one that chases love finds money unstable. The practice is harmonisation, holding both without ranking them. Most Seven of Diamonds people have been living one side of this equation for too long.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 2 &mdash; Non-Attachment Is Not Indifference</span>
+        <p>The Seven of Diamonds must maintain a non-attached attitude toward money. That is not the same as not caring. It is putting money in its proper place rather than making it the primary measure of worth. When that happens, the source material says wealth tends to arrive or be inherited. The attachment is what blocks it. The release is what opens the channel.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 3 &mdash; Only Six Cards Understand</span>
+        <p>The Seven of Diamonds belongs to the Seven family. Only six other cards share the frequency. The ideas and values this card carries can feel genuinely alien to most people around it because understanding them requires the same level, which most people do not have. That is not arrogance. It is accurate description of the Seven's specific experience of not quite fitting the standard frameworks.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 4 &mdash; Once on the Path, Everything Makes Sense</span>
+        <p>The Seven of Diamonds spiritual studies provide inner validation for the intuition that has been running all along. Once the card is on the path, the restlessness, the financial fluctuation, and the relational complexity all become readable as part of a larger pattern. The chaos was always purposeful. The path is what reveals the purpose.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 5 &mdash; The Contracts Warning</span>
+        <p>The Seven of Diamonds is specifically cautioned around signing contracts and engaging in legal disputes. That is a practical and documented pattern for this card. The intuition that serves so well in other domains can be overridden by optimism or financial enthusiasm in formal legal contexts. Read carefully. Sign carefully. Avoid the courtroom wherever possible.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 6 &mdash; Ten Birthdays, One Distinctive Frequency</span>
+        <p>January 20th through October 2nd. Ten dates carrying the same spiritually intelligent, financially complex, love-and-money-navigating Seven of Diamonds frequency. You have a strange relationship with money. Deep down you know it is not about wealth. It is about worth. And once you learn what really matters, you become unstoppable.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 28px;">
+      <div class="section-label">Avatar Resonance</div>
+      <div class="hooks-grid">
+        <div class="hook-item">
+          <span class="hook-label">Nicole &mdash; The Hollow Success</span>
+          <p>The Seven of Diamonds who made financial success the primary measure and arrived at significant wealth without the love and relational depth the card also requires. The hollowness is the money-or-love imbalance at its most visible. The non-attachment practice is not about earning less. It is about reassigning the meaning the money has been carrying.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Grace &mdash; The Religious Deconstructor</span>
+          <p>The Seven of Diamonds whose spiritual studies have been disrupted. The source material is specific: it is through spiritual work that this card finds inner validation for its intuition and puts everything in proper perspective. Grace's deconstruction is not the end of the spiritual path. It is the clearing of a framework that was no longer adequate to hold what the Seven of Diamonds actually knows.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Rachel &mdash; The Done-the-Work Woman</span>
+          <p>The Seven of Diamonds who has been doing the inner work without the spiritual framework that would allow everything to make sense as a pattern. Rachel may be processing the restlessness, the relational difficulty, and the financial fluctuation as separate problems. The path is what shows them as connected. Finding that framework is the specific next move.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Tasha &mdash; The Single Mum</span>
+          <p>The Seven of Diamonds whose close family ties and sharing in their trials is the specific pattern in full expression. Tasha's deep investment in those she loves is the card operating as designed. The watch for her is whether the sacrifice in love is coming from fullness or whether the financial pressure is making the relationship and the money feel like they are permanently competing.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Carmen &mdash; The Woman at 60 Rebuilding</span>
+          <p>The Seven of Diamonds after 45, specifically when the psychic gift and leadership capacity tend to come into their fullest expression. Carmen at 60 is in the territory where this card's ability to lead organisations working for progress and improvement becomes most available. The spiritual work of the earlier decades is what makes this possible now.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Amara &mdash; The Between-Two-Worlds Woman</span>
+          <p>The Seven of Diamonds whose attraction to international work, trade, and cross-cultural connections is specifically documented as a natural fit. For Amara, the between-worlds position is not just personal complexity. It is alignment with one of the specific professional channels this card tends to thrive in.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Life Spread</div>
+  <div style="margin-bottom: 24px;">
+    <div class="seven-note">
+      <strong>Seven Family Note:</strong> The Seven of Diamonds belongs to the special Seven card family. This card shares its deepest frequency with only six other cards in the deck. Its life path does not follow the standard traits of the remaining 46 cards. Karma Cards for this card are extended: 9 of Hearts, Ace of Clubs, 2 of Hearts, Jack of Hearts, 8 of Clubs, and King of Spades. No Karma Cousins apply.
+    </div>
+    <div class="prc-note">
+      <strong>PRC Note:</strong> Ten Planetary Ruling Cards apply. January 20th &mdash; 2 of Hearts. February 18th &mdash; King of Hearts. March 16th &mdash; King of Diamonds. April 14th &mdash; 9 of Clubs. May 12th &mdash; Jack of Hearts. June 10th &mdash; 5 of Spades. July 8th &mdash; 7 of Hearts. August 6th &mdash; 7 of Diamonds. September 4th &mdash; 5 of Spades. October 2nd &mdash; Jack of Hearts.
+    </div>
+    <div class="spread-grid">
+      <div class="spread-cell"><span class="spread-key">Birth Card (BC)</span><span class="spread-val">Seven of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Planetary Ruling Card (PRC)</span><span class="spread-val">2&#9829; / K&#9829; / K&#9830; / 9&#9827; / J&#9829; / 5&#9824; / 7&#9829; / 7&#9830; / 5&#9824; / J&#9829;</span></div>
+      <div class="spread-cell"><span class="spread-key">Personality Card</span><span class="spread-val">&mdash;</span></div>
+      <div class="spread-cell"><span class="spread-key">Moon</span><span class="spread-val">7 of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Mercury</span><span class="spread-val">5 of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Venus</span><span class="spread-val">Jack of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Mars</span><span class="spread-val">9 of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Jupiter</span><span class="spread-val">9 of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Saturn</span><span class="spread-val">2 of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Uranus</span><span class="spread-val">King of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Neptune</span><span class="spread-val">King of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Pluto</span><span class="spread-val">6 of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Result</span><span class="spread-val">4 of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Cosmic Lesson</span><span class="spread-val">2 of Diamonds</span></div>
+    </div>
+  </div>
+
+  <div class="section-label">Connections</div>
+  <div class="connections-grid">
+    <div class="connection-block">
+      <span class="connection-label">Karma Cards</span>
+      <div class="connection-cards">
+        <span class="card-pill">9&#9829;</span><span class="card-pill">A&#9827;</span><span class="card-pill">2&#9829;</span>
+        <span class="card-pill">J&#9829;</span><span class="card-pill">8&#9827;</span><span class="card-pill">K&#9824;</span>
+      </div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Karma Cousins</span>
+      <div class="connection-cards"><span class="card-pill" style="color: var(--text-soft); background: transparent; border: 1px solid var(--gold-light);">None</span></div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Past Life Cards</span>
+      <div class="connection-cards"><span class="card-pill">6&#9830;</span><span class="card-pill">8&#9830;</span></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>The MillionHeiress BABE&#8482; Card Library &nbsp;&middot;&nbsp; Internal Reference Document</p>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Six of Clubs — MHB Card Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blush: #F0EDE8;
+    --parchment: #FAF8F4;
+    --magenta: #B5406A;
+    --gold: #C9A96E;
+    --gold-light: #E8D5A3;
+    --emerald: #3D7A6F;
+    --text-dark: #1E2820;
+    --text-mid: #3A4A3E;
+    --text-soft: #7A8A7E;
+    --clubs-green: #2C4A3E;
+    --clubs-mid: #3D6B5A;
+    --card-bg: #F8FAF8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--parchment);
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-dark);
+    min-height: 100vh;
+    padding: 48px 24px;
+  }
+
+  .page { max-width: 820px; margin: 0 auto; }
+
+  .header {
+    text-align: center;
+    margin-bottom: 56px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--gold-light);
+  }
+
+  .suit-tag {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 52px;
+    font-weight: 300;
+    color: var(--clubs-green);
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+
+  .card-title span { font-style: italic; }
+
+  .birth-date {
+    font-size: 13px;
+    color: var(--text-soft);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 12px;
+  }
+
+  .card-symbol {
+    font-size: 48px;
+    margin: 16px 0 8px;
+    opacity: 0.85;
+    color: var(--clubs-green);
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--gold-light);
+  }
+
+  .output-block {
+    background: var(--card-bg);
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    padding: 36px 40px;
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  .output-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--clubs-green);
+    border-radius: 2px 0 0 2px;
+  }
+
+  .output-type {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--clubs-mid);
+    margin-bottom: 16px;
+  }
+
+  .output-block h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+
+  .output-block p {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text-mid);
+    margin-bottom: 14px;
+  }
+
+  .output-block p:last-child { margin-bottom: 0; }
+
+  .energy-block { background: var(--clubs-green); border: none; }
+  .energy-block::before { background: var(--gold); }
+  .energy-block .output-type { color: var(--gold-light); }
+  .energy-block h3 { color: white; font-size: 30px; }
+  .energy-block p { color: rgba(255,255,255,0.88); font-size: 16px; }
+
+  .energy-cta {
+    display: inline-block;
+    margin-top: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    border-bottom: 1px solid var(--gold);
+    padding-bottom: 2px;
+  }
+
+  .hooks-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .hook-item {
+    background: var(--blush);
+    border-radius: 2px;
+    padding: 20px;
+  }
+
+  .hook-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--clubs-mid);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .hook-item p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-dark);
+    margin: 0;
+  }
+
+  .spread-section { margin-bottom: 24px; }
+
+  .spread-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    overflow: hidden;
+    background: var(--card-bg);
+  }
+
+  .spread-cell {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--gold-light);
+    border-right: 1px solid var(--gold-light);
+  }
+
+  .spread-cell:nth-child(even) { border-right: none; }
+  .spread-cell:nth-last-child(-n+2) { border-bottom: none; }
+
+  .spread-key {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .spread-val {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    color: var(--text-dark);
+    font-weight: 500;
+  }
+
+  .connections-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .connection-block {
+    background: var(--card-bg);
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .connection-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .connection-cards {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .card-pill {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--clubs-green);
+    background: var(--blush);
+    border-radius: 2px;
+    padding: 4px 12px;
+  }
+
+  .states-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .state-block { padding: 24px; border-radius: 2px; }
+
+  .state-locked {
+    background: rgba(61, 122, 111, 0.08);
+    border: 1px solid rgba(61, 122, 111, 0.25);
+  }
+
+  .state-unattended {
+    background: rgba(181, 64, 106, 0.06);
+    border: 1px solid rgba(181, 64, 106, 0.2);
+  }
+
+  .state-title {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .state-locked .state-title { color: var(--emerald); }
+  .state-unattended .state-title { color: var(--magenta); }
+
+  .state-block ul { list-style: none; padding: 0; }
+
+  .state-block ul li {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-mid);
+    padding: 4px 0;
+    padding-left: 14px;
+    position: relative;
+  }
+
+  .state-locked ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--emerald);
+    font-size: 12px;
+  }
+
+  .state-unattended ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--magenta);
+    font-size: 12px;
+  }
+
+  .prc-note {
+    background: var(--blush);
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    padding: 14px 20px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: var(--text-mid);
+    line-height: 1.6;
+  }
+
+  .prc-note strong { color: var(--clubs-mid); font-weight: 600; }
+
+  .footer {
+    text-align: center;
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--gold-light);
+  }
+
+  .footer p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    font-style: italic;
+    color: var(--text-soft);
+  }
+
+  @media (max-width: 600px) {
+    .hooks-grid, .states-grid, .connections-grid { grid-template-columns: 1fr; }
+    .spread-grid { grid-template-columns: 1fr; }
+    .spread-cell { border-right: none !important; }
+    .card-title { font-size: 38px; }
+    .output-block { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <span class="suit-tag">Clubs Suit — Thinking, Communication & Mental Inheritance</span>
+    <div class="card-symbol">♣</div>
+    <h1 class="card-title"><span>Six</span> of Clubs</h1>
+    <p class="birth-date">March 30th &nbsp;·&nbsp; April 28th &nbsp;·&nbsp; May 26th &nbsp;·&nbsp; June 24th &nbsp;·&nbsp; July 22nd &nbsp;·&nbsp; August 20th &nbsp;·&nbsp; September 18th &nbsp;·&nbsp; October 16th &nbsp;·&nbsp; November 14th &nbsp;·&nbsp; December 12th</p>
+  </div>
+
+  <!-- ENERGY OF THE DAY -->
+  <div class="section-label">Energy of the Day</div>
+  <div class="output-block energy-block">
+    <div class="output-type">Daily Card Feature</div>
+    <h3>You already know. The question is whether you're trusting it.</h3>
+    <p>Six of Clubs energy is perceptive, harmonising, and quietly guided. Today the frequency is calm and clear in a way that the mind alone cannot produce. The intuitive signal is particularly sharp. Whatever you are reading about a person, a situation, or a decision today is worth taking seriously before the rational mind starts explaining it away.</p>
+    <p>Watch the worry though. The Six of Clubs carries a tendency to worry specifically about not living up to its own potential. Today, notice if that pattern is using energy that the actual work needs.</p>
+    <span class="energy-cta">Today's invitation: trust what you already know</span>
+  </div>
+
+  <!-- REPORT DESCRIPTION -->
+  <div class="section-label">Report Description</div>
+  <div class="output-block">
+    <div class="output-type">For use inside BABE Signature Reports</div>
+    <h3>The Card of Higher Purpose</h3>
+
+    <p>The Six of Clubs is also known as the psychic card, and the source material makes a point of noting how rarely the people born under this Birthprint are actually aware of that gift. The intuitive capacity here is not vague or occasional. It is structural. The combination of the Six's natural attunement to harmony and order with the Clubs suit's mental orientation produces a mind that reads beneath the surface of things with an accuracy that most people would not easily attribute to logic. It is not logic. It is a different kind of knowing.</p>
+
+    <p>The card carries a specific responsibility: the responsibility to truth. This is not a casual framing. The Six of Clubs is here to find a system of truth that it can genuinely believe in and live by. Not adopt. Not perform. Actually live. When that is found, the source material says there is no limit to the good this card can do in the world. When it is not found, the same card becomes one of the biggest worriers and procrastinators in the deck. The worry is the gap between knowing the potential is there and not yet having found the path to living it.</p>
+
+    <p>The path for this card is described as light rather than labour. That distinction is worth sitting with. The Six of Clubs is not built for grinding. It is built for clarity, for the kind of work that flows from a genuinely aligned mind, for the application of innate knowledge rather than the accumulation of brute effort. Overwork consistently shows up as a pattern that depletes rather than builds for this card. The discipline required here is not the discipline of doing more. It is the discipline of staying mentally sharp, spiritually grounded, and genuinely present in what is being done.</p>
+
+    <p>The financial promise in this card is real. The source material is specific: if there is a card that gives the promise to become rich, it is the Six of Clubs. The condition is that money cannot be allowed to take first place. When financial gain becomes the primary motivation, the peace of mind that makes the Six of Clubs genuinely effective gets threatened and the selfishness that is this card's specific shadow begins to develop. The wealth is available. The order of priorities is the gatekeeper.</p>
+
+    <p>The worry pattern is the most consistent expression of this card operating below its potential. Worry about health, about the people loved, about not doing enough, about not commercialising the gifts adequately, about falling short of a standard that is felt but not always named. Most of what is being worried about has already been handled. The source material makes this explicit: most of the Six of Clubs problems are already solved. The worry is the card's energy spinning in a direction that does not serve it.</p>
+
+    <p>Inner balance and harmonious communication are not optional maintenance for this card. They are the operational requirements. When the inner life is in balance, the intuition is clear, the guidance is available, and the path is light. When the inner life is disturbed, the same card becomes its own obstacle, second-guessing what it knows, delaying what it should act on, worrying about what has already been taken care of.</p>
+
+    <div class="states-grid">
+      <div class="state-block state-locked">
+        <span class="state-title">Locked In</span>
+        <ul>
+          <li>Trusts and develops the intuitive capacity as a primary working tool</li>
+          <li>Finds and lives by a genuine system of truth rather than performing one</li>
+          <li>Works from alignment rather than effort and maintains the mental and spiritual clarity that makes that possible</li>
+          <li>Keeps money in its proper place rather than letting financial gain become the organising principle</li>
+          <li>Channels the worry energy into the actual work rather than letting it consume the resource the work needs</li>
+        </ul>
+      </div>
+      <div class="state-block state-unattended">
+        <span class="state-title">Unattended</span>
+        <ul>
+          <li>Dismisses or ignores the intuitive gift and wonders why the guidance feels absent</li>
+          <li>Worries about not living up to the potential while the worrying itself is what is blocking the potential</li>
+          <li>Overworks past the point of mental clarity and loses the sharpness the card specifically requires</li>
+          <li>Lets financial motivation take first place and watches the peace of mind quietly erode</li>
+          <li>Procrastinates on the path because the system of truth has not yet been fully found or committed to</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT GENERATOR -->
+  <div class="section-label">Content Generator</div>
+  <div class="output-block">
+    <div class="output-type">Angles, Hooks & Avatar Connections</div>
+    <h3>Content Angles</h3>
+    <div class="hooks-grid">
+      <div class="hook-item">
+        <span class="hook-label">Hook 1 — The Psychic Card Nobody Told You About</span>
+        <p>The Six of Clubs is also called the psychic card. Most people born on these dates have no idea. The intuitive capacity is structural, not occasional. It has been there the whole time, reading situations, reading people, knowing things before they are confirmed. The question is not whether it is real. It is whether it is being used on purpose.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 2 — The Responsibility to Truth</span>
+        <p>The Six of Clubs carries a specific responsibility: to find a system of truth it can genuinely believe in and actually live by. Not adopt. Not perform. Live. When that is found, this card has no ceiling. When it is not found, the same card becomes one of the biggest worriers and procrastinators in the deck. That gap is the whole game.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 3 — Light Not Labour</span>
+        <p>The path for the Six of Clubs is described as light, not labour. That is a specific and unusual instruction. This card is not built for grinding. It is built for clarity, for work that flows from alignment, for the application of what is already known. Overwork consistently depletes rather than builds this card. The discipline required here is staying sharp, not working harder.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 4 — The Worry About What Is Already Solved</span>
+        <p>The Six of Clubs worries specifically about not living up to its own potential. The source material says most of the problems this card worries about are already solved. The worry is the card's energy going in a direction that doesn't serve it. What would change if the energy currently going into worry went into the work instead?</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 5 — The Financial Promise With a Condition</span>
+        <p>The Six of Clubs carries a genuine promise of financial abundance. The condition is that money cannot be allowed to take first place. When it does, the peace of mind that makes this card effective gets threatened and the specific shadow of selfishness begins to develop. The wealth is available. The order of priorities is what determines whether it arrives and stays.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 6 — Ten Birthdays, One Guided Frequency</span>
+        <p>March 30th through December 12th. Ten dates across three seasons carrying the same perceptive, truth-seeking, intuitively guided Six of Clubs frequency. The psychic card. The card of higher purpose. The one that knows the answers and spends too much time worrying about whether it will actually use them.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 28px;">
+      <div class="section-label">Avatar Resonance</div>
+      <div class="hooks-grid">
+        <div class="hook-item">
+          <span class="hook-label">Grace — The Religious Deconstructor</span>
+          <p>The Six of Clubs responsibility to truth is being lived in real time by Grace. She left a system that told her what truth was and is now in the harder work of finding one she can actually believe in rather than adopt. That is precisely the journey this card requires. She is not lost. She is in the most important part of the process.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Rachel — The Done-the-Work Woman</span>
+          <p>The Six of Clubs whose intuitive intelligence has been doing the reading accurately the whole time and whose rational mind has been explaining it away. Rachel has done every form of intellectual and emotional work. What she may not have done is trust the thing she already knows without needing it confirmed by the next book, teacher, or course.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Jade — The Invisible Middle</span>
+          <p>The Six of Clubs in the sandwich generation, overworking past the point of mental clarity. The card specifically warns against this. Jade's invisible labour is depleting the precise resource, the sharp, clear, intuitively guided mind, that is her actual power. The rest is not laziness. It is maintenance of the operational tool this card requires.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Nicole — The Hollow Success</span>
+          <p>The Six of Clubs who allowed financial success to take first place. The source material is specific about what happens when it does: peace of mind is threatened and selfishness develops. Nicole is living the aftermath. The card's promise of abundance is still available. The path back to it requires reordering what is at the centre.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Tasha — The Single Mum</span>
+          <p>The Six of Clubs worrying about the people she loves. That pattern is written directly into this card. Tasha's anxiety about her children, her future, whether she is doing enough, is the Six of Clubs pattern in one of its most recognisable forms. Most of what she is worrying about is already handled. The card says so explicitly. That is worth hearing directly.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Carmen — The Woman at 60 Rebuilding</span>
+          <p>The Six of Clubs at 60 has the full accumulated weight of the intuitive inheritance behind her. Carmen has been reading situations accurately for decades. The rebuilding she is doing now is not starting over. It is finally building in the direction the card has been pointing toward the whole time, with all of the guidance fully available and the clarity hard-earned.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIFE SPREAD -->
+  <div class="section-label">Life Spread</div>
+  <div class="spread-section">
+    <div class="prc-note">
+      <strong>PRC Note:</strong> Ten Planetary Ruling Cards apply to this birth card. March 30th — 10 of Clubs. April 28th — Queen of Hearts. May 26th — 6 of Spades. June 24th — 8 of Hearts. July 22nd — 8 of Hearts. August 20th — 6 of Clubs. September 18th — 6 of Spades. October 16th — Queen of Hearts. November 14th — 10 of Clubs + Queen of Clubs. December 12th — 8 of Diamonds.
+    </div>
+    <div class="spread-grid">
+      <div class="spread-cell">
+        <span class="spread-key">Birth Card (BC)</span>
+        <span class="spread-val">Six of Clubs</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Planetary Ruling Card (PRC)</span>
+        <span class="spread-val">10♣ / Q♥ / 6♠ / 8♥ / 8♥ / 6♣ / 6♠ / Q♥ / 10♣+Q♣ / 8♦</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Personality Card</span>
+        <span class="spread-val">—</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Moon</span>
+        <span class="spread-val">8 of Hearts</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Mercury</span>
+        <span class="spread-val">6 of Spades</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Venus</span>
+        <span class="spread-val">Queen of Hearts</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Mars</span>
+        <span class="spread-val">10 of Clubs</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Jupiter</span>
+        <span class="spread-val">8 of Diamonds</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Saturn</span>
+        <span class="spread-val">King of Spades</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Uranus</span>
+        <span class="spread-val">3 of Hearts</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Neptune</span>
+        <span class="spread-val">Ace of Clubs</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Pluto</span>
+        <span class="spread-val">Queen of Clubs</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Result</span>
+        <span class="spread-val">10 of Spades</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Cosmic Lesson</span>
+        <span class="spread-val">5 of Clubs</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONNECTIONS -->
+  <div class="section-label">Connections</div>
+  <div class="connections-grid">
+    <div class="connection-block">
+      <span class="connection-label">Karma Cards</span>
+      <div class="connection-cards">
+        <span class="card-pill">8♠</span>
+        <span class="card-pill">2♦</span>
+      </div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Karma Cousins</span>
+      <div class="connection-cards">
+        <span class="card-pill">K♣</span>
+        <span class="card-pill">A♦</span>
+      </div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Past Life Cards</span>
+      <div class="connection-cards">
+        <span class="card-pill">5♣</span>
+        <span class="card-pill">7♣</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <p>The MillionHeiress BABE™ Card Library &nbsp;·&nbsp; Internal Reference Document</p>
+  </div>
+
+</div>
+</body>
+</html>

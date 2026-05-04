@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Two of Spades — MHB Card Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blush: #ECEEF2;
+    --parchment: #F4F5F8;
+    --magenta: #B5406A;
+    --gold: #C9A96E;
+    --gold-light: #E8D5A3;
+    --emerald: #3D7A6F;
+    --text-dark: #0E1520;
+    --text-mid: #2C3545;
+    --text-soft: #6A7585;
+    --spades-navy: #1E2D4A;
+    --spades-mid: #2E4570;
+    --card-bg: #F8F9FC;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--parchment); font-family: 'Outfit', sans-serif; color: var(--text-dark); min-height: 100vh; padding: 48px 24px; }
+  .page { max-width: 820px; margin: 0 auto; }
+
+  .header { text-align: center; margin-bottom: 56px; padding-bottom: 32px; border-bottom: 1px solid var(--gold-light); }
+  .suit-tag { font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; display: block; }
+  .card-title { font-family: 'Cormorant Garamond', serif; font-size: 52px; font-weight: 300; color: var(--spades-navy); line-height: 1.1; margin-bottom: 8px; }
+  .card-title span { font-style: italic; }
+  .birth-date { font-size: 13px; color: var(--text-soft); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 12px; line-height: 1.8; }
+  .card-symbol { font-size: 48px; margin: 16px 0 8px; opacity: 0.85; color: var(--spades-navy); }
+
+  .section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--gold-light); }
+
+  .output-block { background: var(--card-bg); border: 1px solid var(--gold-light); border-radius: 2px; padding: 36px 40px; margin-bottom: 24px; position: relative; }
+  .output-block::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--spades-navy); border-radius: 2px 0 0 2px; }
+  .output-type { font-size: 10px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--spades-mid); margin-bottom: 16px; }
+  .output-block h3 { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 400; color: var(--text-dark); margin-bottom: 16px; line-height: 1.2; }
+  .output-block p { font-size: 15px; line-height: 1.75; color: var(--text-mid); margin-bottom: 14px; }
+  .output-block p:last-child { margin-bottom: 0; }
+
+  .energy-block { background: var(--spades-navy); border: none; }
+  .energy-block::before { background: var(--gold); }
+  .energy-block .output-type { color: var(--gold-light); }
+  .energy-block h3 { color: white; font-size: 30px; }
+  .energy-block p { color: rgba(255,255,255,0.88); font-size: 16px; }
+  .energy-cta { display: inline-block; margin-top: 20px; font-size: 12px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold-light); border-bottom: 1px solid var(--gold-light); padding-bottom: 2px; }
+
+  .hooks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+  .hook-item { background: var(--blush); border-radius: 2px; padding: 20px; }
+  .hook-label { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--spades-mid); margin-bottom: 8px; display: block; }
+  .hook-item p { font-size: 14px; line-height: 1.6; color: var(--text-dark); margin: 0; }
+
+  .spread-section { margin-bottom: 24px; }
+  .spread-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--gold-light); border-radius: 2px; overflow: hidden; background: var(--card-bg); }
+  .spread-cell { padding: 12px 20px; border-bottom: 1px solid var(--gold-light); border-right: 1px solid var(--gold-light); }
+  .spread-cell:nth-child(even) { border-right: none; }
+  .spread-cell:nth-last-child(-n+2) { border-bottom: none; }
+  .spread-key { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-soft); display: block; margin-bottom: 3px; }
+  .spread-val { font-family: 'Cormorant Garamond', serif; font-size: 17px; color: var(--text-dark); font-weight: 500; }
+
+  .connections-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .connection-block { background: var(--card-bg); border: 1px solid var(--gold-light); border-radius: 2px; padding: 20px; text-align: center; }
+  .connection-label { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-soft); display: block; margin-bottom: 10px; }
+  .connection-cards { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .card-pill { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 500; color: var(--spades-navy); background: var(--blush); border-radius: 2px; padding: 4px 12px; }
+
+  .states-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+  .state-block { padding: 24px; border-radius: 2px; }
+  .state-locked { background: rgba(61, 122, 111, 0.08); border: 1px solid rgba(61, 122, 111, 0.25); }
+  .state-unattended { background: rgba(181, 64, 106, 0.06); border: 1px solid rgba(181, 64, 106, 0.2); }
+  .state-title { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 12px; display: block; }
+  .state-locked .state-title { color: var(--emerald); }
+  .state-unattended .state-title { color: var(--magenta); }
+  .state-block ul { list-style: none; padding: 0; }
+  .state-block ul li { font-size: 14px; line-height: 1.6; color: var(--text-mid); padding: 4px 0; padding-left: 14px; position: relative; }
+  .state-locked ul li::before { content: '→'; position: absolute; left: 0; color: var(--emerald); font-size: 12px; }
+  .state-unattended ul li::before { content: '→'; position: absolute; left: 0; color: var(--magenta); font-size: 12px; }
+
+  .prc-note { background: var(--blush); border: 1px solid var(--gold-light); border-radius: 2px; padding: 14px 20px; margin-bottom: 16px; font-size: 13px; color: var(--text-mid); line-height: 1.6; }
+  .prc-note strong { color: var(--spades-mid); font-weight: 600; }
+
+  .footer { text-align: center; margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--gold-light); }
+  .footer p { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-style: italic; color: var(--text-soft); }
+
+  @media (max-width: 600px) {
+    .hooks-grid, .states-grid, .connections-grid { grid-template-columns: 1fr; }
+    .spread-grid { grid-template-columns: 1fr; }
+    .spread-cell { border-right: none !important; }
+    .card-title { font-size: 38px; }
+    .output-block { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <span class="suit-tag">Spades Suit — Work, Transformation & Karmic Inheritance</span>
+    <div class="card-symbol">♠</div>
+    <h1 class="card-title"><span>Two</span> of Spades</h1>
+    <p class="birth-date">January 12th &nbsp;·&nbsp; February 10th &nbsp;·&nbsp; March 8th &nbsp;·&nbsp; April 6th &nbsp;·&nbsp; May 4th &nbsp;·&nbsp; June 2nd</p>
+  </div>
+
+  <div class="section-label">Energy of the Day</div>
+  <div class="output-block energy-block">
+    <div class="output-type">Daily Card Feature</div>
+    <h3>Friendship is your foundation. Tend to it today.</h3>
+    <p>Two of Spades energy is sociable, intuitive, and built for connection that goes beneath the surface. Today the frequency is warm and relational. The people in your life are resources in the best sense. The right conversation today, the right connection made or deepened, has more value than most tasks on the list. Let the people be the priority.</p>
+    <p>Watch the self-indulgence pattern. The Two of Spades has an easier life path than most Spades cards and that ease can quietly become a reason not to do the harder inner work. Today, notice if comfort is getting in the way of progress.</p>
+    <span class="energy-cta">Today's invitation: invest in the people who show up for you</span>
+  </div>
+
+  <div class="section-label">Report Description</div>
+  <div class="output-block">
+    <div class="output-type">For use inside BABE Signature Reports</div>
+    <h3>The Friendship Card</h3>
+
+    <p>The Two of Spades is the card of work partnership and friendship. In a suit that carries significant karmic weight and tends toward difficult life patterns, the Two of Spades has a comparatively easier path. That comparative ease is both a gift and a specific responsibility. The instruction is not to let the ease become self-indulgence at the expense of the work and the duty that the card is here to do.</p>
+
+    <p>Friends are specifically named as crucial to this Birthprint. Not background figures. Central resources. The Two of Spades is genuinely sociable and popular, and the connections it builds tend to be long-lasting and substantively supportive. The network this card constructs over a lifetime is often one of its most significant practical assets. The specific watch is allowing the social ease to substitute for the deeper inner work, filling the space with good company and good times rather than confronting the spiritual nature that the card, at its core, is also being asked to develop.</p>
+
+    <p>The fear dynamic is worth naming directly. Twos are fear cards. For the Two of Spades, the specific fear is of the spiritual nature itself. There is a quality of genuine spiritual power available in this Birthprint that can feel almost too large to hold. The psychic gift is strong. The intuitive capacity, when developed through genuine study and practice, is significant. The pattern for many Two of Spades is to manage around that potential rather than moving into it, staying in the social and the comfortable rather than confronting the depth of what the card actually carries.</p>
+
+    <p>The rut pattern shows up in both family life and work. The double sixes in the Venus and Mars positions create a specific pull toward monotony in both domestic and professional contexts. When the Two of Spades fights the monotony without clear direction, frustration tends to follow. When the inner guidance is accessed and a clear forward path is identified, the same card can move with genuine momentum.</p>
+
+    <p>Work away from home is a documented pattern. The Two of Spades often finds itself working at a distance from the domestic life it values, and life teaches the independence and self-reliance that can feel like a contradiction for a card that also genuinely needs people. Building the strength of character that comes from standing on its own feet tends to happen through the experience of having to do exactly that, not through avoiding it.</p>
+
+    <p>The higher calling of this card is specifically named as teaching and showing others the way of true wisdom. The psychic power, when owned and developed, can take the Two of Spades to positions of genuine authority and responsibility. Most of what is required is the willingness to acknowledge and develop the depth that is already there rather than keeping it as background noise.</p>
+
+    <div class="states-grid">
+      <div class="state-block state-locked">
+        <span class="state-title">Locked In</span>
+        <ul>
+          <li>Develops and owns the psychic and intuitive capacity rather than managing around it</li>
+          <li>Invests in friendships and partnerships that are substantively mutual rather than just comfortable</li>
+          <li>Does not allow the easier path to become a reason to avoid the harder inner work</li>
+          <li>Builds independence and self-reliance through experience rather than dependence on others</li>
+          <li>Answers the higher calling of teaching and wisdom-sharing when it arrives</li>
+        </ul>
+      </div>
+      <div class="state-block state-unattended">
+        <span class="state-title">Unattended</span>
+        <ul>
+          <li>Uses social ease and good company to avoid the spiritual depth the card is also being asked to develop</li>
+          <li>Lets the family and work rut persist without the deliberate movement that would break it</li>
+          <li>Allows self-indulgence to consistently win over duty and the actual work of the life</li>
+          <li>Fears the size of the spiritual potential and keeps it at arm's length indefinitely</li>
+          <li>Relies on others to carry what is actually hers to develop and wonders why the independence feels shaky</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Content Generator</div>
+  <div class="output-block">
+    <div class="output-type">Angles, Hooks & Avatar Connections</div>
+    <h3>Content Angles</h3>
+    <div class="hooks-grid">
+      <div class="hook-item">
+        <span class="hook-label">Hook 1 — Afraid of Her Own Power</span>
+        <p>The Two of Spades has genuine spiritual power. The specific fear named for this card is of that spiritual nature itself. The pattern is not avoiding power because it is absent. It is managing around something that feels almost too large to hold. What changes when the card stops managing around it and actually moves into it?</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 2 — Friends as Foundation</span>
+        <p>The Two of Spades does not treat friendship as a nice-to-have. Friends are central resources and long-term relationships are one of the card's most significant practical assets. The specific instruction is to invest in keeping those connections alive rather than letting the social ease create complacency about maintaining them.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 3 — The Easier Path With a Condition</span>
+        <p>The Two of Spades has a comparatively easier life path than most Spades cards. That is a gift with a specific condition attached: do not let the ease become self-indulgence at the expense of duty and work. The card that ignores this tends to find that the ease slowly evaporates. The one that honours it tends to find the ease increases.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 4 — The Rut in Family and Work</span>
+        <p>The Two of Spades can establish domestic and professional dynamics and stay in them long past the point where genuine growth is happening. The frustration that follows when the monotony is fought without direction is specific and documented. The inner guidance has the answer. The pattern is accessing it rather than staying in the comfort of the familiar.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 5 — The Higher Call</span>
+        <p>The Two of Spades has a specific higher calling: to teach and show others the way of true wisdom. That is not a decorative phrase. It is what this card is built for when it owns and develops the psychic power it carries. Most Two of Spades people are doing a version of this already without the language for it or the full ownership of the gift behind it.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 6 — Six Birthdays, One Warm Frequency</span>
+        <p>January 12th through June 2nd. Six dates in the first half of the year carrying the same sociable, friendship-oriented, spiritually powerful Two of Spades frequency. The card that belongs everywhere and needs genuine belonging at depth. The one who makes people feel welcome without always letting herself be fully known.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 28px;">
+      <div class="section-label">Avatar Resonance</div>
+      <div class="hooks-grid">
+        <div class="hook-item">
+          <span class="hook-label">Tasha — The Single Mum</span>
+          <p>The Two of Spades working away from the domestic life it values. Tasha's experience of being pulled between work and home is written directly into this card's pattern. Life is teaching her to stand on her own feet. The card says the strength of character that comes from that process is real and lasting, even when the process is hard.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Grace — The Religious Deconstructor</span>
+          <p>The Two of Spades whose spiritual power was channelled through a structure and is now being asked to develop it independently. The fear of the spiritual nature is real for this card. Grace is at the specific point where what was previously a container has been removed and the power it was holding is now available without the framework. That is both freedom and responsibility.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Jade — The Invisible Middle</span>
+          <p>The Two of Spades in the family and work rut pattern at its most entrenched. Jade's domestic and professional monotony is the card's specific shadow running at full volume. The inner guidance is available. The question is whether the comfort of the familiar is louder than the signal pointing toward what is next.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Rachel — The Done-the-Work Woman</span>
+          <p>The Two of Spades who has done the social and intellectual work but has been managing around the deeper spiritual development the card requires. Rachel's stuckness may be less about insight and more about the willingness to acknowledge and move into the spiritual power that is already present. The knowledge is there. The ownership of it is the missing piece.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Zara — The Young Independent</span>
+          <p>The Two of Spades building the friendship network and social foundation at the start of life. Zara's ease in connecting with people is the card operating as designed. The specific thing she needs to hear is that the social foundation being built now is a long-term asset, and the depth of the inner work she does or avoids during this period will determine what she has to offer when the higher calling arrives.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Carmen — The Woman at 60 Rebuilding</span>
+          <p>The Two of Spades at 60 with the network, the wisdom, and the hard-earned independence that the card's life pattern produces. Carmen has stood on her own feet and knows it. The higher calling of teaching and showing others the way of true wisdom is most fully available now. The rebuilding she is doing is not starting over. It is stepping into the role the card has been preparing her for.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Life Spread</div>
+  <div class="spread-section">
+    <div class="prc-note">
+      <strong>PRC Note:</strong> Six Planetary Ruling Cards apply to this birth card. January 12th — 10 of Clubs. February 10th — 8 of Diamonds. March 8th — King of Spades. April 6th — 6 of Spades. May 4th — 6 of Clubs. June 2nd — 8 of Hearts.
+    </div>
+    <div class="spread-grid">
+      <div class="spread-cell"><span class="spread-key">Birth Card (BC)</span><span class="spread-val">Two of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Planetary Ruling Card (PRC)</span><span class="spread-val">10♣ / 8♦ / K♠ / 6♠ / 6♣ / 8♥</span></div>
+      <div class="spread-cell"><span class="spread-key">Personality Card</span><span class="spread-val">—</span></div>
+      <div class="spread-cell"><span class="spread-key">Moon</span><span class="spread-val">4 of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Mercury</span><span class="spread-val">8 of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Venus</span><span class="spread-val">6 of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Mars</span><span class="spread-val">6 of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Jupiter</span><span class="spread-val">Queen of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Saturn</span><span class="spread-val">10 of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Uranus</span><span class="spread-val">8 of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Neptune</span><span class="spread-val">King of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Pluto</span><span class="spread-val">3 of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Result</span><span class="spread-val">Ace of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Cosmic Lesson</span><span class="spread-val">Queen of Clubs</span></div>
+    </div>
+  </div>
+
+  <div class="section-label">Connections</div>
+  <div class="connections-grid">
+    <div class="connection-block">
+      <span class="connection-label">Karma Cards</span>
+      <div class="connection-cards">
+        <span class="card-pill">6♠</span>
+        <span class="card-pill">K♣</span>
+      </div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Karma Cousins</span>
+      <div class="connection-cards">
+        <span class="card-pill">9♠</span>
+        <span class="card-pill">8♠</span>
+      </div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Past Life Cards</span>
+      <div class="connection-cards">
+        <span class="card-pill">A♠</span>
+        <span class="card-pill">3♠</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>The MillionHeiress BABE™ Card Library &nbsp;·&nbsp; Internal Reference Document</p>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Six of Hearts — MHB Card Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blush: #FDF5F5; --parchment: #FFF8F6; --magenta: #B5406A; --gold: #C9A96E; --gold-light: #E8D5A3; --emerald: #3D7A6F;
+    --text-dark: #200D0D; --text-mid: #4A2C2C; --text-soft: #8A6A6A; --hearts-red: #A63248; --hearts-mid: #C23B57; --card-bg: #FFFBFB;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--parchment); font-family: 'Outfit', sans-serif; color: var(--text-dark); min-height: 100vh; padding: 48px 24px; }
+  .page { max-width: 820px; margin: 0 auto; }
+  .header { text-align: center; margin-bottom: 56px; padding-bottom: 32px; border-bottom: 1px solid var(--gold-light); }
+  .suit-tag { font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; display: block; }
+  .card-title { font-family: 'Cormorant Garamond', serif; font-size: 52px; font-weight: 300; color: var(--hearts-red); line-height: 1.1; margin-bottom: 8px; }
+  .card-title span { font-style: italic; }
+  .birth-date { font-size: 13px; color: var(--text-soft); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 12px; line-height: 1.8; }
+  .card-symbol { font-size: 48px; margin: 16px 0 8px; opacity: 0.85; color: var(--hearts-red); }
+  .section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--gold-light); }
+  .output-block { background: var(--card-bg); border: 1px solid var(--gold-light); border-radius: 2px; padding: 36px 40px; margin-bottom: 24px; position: relative; }
+  .output-block::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--hearts-red); border-radius: 2px 0 0 2px; }
+  .output-type { font-size: 10px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--hearts-mid); margin-bottom: 16px; }
+  .output-block h3 { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 400; color: var(--text-dark); margin-bottom: 16px; line-height: 1.2; }
+  .output-block p { font-size: 15px; line-height: 1.75; color: var(--text-mid); margin-bottom: 14px; }
+  .output-block p:last-child { margin-bottom: 0; }
+  .energy-block { background: var(--hearts-red); border: none; }
+  .energy-block::before { background: var(--gold); }
+  .energy-block .output-type { color: var(--gold-light); }
+  .energy-block h3 { color: white; font-size: 30px; }
+  .energy-block p { color: rgba(255,255,255,0.88); font-size: 16px; }
+  .energy-cta { display: inline-block; margin-top: 20px; font-size: 12px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold-light); border-bottom: 1px solid rgba(255,255,255,0.4); padding-bottom: 2px; }
+  .hooks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+  .hook-item { background: var(--blush); border-radius: 2px; padding: 20px; }
+  .hook-label { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--hearts-mid); margin-bottom: 8px; display: block; }
+  .hook-item p { font-size: 14px; line-height: 1.6; color: var(--text-dark); margin: 0; }
+  .spread-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--gold-light); border-radius: 2px; overflow: hidden; background: var(--card-bg); }
+  .spread-cell { padding: 12px 20px; border-bottom: 1px solid var(--gold-light); border-right: 1px solid var(--gold-light); }
+  .spread-cell:nth-child(even) { border-right: none; }
+  .spread-cell:nth-last-child(-n+2) { border-bottom: none; }
+  .spread-key { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-soft); display: block; margin-bottom: 3px; }
+  .spread-val { font-family: 'Cormorant Garamond', serif; font-size: 17px; color: var(--text-dark); font-weight: 500; }
+  .connections-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .connection-block { background: var(--card-bg); border: 1px solid var(--gold-light); border-radius: 2px; padding: 20px; text-align: center; }
+  .connection-label { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-soft); display: block; margin-bottom: 10px; }
+  .connection-cards { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .card-pill { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 500; color: var(--hearts-red); background: var(--blush); border-radius: 2px; padding: 4px 12px; }
+  .states-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+  .state-block { padding: 24px; border-radius: 2px; }
+  .state-locked { background: rgba(61,122,111,0.08); border: 1px solid rgba(61,122,111,0.25); }
+  .state-unattended { background: rgba(181,64,106,0.06); border: 1px solid rgba(181,64,106,0.2); }
+  .state-title { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 12px; display: block; }
+  .state-locked .state-title { color: var(--emerald); }
+  .state-unattended .state-title { color: var(--magenta); }
+  .state-block ul { list-style: none; padding: 0; }
+  .state-block ul li { font-size: 14px; line-height: 1.6; color: var(--text-mid); padding: 4px 0; padding-left: 14px; position: relative; }
+  .state-locked ul li::before { content: '→'; position: absolute; left: 0; color: var(--emerald); font-size: 12px; }
+  .state-unattended ul li::before { content: '→'; position: absolute; left: 0; color: var(--magenta); font-size: 12px; }
+  .prc-note { background: var(--blush); border: 1px solid var(--gold-light); border-radius: 2px; padding: 14px 20px; margin-bottom: 16px; font-size: 13px; color: var(--text-mid); line-height: 1.6; }
+  .prc-note strong { color: var(--hearts-mid); font-weight: 600; }
+  .footer { text-align: center; margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--gold-light); }
+  .footer p { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-style: italic; color: var(--text-soft); }
+  @media (max-width: 600px) {
+    .hooks-grid, .states-grid, .connections-grid { grid-template-columns: 1fr; }
+    .spread-grid { grid-template-columns: 1fr; }
+    .spread-cell { border-right: none !important; }
+    .card-title { font-size: 38px; }
+    .output-block { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <span class="suit-tag">Hearts Suit — Love, Feeling &amp; Emotional Inheritance</span>
+    <div class="card-symbol">♥</div>
+    <h1 class="card-title"><span>Six</span> of Hearts</h1>
+    <p class="birth-date">October 29th &nbsp;·&nbsp; November 27th &nbsp;·&nbsp; December 25th</p>
+  </div>
+
+  <div class="section-label">Energy of the Day</div>
+  <div class="output-block energy-block">
+    <div class="output-type">Daily Card Feature</div>
+    <h3>Harmony is the work. Practise it deliberately today.</h3>
+    <p>Six of Hearts energy is stable, loving, and grounded in the specific awareness that love operates by law. Today the frequency is warm and relational. The card for Christmas Day carries a frequency of plenty and giving that is available in the ordinary moments, not just the ceremonial ones. The invitation is to bring the peace-making quality into whatever interaction needs it most right now.</p>
+    <p>Watch the ease-loving tendency. The Six of Hearts can avoid struggle so consistently that growth quietly stops. Today, notice if the comfort is earned rest or avoidance of something that genuinely needs to be addressed.</p>
+    <span class="energy-cta">Today's invitation: practise the law of love in one specific place</span>
+  </div>
+
+  <div class="section-label">Report Description</div>
+  <div class="output-block">
+    <div class="output-type">For use inside BABE Signature Reports</div>
+    <h3>The Peace Maker's Card</h3>
+
+    <p>The Six of Hearts is the card for Christmas Day. That is not a decorative detail. It is a specific designation that reflects what this Birthprint is actually carrying: a life intended to be one of plenty and giving, structured around the Christ principle of sacrifice and selflessness, and consistently finding its deepest happiness in the act of genuine giving rather than in acquisition or achievement alone. The Law of Love is the operating principle of this card. Practising and teaching it produces the highest satisfaction available to this Birthprint in whatever domain it occupies.</p>
+
+    <p>The stability in love and family is real and structural. The Six of Hearts is the most stable and dependable of all the Sixes. The emotional life is deep and affectionate, but the card is not easily swept off its feet. There is good mental balance and good judgment when it is practised. The home is of essential importance and once established, the Six of Hearts wants to keep it forever. That quality produces the kind of reliable, long-term relational presence that others consistently describe as foundational.</p>
+
+    <p>The karmic love debt that this card is here to settle is worth receiving clearly. The Six of Hearts is here to forgive and forget, to clear past life relational patterns through the conscious application of love and goodwill. The source material is specific: they never get away with injuries to others and are well aware of that. The ethical sensitivity in this Birthprint is high and consistent. The capacity for spiritual awareness that comes through right action in love is genuinely significant for this card.</p>
+
+    <p>The fixedness is the specific watch. The Six of Hearts dislikes change and can stay in situations, relationships, and patterns longer than is genuinely necessary, sorting through intentions and motives while the situation continues to run. The love of ease, comfort, and harmony that makes this card such a stable and warm presence can equally make it avoid the productive struggle that growth sometimes requires. The harmony that comes from genuine resolution is different from the harmony that comes from avoiding the confrontation that resolution would require.</p>
+
+    <p>Financially, the Six of Hearts usually has no difficulty making money but carries a consistent worry about not having enough. The desire to look prosperous and to associate with people of means is real. Business partnerships are essential but need careful management, particularly around shared financial interests. The significant mental power available to this card can be applied to most areas with genuine success when the occasional fears about scarcity are not allowed to interfere.</p>
+
+    <div class="states-grid">
+      <div class="state-block state-locked">
+        <span class="state-title">Locked In</span>
+        <ul>
+          <li>Practises and teaches the law of love as the specific path through which this card finds its highest satisfaction</li>
+          <li>Forgives and forgets the karmic love debts rather than carrying them as ongoing resentment</li>
+          <li>Brings genuine resolution to relational situations rather than using harmony as a way of avoiding necessary confrontation</li>
+          <li>Applies the significant mental power to areas of genuine interest without letting the scarcity fear interfere</li>
+          <li>Gives generously from the place of plenty the card was designed for and finds the happiness that giving produces</li>
+        </ul>
+      </div>
+      <div class="state-block state-unattended">
+        <span class="state-title">Unattended</span>
+        <ul>
+          <li>Stays in relationships, patterns, and situations longer than necessary because the discomfort of changing feels worse than the discomfort of staying</li>
+          <li>Uses comfort and ease-seeking as a substitute for the productive struggle that growth sometimes requires</li>
+          <li>Lets the money worry run in the background and interfere with the financial success the card is actually capable of</li>
+          <li>Performs harmony rather than producing it, keeping the surface smooth while the underlying tension accumulates</li>
+          <li>Carries injuries to others without examining them and encounters the specific consequence this card's ethical awareness guarantees</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Content Generator</div>
+  <div class="output-block">
+    <div class="output-type">Angles, Hooks &amp; Avatar Connections</div>
+    <h3>Content Angles</h3>
+    <div class="hooks-grid">
+      <div class="hook-item">
+        <span class="hook-label">Hook 1 — The Christmas Card</span>
+        <p>The Six of Hearts is the card for December 25th. The life is intended to be one of plenty and giving. The Christ principle of sacrifice and selflessness is the operating frequency of this Birthprint. Not as a burden. As the specific channel through which the deepest happiness available to this card consistently arrives.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 2 — The Law of Love</span>
+        <p>The Six of Hearts is aware of the law of love and applies themselves to maintain stability in relationships. That is an active, conscious practice of a principle most people talk about and few actually live by. When this card practises and teaches the law of love, the highest satisfaction follows in whatever domain it occupies.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 3 — Never Gets Away With It</span>
+        <p>The Six of Hearts never gets away with injuries to others and is well aware of that. The ethical sensitivity is built in and the karmic feedback on relational harm is specific and consistent. The card that understands this tends to choose more carefully before it acts in ways it would need to get away with.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 4 — The Harmony That Avoids</span>
+        <p>The Six of Hearts loves ease, comfort, and harmony. The specific pattern worth watching is when that love becomes a way of avoiding the confrontation that genuine resolution requires. The peace from avoiding the conversation is a different thing from the peace that comes from having it. This card needs to know which one it is choosing.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 5 — The Karmic Love Debt</span>
+        <p>The Six of Hearts is here to settle karmic love debts, to forgive and forget, to rise to spiritual awareness through right action in love. The forgiveness is not for the other person's benefit alone. It is the mechanism through which this card clears its own past life patterns and accesses the spiritual height it is genuinely capable of.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 6 — Three Birthdays, One Loving Frequency</span>
+        <p>October 29th, November 27th, December 25th. Three dates at the end of the year, including Christmas Day. The most stable and dependable of all the Sixes. The Peace Maker. The one who knows how to love, how to give, and how to be loved in return.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 28px;">
+      <div class="section-label">Avatar Resonance</div>
+      <div class="hooks-grid">
+        <div class="hook-item">
+          <span class="hook-label">Tasha — The Single Mum</span>
+          <p>The Six of Hearts building the home the card values above almost everything, without the partnership it was also designed to work within. The giving is fully operational. The plenty the source material says this card was intended for is not yet fully visible. The specific work is trusting that the giving is building toward something rather than simply being spent.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Diane — The Recently Divorced</span>
+          <p>The Six of Hearts who stayed longer than necessary because the fixedness and the love of harmony made changing feel harder than staying. The ending is the card finally moving. The karmic love debt pattern is part of what the marriage was completing. The forgiveness work that follows is the specific spiritual practice this card has access to on the other side of it.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Pauline — The Grief Reckoner</span>
+          <p>The Six of Hearts carrying love and loss in the specific territory where the forgiving and forgetting this card is built for is most demanding. The spiritual awareness available through right action in love is most accessible precisely in the experiences that require the most. Pauline's grief is the card being asked to do the work it was built for at its most intense.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Rachel — The Done-the-Work Woman</span>
+          <p>The Six of Hearts whose love of ease has quietly substituted for some productive struggle. The harmony Rachel has been maintaining may be partly genuine and partly the card avoiding the specific confrontation that genuine resolution would require. That distinction is worth examining.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Grace — The Religious Deconstructor</span>
+          <p>The Six of Hearts whose practice of the law of love was embedded in a religious structure that eventually conflicted with the genuine expression of that law. The Christ principle this card carries is not housed in any specific institution. Grace's deconstruction is the card finding the direct expression of the love principle that the institution was always only pointing toward.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Carmen — The Woman at 60 Rebuilding</span>
+          <p>The Six of Hearts at 60 rebuilding toward the life of plenty and giving the card was designed for. The karmic love debts of the earlier decades have been substantially worked through. The forgiveness practice is developed. This is the Six of Hearts moving into its fullest expression of what it always carried.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Life Spread</div>
+  <div style="margin-bottom: 24px;">
+    <div class="prc-note">
+      <strong>PRC Note:</strong> Three Planetary Ruling Cards apply to this birth card. October 29th — Jack of Spades + 10 of Diamonds. November 27th — 8 of Clubs. December 25th — 6 of Diamonds.
+    </div>
+    <div class="spread-grid">
+      <div class="spread-cell"><span class="spread-key">Birth Card (BC)</span><span class="spread-val">Six of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Planetary Ruling Card (PRC)</span><span class="spread-val">J♠+10♦ / 8♣ / 6♦</span></div>
+      <div class="spread-cell"><span class="spread-key">Personality Card</span><span class="spread-val">—</span></div>
+      <div class="spread-cell"><span class="spread-key">Moon</span><span class="spread-val">King of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Mercury</span><span class="spread-val">4 of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Venus</span><span class="spread-val">2 of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Mars</span><span class="spread-val">Jack of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Jupiter</span><span class="spread-val">8 of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Saturn</span><span class="spread-val">6 of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Uranus</span><span class="spread-val">4 of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Neptune</span><span class="spread-val">10 of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Pluto</span><span class="spread-val">10 of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Result</span><span class="spread-val">8 of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Cosmic Lesson</span><span class="spread-val">Ace of Hearts</span></div>
+    </div>
+  </div>
+
+  <div class="section-label">Connections</div>
+  <div class="connections-grid">
+    <div class="connection-block">
+      <span class="connection-label">Karma Cards</span>
+      <div class="connection-cards"><span class="card-pill">4♣</span><span class="card-pill">3♦</span></div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Karma Cousins</span>
+      <div class="connection-cards"><span class="card-pill">5♣</span><span class="card-pill">Q♦</span></div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Past Life Cards</span>
+      <div class="connection-cards"><span class="card-pill">5♥</span><span class="card-pill">7♥</span></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>The MillionHeiress BABE™ Card Library &nbsp;·&nbsp; Internal Reference Document</p>
+  </div>
+
+</div>
+</body>
+</html>

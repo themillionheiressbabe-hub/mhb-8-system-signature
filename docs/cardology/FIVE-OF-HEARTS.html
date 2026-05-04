@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Five of Hearts — MHB Card Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blush: #F5EDE6;
+    --parchment: #FAF6F1;
+    --deep-rose: #C4736A;
+    --magenta: #B5406A;
+    --gold: #C9A96E;
+    --gold-light: #E8D5A3;
+    --emerald: #3D7A6F;
+    --text-dark: #2C2420;
+    --text-mid: #5C4A44;
+    --text-soft: #8C7A74;
+    --hearts-red: #A63248;
+    --card-bg: #FFFAF7;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--parchment);
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-dark);
+    min-height: 100vh;
+    padding: 48px 24px;
+  }
+
+  .page { max-width: 820px; margin: 0 auto; }
+
+  .header {
+    text-align: center;
+    margin-bottom: 56px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--gold-light);
+  }
+
+  .suit-tag {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 52px;
+    font-weight: 300;
+    color: var(--hearts-red);
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+
+  .card-title span { font-style: italic; }
+
+  .birth-date {
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    color: var(--text-soft);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 12px;
+  }
+
+  .card-symbol {
+    font-size: 48px;
+    margin: 16px 0 8px;
+    opacity: 0.85;
+  }
+
+  .section-label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--gold-light);
+  }
+
+  .output-block {
+    background: var(--card-bg);
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    padding: 36px 40px;
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  .output-block::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--magenta);
+    border-radius: 2px 0 0 2px;
+  }
+
+  .output-type {
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--magenta);
+    margin-bottom: 16px;
+  }
+
+  .output-block h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+
+  .output-block p {
+    font-family: 'Outfit', sans-serif;
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text-mid);
+    margin-bottom: 14px;
+  }
+
+  .output-block p:last-child { margin-bottom: 0; }
+
+  .energy-block {
+    background: var(--hearts-red);
+    border: none;
+  }
+
+  .energy-block::before { background: var(--gold); }
+  .energy-block .output-type { color: var(--gold-light); }
+  .energy-block h3 { color: white; font-size: 30px; }
+  .energy-block p { color: rgba(255,255,255,0.88); font-size: 16px; }
+
+  .energy-cta {
+    display: inline-block;
+    margin-top: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    border-bottom: 1px solid var(--gold);
+    padding-bottom: 2px;
+  }
+
+  .hooks-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .hook-item {
+    background: var(--blush);
+    border-radius: 2px;
+    padding: 20px;
+  }
+
+  .hook-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--magenta);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .hook-item p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-dark);
+    margin: 0;
+  }
+
+  .spread-section { margin-bottom: 24px; }
+
+  .spread-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    overflow: hidden;
+    background: var(--card-bg);
+  }
+
+  .spread-cell {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--gold-light);
+    border-right: 1px solid var(--gold-light);
+  }
+
+  .spread-cell:nth-child(even) { border-right: none; }
+  .spread-cell:nth-last-child(-n+2) { border-bottom: none; }
+
+  .spread-key {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .spread-val {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    color: var(--text-dark);
+    font-weight: 500;
+  }
+
+  .connections-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .connection-block {
+    background: var(--card-bg);
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .connection-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .connection-cards {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .card-pill {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--magenta);
+    background: var(--blush);
+    border-radius: 2px;
+    padding: 4px 12px;
+  }
+
+  .states-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .state-block { padding: 24px; border-radius: 2px; }
+
+  .state-locked {
+    background: rgba(61, 122, 111, 0.08);
+    border: 1px solid rgba(61, 122, 111, 0.25);
+  }
+
+  .state-unattended {
+    background: rgba(181, 64, 106, 0.06);
+    border: 1px solid rgba(181, 64, 106, 0.2);
+  }
+
+  .state-title {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .state-locked .state-title { color: var(--emerald); }
+  .state-unattended .state-title { color: var(--magenta); }
+
+  .state-block ul { list-style: none; padding: 0; }
+
+  .state-block ul li {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-mid);
+    padding: 4px 0;
+    padding-left: 14px;
+    position: relative;
+  }
+
+  .state-locked ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--emerald);
+    font-size: 12px;
+  }
+
+  .state-unattended ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--magenta);
+    font-size: 12px;
+  }
+
+  .prc-note {
+    background: var(--blush);
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    padding: 14px 20px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: var(--text-mid);
+    line-height: 1.6;
+  }
+
+  .prc-note strong {
+    color: var(--magenta);
+    font-weight: 600;
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--gold-light);
+  }
+
+  .footer p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    font-style: italic;
+    color: var(--text-soft);
+  }
+
+  @media (max-width: 600px) {
+    .hooks-grid, .states-grid, .connections-grid { grid-template-columns: 1fr; }
+    .spread-grid { grid-template-columns: 1fr; }
+    .spread-cell { border-right: none !important; }
+    .card-title { font-size: 38px; }
+    .output-block { padding: 24px 20px; }
+  }
+
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <span class="suit-tag">Hearts Suit — Relationships, Love & Emotional Inheritance</span>
+    <div class="card-symbol">♥</div>
+    <h1 class="card-title"><span>Five</span> of Hearts</h1>
+    <p class="birth-date">October 30th &nbsp;·&nbsp; November 28th &nbsp;·&nbsp; December 26th &nbsp;·&nbsp; The Emotionally Restless Card</p>
+  </div>
+
+  <!-- ENERGY OF THE DAY -->
+  <div class="section-label">Energy of the Day</div>
+  <div class="output-block energy-block">
+    <div class="output-type">Daily Card Feature</div>
+    <h3>The answers you're looking for are already in here.</h3>
+    <p>Five of Hearts energy is magnetic, curious, and always in motion. Today the frequency is alive with possibility and the pull toward the new is strong. That restlessness is real information. The question is whether you're following it toward something or just away from something.</p>
+    <p>Today's move is to pause before the pivot. The next thing isn't always better than what's in front of you right now. Sometimes the most radical act is staying and going deeper.</p>
+    <span class="energy-cta">Today's invitation: go deeper before you go elsewhere</span>
+  </div>
+
+  <!-- REPORT DESCRIPTION -->
+  <div class="section-label">Report Description</div>
+  <div class="output-block">
+    <div class="output-type">For use inside BABE Signature Reports</div>
+    <h3>The Emotionally Restless Card</h3>
+
+    <p>The Five of Hearts is one of the most socially magnetic cards in the deck. Charming, versatile, quick with people, always interesting in a room. The energy here is genuinely alive. People are drawn to the Five of Hearts and that draw is not manufactured. It is simply what happens when someone with this card shows up fully.</p>
+
+    <p>What the card also carries, sitting underneath all of that magnetism, is a restlessness that never fully quiets. Fives in any suit represent change, variety, and the pull toward new experience. In the Hearts suit, that plays out emotionally. There is a consistent undercurrent of seeking in this Birthprint. Seeking in relationships, in work, in the sense that something better, deeper, or more satisfying might be just around the next corner. That seeking is not a flaw. It is a built-in drive. The pattern to watch is when the seeking becomes avoidance. When movement is used to outrun intimacy rather than to genuinely explore.</p>
+
+    <p>The conflict between emotional desire and practical good sense is real in this card and worth naming directly. The Five of Hearts can know clearly what the sensible choice is and still feel the pull in an entirely different direction. The work here is not to suppress the emotional current. It is to develop enough self-awareness to distinguish between genuine restlessness that is pointing toward something real, and habitual escape that is pointing away from something uncomfortable.</p>
+
+    <p>There is significant earning capacity in this Birthprint, particularly when focus is sustained. The Four of Diamonds underlying this card gives real financial intelligence and the ability to build material security. The obstacle is consistency. The Five of Hearts can make a great deal of money when it commits to a direction long enough to see compounding returns. The pattern that blocks this is spreading across too many directions at once and never staying long enough to receive what sustained effort actually produces.</p>
+
+    <p>Spiritual knowledge is a genuine anchor for this card. Not as a detour from real life but as an actual answer to the restlessness. The seeking that drives the Five of Hearts finds real resolution when it turns inward and toward something larger than the next relationship or the next opportunity. Teaching, in particular, sits well here. The ability to communicate, to make ideas accessible, to hold a room is all present. When that gift is pointed at something meaningful, the Five of Hearts is capable of genuine impact.</p>
+
+    <p>Dwelling in the past is consistently counterproductive for this card. The pattern shows that emotional dissatisfaction tends to deepen when old experiences are replayed rather than learned from and released. The Five of Hearts moves forward best when it actually moves forward, not when it carries the weight of what didn't work into each new chapter.</p>
+
+    <div class="states-grid">
+      <div class="state-block state-locked">
+        <span class="state-title">Locked In</span>
+        <ul>
+          <li>Channels magnetic social energy into work and relationships that actually matter</li>
+          <li>Stays long enough to receive the rewards that sustained effort builds</li>
+          <li>Uses spiritual knowledge as a genuine anchor, not a detour</li>
+          <li>Distinguishes between real restlessness and habitual escape</li>
+          <li>Releases the past cleanly and moves forward without dragging it along</li>
+        </ul>
+      </div>
+      <div class="state-block state-unattended">
+        <span class="state-title">Unattended</span>
+        <ul>
+          <li>Moves before the current chapter has finished teaching what it came to teach</li>
+          <li>Uses charm and variety to avoid the depth that real intimacy requires</li>
+          <li>Scatters financial energy across too many directions and wonders why security feels unstable</li>
+          <li>Replays past disappointments and lets them colour the present</li>
+          <li>Mistakes the pull toward escape for intuition about what's next</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT GENERATOR -->
+  <div class="section-label">Content Generator</div>
+  <div class="output-block">
+    <div class="output-type">Angles, Hooks & Avatar Connections</div>
+    <h3>Content Angles</h3>
+    <div class="hooks-grid">
+      <div class="hook-item">
+        <span class="hook-label">Hook 1 — The Restless Heart</span>
+        <p>The Five of Hearts is not commitment-phobic. It is change-oriented. There is a difference. One is about fear. The other is about design. Understanding which one is actually running the pattern changes everything about how you show up in relationships and work.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 2 — The Answer Is Already Inside</span>
+        <p>Every Five of Hearts has spent time looking for something out there. In the next person, the next city, the next version of the plan. The card keeps saying the same thing: the answer you're chasing is already in you. What changes when you actually believe that?</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 3 — The Money Focus Pattern</span>
+        <p>The earning capacity in this Birthprint is real. The obstacle isn't ability. It's consistency. The Five of Hearts can build significant financial security when it stays in one lane long enough. The question is whether the pull toward variety is worth the compound interest it's costing you.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 4 — Moving On vs. Moving Forward</span>
+        <p>There's a version of moving on that is actually just moving. The scenery changes, the feeling doesn't. Moving forward is different. It requires sitting with what the last chapter was actually teaching before you close it. Five of Hearts energy knows the difference. The pattern is in whether you use it.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 5 — Three Birthdays, One Frequency</span>
+        <p>October 30th. November 28th. December 26th. Three very different dates, all carrying the same restless, magnetic, change-oriented Five of Hearts energy. The season is different. The pattern is the same.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 6 — The Teacher Underneath</span>
+        <p>The Five of Hearts has genuine teaching ability. The communication is natural, the energy is compelling, and there is real range in how ideas get delivered. Most Five of Hearts women don't call themselves teachers. But look at what people come to them for.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 28px;">
+      <div class="section-label">Avatar Resonance</div>
+      <div class="hooks-grid">
+        <div class="hook-item">
+          <span class="hook-label">Zara — The Young Independent</span>
+          <p>The restlessness feels like freedom at this stage. Five of Hearts energy at Zara's age is full-volume. The work is helping her understand that the seeking has a direction, and the sooner she finds it, the less she has to leave behind to get there.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Diane — The Recently Divorced</span>
+          <p>Moved through a series of emotional experiences looking for the one that would finally satisfy. The Five of Hearts pattern is right there. Now out of the marriage, the question is whether the next chapter is more of the same search, or something genuinely different.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Amara — The Between-Two-Worlds Woman</span>
+          <p>The Five of Hearts thrives with change, travel, and cross-cultural experience. For Amara, what might feel like being torn is actually the card doing exactly what it was designed for. That reframe matters.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Rachel — The Done-the-Work Woman</span>
+          <p>Has the insight. Still moving sideways. The Five of Hearts pattern of spreading across too many options without fully landing is Rachel's sticking point. She needs infrastructure, not more exploration. That's the exact conversation this card opens.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Grace — The Religious Deconstructor</span>
+          <p>The spiritual pull in this card is real and gets louder when ignored. Grace leaving a high-control environment doesn't mean she leaves her spirituality. It might mean she finally gets to follow it on her own terms. Five of Hearts energy can do a lot with that kind of freedom.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Nicole — The Hollow Success</span>
+          <p>The magnetism and versatility are both operational. What isn't is the satisfaction underneath. Nicole has been changing contexts looking for the thing that finally fills the gap. The card says the gap isn't out there. It's the inward work she keeps postponing.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIFE SPREAD -->
+  <div class="section-label">Life Spread</div>
+  <div class="spread-section">
+    <div class="prc-note">
+      <strong>PRC Note:</strong> Three Planetary Ruling Cards apply to this birth card. October 30th — 9 of Hearts + 9 of Diamonds. November 28th — 7 of Clubs. December 26th — 5 of Diamonds.
+    </div>
+    <div class="spread-grid">
+      <div class="spread-cell">
+        <span class="spread-key">Birth Card (BC)</span>
+        <span class="spread-val">Five of Hearts</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Planetary Ruling Card (PRC)</span>
+        <span class="spread-val">9♥ + 9♦ / 7♣ / 5♦</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Personality Card</span>
+        <span class="spread-val">Jack</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Moon</span>
+        <span class="spread-val">Queen of Diamonds</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Mercury</span>
+        <span class="spread-val">3 of Clubs</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Venus</span>
+        <span class="spread-val">3 of Spades</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Mars</span>
+        <span class="spread-val">9 of Hearts</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Jupiter</span>
+        <span class="spread-val">7 of Clubs</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Saturn</span>
+        <span class="spread-val">5 of Diamonds</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Uranus</span>
+        <span class="spread-val">Queen of Spades</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Neptune</span>
+        <span class="spread-val">Jack of Clubs</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Pluto</span>
+        <span class="spread-val">9 of Diamonds</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Result</span>
+        <span class="spread-val">7 of Spades</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Cosmic Lesson</span>
+        <span class="spread-val">2 of Clubs</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONNECTIONS -->
+  <div class="section-label">Connections</div>
+  <div class="connections-grid">
+    <div class="connection-block">
+      <span class="connection-label">Karma Cards</span>
+      <div class="connection-cards">
+        <span class="card-pill">4♦</span>
+        <span class="card-pill">5♣</span>
+      </div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Karma Cousins</span>
+      <div class="connection-cards">
+        <span class="card-pill">5♠</span>
+        <span class="card-pill">4♣</span>
+      </div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Past Life Cards</span>
+      <div class="connection-cards">
+        <span class="card-pill">4♥</span>
+        <span class="card-pill">6♥</span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <p>The MillionHeiress BABE™ Card Library &nbsp;·&nbsp; Internal Reference Document</p>
+  </div>
+
+</div>
+</body>
+</html>

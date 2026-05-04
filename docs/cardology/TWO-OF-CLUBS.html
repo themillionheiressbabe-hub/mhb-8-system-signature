@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Two of Clubs — MHB Card Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blush: #F0EDE8;
+    --parchment: #FAF8F4;
+    --magenta: #B5406A;
+    --gold: #C9A96E;
+    --gold-light: #E8D5A3;
+    --emerald: #3D7A6F;
+    --text-dark: #1E2820;
+    --text-mid: #3A4A3E;
+    --text-soft: #7A8A7E;
+    --clubs-green: #2C4A3E;
+    --clubs-mid: #3D6B5A;
+    --card-bg: #F8FAF8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--parchment);
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-dark);
+    min-height: 100vh;
+    padding: 48px 24px;
+  }
+
+  .page { max-width: 820px; margin: 0 auto; }
+
+  .header {
+    text-align: center;
+    margin-bottom: 56px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--gold-light);
+  }
+
+  .suit-tag {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 52px;
+    font-weight: 300;
+    color: var(--clubs-green);
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+
+  .card-title span { font-style: italic; }
+
+  .birth-date {
+    font-size: 13px;
+    color: var(--text-soft);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 12px;
+  }
+
+  .card-symbol {
+    font-size: 48px;
+    margin: 16px 0 8px;
+    opacity: 0.85;
+    color: var(--clubs-green);
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--gold-light);
+  }
+
+  .output-block {
+    background: var(--card-bg);
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    padding: 36px 40px;
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  .output-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--clubs-green);
+    border-radius: 2px 0 0 2px;
+  }
+
+  .output-type {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--clubs-mid);
+    margin-bottom: 16px;
+  }
+
+  .output-block h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+
+  .output-block p {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text-mid);
+    margin-bottom: 14px;
+  }
+
+  .output-block p:last-child { margin-bottom: 0; }
+
+  .energy-block { background: var(--clubs-green); border: none; }
+  .energy-block::before { background: var(--gold); }
+  .energy-block .output-type { color: var(--gold-light); }
+  .energy-block h3 { color: white; font-size: 30px; }
+  .energy-block p { color: rgba(255,255,255,0.88); font-size: 16px; }
+
+  .energy-cta {
+    display: inline-block;
+    margin-top: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    border-bottom: 1px solid var(--gold);
+    padding-bottom: 2px;
+  }
+
+  .hooks-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .hook-item {
+    background: var(--blush);
+    border-radius: 2px;
+    padding: 20px;
+  }
+
+  .hook-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--clubs-mid);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .hook-item p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-dark);
+    margin: 0;
+  }
+
+  .spread-section { margin-bottom: 24px; }
+
+  .spread-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    overflow: hidden;
+    background: var(--card-bg);
+  }
+
+  .spread-cell {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--gold-light);
+    border-right: 1px solid var(--gold-light);
+  }
+
+  .spread-cell:nth-child(even) { border-right: none; }
+  .spread-cell:nth-last-child(-n+2) { border-bottom: none; }
+
+  .spread-key {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .spread-val {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    color: var(--text-dark);
+    font-weight: 500;
+  }
+
+  .connections-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .connection-block {
+    background: var(--card-bg);
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .connection-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .connection-cards {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .card-pill {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--clubs-green);
+    background: var(--blush);
+    border-radius: 2px;
+    padding: 4px 12px;
+  }
+
+  .states-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .state-block { padding: 24px; border-radius: 2px; }
+
+  .state-locked {
+    background: rgba(61, 122, 111, 0.08);
+    border: 1px solid rgba(61, 122, 111, 0.25);
+  }
+
+  .state-unattended {
+    background: rgba(181, 64, 106, 0.06);
+    border: 1px solid rgba(181, 64, 106, 0.2);
+  }
+
+  .state-title {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .state-locked .state-title { color: var(--emerald); }
+  .state-unattended .state-title { color: var(--magenta); }
+
+  .state-block ul { list-style: none; padding: 0; }
+
+  .state-block ul li {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-mid);
+    padding: 4px 0;
+    padding-left: 14px;
+    position: relative;
+  }
+
+  .state-locked ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--emerald);
+    font-size: 12px;
+  }
+
+  .state-unattended ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--magenta);
+    font-size: 12px;
+  }
+
+  .prc-note {
+    background: var(--blush);
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    padding: 14px 20px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: var(--text-mid);
+    line-height: 1.6;
+  }
+
+  .prc-note strong { color: var(--clubs-mid); font-weight: 600; }
+
+  .footer {
+    text-align: center;
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--gold-light);
+  }
+
+  .footer p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    font-style: italic;
+    color: var(--text-soft);
+  }
+
+  @media (max-width: 600px) {
+    .hooks-grid, .states-grid, .connections-grid { grid-template-columns: 1fr; }
+    .spread-grid { grid-template-columns: 1fr; }
+    .spread-cell { border-right: none !important; }
+    .card-title { font-size: 38px; }
+    .output-block { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <span class="suit-tag">Clubs Suit — Thinking, Communication & Mental Inheritance</span>
+    <div class="card-symbol">♣</div>
+    <h1 class="card-title"><span>Two</span> of Clubs</h1>
+    <p class="birth-date">May 30th &nbsp;·&nbsp; June 28th &nbsp;·&nbsp; July 26th &nbsp;·&nbsp; August 24th &nbsp;·&nbsp; September 22nd &nbsp;·&nbsp; October 20th &nbsp;·&nbsp; November 18th &nbsp;·&nbsp; December 16th</p>
+  </div>
+
+  <!-- ENERGY OF THE DAY -->
+  <div class="section-label">Energy of the Day</div>
+  <div class="output-block energy-block">
+    <div class="output-type">Daily Card Feature</div>
+    <h3>The best ideas don't live in isolation. Find someone to think with today.</h3>
+    <p>Two of Clubs energy is sharp, sociable, and at its best in the company of someone worth talking to. Today the frequency is built for exchange. A good conversation, a real debate, a meeting of minds that goes somewhere unexpected. The Two of Clubs doesn't just want to talk. It wants to think out loud with someone who can keep up.</p>
+    <p>Watch the fear underneath though. The impulse to fill the space with people can be a genuine love of connection or a way of avoiding what comes up in the quiet. Today, notice which one is driving.</p>
+    <span class="energy-cta">Today's invitation: find someone worth thinking with</span>
+  </div>
+
+  <!-- REPORT DESCRIPTION -->
+  <div class="section-label">Report Description</div>
+  <div class="output-block">
+    <div class="output-type">For use inside BABE Signature Reports</div>
+    <h3>The Card of Conversation</h3>
+
+    <p>The Two of Clubs carries the principle of union applied to the mind. Where the Two of Hearts seeks union in love and the Two of Diamonds seeks it in resources, the Two of Clubs seeks it in thought. In the meeting of minds. In the conversation that goes deep enough to matter. This card is not satisfied by surface exchange. It wants the kind of dialogue that changes something, that illuminates something previously unclear, that leaves both parties thinking differently than they did before they started.</p>
+
+    <p>The intelligence here is quick and genuinely sharp. The Two of Clubs can hold its ground in any debate, not because it is aggressive but because the thinking is fast, the memory is long, and the tongue rarely lacks for something to say. The first response tends to land on the opposite side of whatever argument is being presented. That is not contrarianism for its own sake. It is an instinct to test ideas by applying pressure to them. When others understand that about this card, the dynamic shifts from feeling challenged to feeling genuinely engaged.</p>
+
+    <p>Underneath all of this intellectual fluency is a fear pattern that deserves to be named clearly and without judgment. The Ace of Spades Karma Card brings with it an underlying anxiety about change, about loss, about being alone. This can show up as the Two of Clubs filling every available space with people, with activity, with conversation, with anything that keeps the quiet from becoming too loud. The two versions of this card, the one who is constantly surrounded and the one who is apparently reclusive, are both running the same fear from different directions. The reclusive version has just found one person to attach to rather than a crowd.</p>
+
+    <p>The protection around this card is real. There is a quality of abundance and good fortune in this Birthprint that, when it is actually noticed and acknowledged, does significant work against the underlying fear. The anxiety tends to thrive in the gap between what is actually present and what is being attended to. When the Two of Clubs genuinely registers the abundance in her life rather than scanning continuously for what might be lost, the fear loses much of its grip.</p>
+
+    <p>Partnership is the natural working mode here. The Two of Clubs performs better in collaboration than in isolation across almost every domain. Business partnerships, creative collaborations, intellectual partnerships, these all tend to produce better results than solo efforts. The challenge is finding partners who are genuinely well-matched rather than just available, because the Two of Clubs does not thrive with just anyone. The quality of the mind across the table matters enormously.</p>
+
+    <p>The later development toward higher knowledge, often after 40, is a consistent pattern in this card. The fear of deeper wisdom that can show up earlier in life tends to dissolve once the inner strength has been recognised and the card has enough lived experience to trust what it knows. What emerges at that stage is often a genuine interest in esoteric, philosophical, or spiritual frameworks that the Two of Clubs approaches with the same intellectual rigour it brings to everything else.</p>
+
+    <div class="states-grid">
+      <div class="state-block state-locked">
+        <span class="state-title">Locked In</span>
+        <ul>
+          <li>Seeks genuine intellectual partnership and invests the full depth of the mind in it</li>
+          <li>Names and addresses the underlying fear rather than managing around it with activity and people</li>
+          <li>Recognises the abundance that is already present and lets that recognition do its work</li>
+          <li>Uses the natural debating instinct to illuminate rather than to dominate</li>
+          <li>Turns toward higher knowledge when the time comes and brings the same rigour to it</li>
+        </ul>
+      </div>
+      <div class="state-block state-unattended">
+        <span class="state-title">Unattended</span>
+        <ul>
+          <li>Fills every space with people and noise to avoid what surfaces in the quiet</li>
+          <li>Attaches to one person or crowd out of fear of isolation rather than genuine choice</li>
+          <li>Makes fast conclusions and leads with opposition before the full picture has been heard</li>
+          <li>Scans continuously for what might go wrong rather than registering what is already working</li>
+          <li>Avoids the deeper wisdom available to this card because confronting it requires confronting the fear first</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT GENERATOR -->
+  <div class="section-label">Content Generator</div>
+  <div class="output-block">
+    <div class="output-type">Angles, Hooks & Avatar Connections</div>
+    <h3>Content Angles</h3>
+    <div class="hooks-grid">
+      <div class="hook-item">
+        <span class="hook-label">Hook 1 — The Fear Under the Sociability</span>
+        <p>The Two of Clubs is one of the most socially engaging cards in the deck. She is also one of the cards most quietly driven by fear of being alone. Those two things coexist in the same person. The sociability is real. So is the fear underneath it. Naming both is more useful than celebrating one and hiding the other.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 2 — She Leads with Opposition</span>
+        <p>The Two of Clubs' first instinct in any conversation is to push back. Not because she is contrary. Because the mind tests ideas by applying pressure to them. When you understand that about her, the whole dynamic shifts. She isn't fighting you. She's thinking with you. Those are very different things.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 3 — The Abundance Already Present</span>
+        <p>The Two of Clubs has significant protection and abundance in her Birthprint. The anxiety she carries tends to thrive in the gap between what is actually there and what she is paying attention to. What changes when she genuinely registers what is already working rather than scanning for what might be lost?</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 4 — Partnership as Power</span>
+        <p>The Two of Clubs is not built to work alone. That is not a weakness. It is a design feature. The right intellectual partnership produces results that neither person could reach solo. The question is not whether she needs people. It is whether the people she has chosen are actually worth the investment she is making in them.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 5 — The Turn After 40</span>
+        <p>There is a specific pattern in this card where the deeper wisdom, the philosophical, esoteric, higher-mind material, only becomes genuinely accessible after the inner strength has been recognised. Usually around 40. Before that, there is often a fear of it. After, there is an appetite that can produce some of the most significant work of this card's life.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 6 — Eight Birthdays, One Frequency</span>
+        <p>May 30th through December 16th. Eight dates across the second half of the year carrying the same quick, conversational, connection-hungry Two of Clubs frequency. The Card of Conversation. The one who seeks union through the meeting of minds and fears, more than most, the silence that comes when the room empties.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 28px;">
+      <div class="section-label">Avatar Resonance</div>
+      <div class="hooks-grid">
+        <div class="hook-item">
+          <span class="hook-label">Tasha — The Single Mum</span>
+          <p>The Two of Clubs who has filled every space with the needs of others and called it connection. The fear of the quiet is real for Tasha. The question the card asks her is whether the busyness is a choice or a way of never having to sit with what surfaces when the children are asleep and the house is still.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Jade — The Invisible Middle</span>
+          <p>The Two of Clubs whose intellectual sharpness and conversational gift have been completely subsumed by the demands of the sandwich generation. Jade is not dull. She is buried. The card asks: when did you last have a conversation that was actually about ideas rather than logistics?</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Rachel — The Done-the-Work Woman</span>
+          <p>The Two of Clubs who has talked to every therapist, read every book, taken every course, and is still running the same fear pattern. The conversation has been external the whole time. The card says: the one she has not fully had yet is the internal one about what she is actually afraid of.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Zara — The Young Independent</span>
+          <p>The Two of Clubs at the start of the journey. Sharp, socially alive, attracting people constantly, and underneath it all more afraid of being alone than she would ever admit. Zara needs the language for the fear before she can start working with it rather than running from it.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Amara — The Between-Two-Worlds Woman</span>
+          <p>The Two of Clubs who does not have one natural community but exists in the space between several. The card's need for genuine intellectual partnership and connection becomes more complex when the environments available do not fully reflect who she is. Amara is looking for her people across more than one world simultaneously.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Carmen — The Woman at 60 Rebuilding</span>
+          <p>The Two of Clubs after 40, finally turning toward the higher knowledge the card has always been capable of and was previously afraid of. Carmen at 60 is right in the window where the inner strength has been earned through experience and the deeper material becomes not just accessible but genuinely compelling. This is when this card gets interesting.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIFE SPREAD -->
+  <div class="section-label">Life Spread</div>
+  <div class="spread-section">
+    <div class="prc-note">
+      <strong>PRC Note:</strong> Eight Planetary Ruling Cards apply to this birth card. May 30th — King of Clubs. June 28th — 7 of Spades. July 26th — 2 of Clubs. August 24th — King of Clubs. September 22nd — King of Clubs or Jack of Diamonds. October 20th — Jack of Diamonds. November 18th — 4 of Hearts + 6 of Spades. December 16th — 4 of Diamonds.
+    </div>
+    <div class="spread-grid">
+      <div class="spread-cell">
+        <span class="spread-key">Birth Card (BC)</span>
+        <span class="spread-val">Two of Clubs</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Planetary Ruling Card (PRC)</span>
+        <span class="spread-val">K♣ / 7♠ / 2♣ / K♣ / K♣ or J♦ / J♦ / 4♥+6♠ / 4♦</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Personality Card</span>
+        <span class="spread-val">—</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Moon</span>
+        <span class="spread-val">7 of Spades</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Mercury</span>
+        <span class="spread-val">King of Clubs</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Venus</span>
+        <span class="spread-val">Jack of Diamonds</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Mars</span>
+        <span class="spread-val">4 of Hearts</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Jupiter</span>
+        <span class="spread-val">4 of Diamonds</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Saturn</span>
+        <span class="spread-val">2 of Spades</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Uranus</span>
+        <span class="spread-val">8 of Hearts</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Neptune</span>
+        <span class="spread-val">6 of Clubs</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Pluto</span>
+        <span class="spread-val">6 of Spades</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Result</span>
+        <span class="spread-val">Queen of Hearts</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Cosmic Lesson</span>
+        <span class="spread-val">10 of Clubs</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONNECTIONS -->
+  <div class="section-label">Connections</div>
+  <div class="connections-grid">
+    <div class="connection-block">
+      <span class="connection-label">Karma Cards</span>
+      <div class="connection-cards">
+        <span class="card-pill">A♠</span>
+        <span class="card-pill">K♥</span>
+      </div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Karma Cousins</span>
+      <div class="connection-cards">
+        <span class="card-pill">7♥</span>
+        <span class="card-pill">9♠</span>
+      </div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Past Life Cards</span>
+      <div class="connection-cards">
+        <span class="card-pill">A♣</span>
+        <span class="card-pill">3♣</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <p>The MillionHeiress BABE™ Card Library &nbsp;·&nbsp; Internal Reference Document</p>
+  </div>
+
+</div>
+</body>
+</html>

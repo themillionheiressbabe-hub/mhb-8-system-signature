@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seven of Spades — MHB Card Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blush: #ECEEF2; --parchment: #F4F5F8; --magenta: #B5406A; --gold: #C9A96E; --gold-light: #E8D5A3; --emerald: #3D7A6F;
+    --text-dark: #0E1520; --text-mid: #2C3545; --text-soft: #6A7585; --spades-navy: #1E2D4A; --spades-mid: #2E4570; --card-bg: #F8F9FC;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--parchment); font-family: 'Outfit', sans-serif; color: var(--text-dark); min-height: 100vh; padding: 48px 24px; }
+  .page { max-width: 820px; margin: 0 auto; }
+  .header { text-align: center; margin-bottom: 56px; padding-bottom: 32px; border-bottom: 1px solid var(--gold-light); }
+  .suit-tag { font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; display: block; }
+  .card-title { font-family: 'Cormorant Garamond', serif; font-size: 52px; font-weight: 300; color: var(--spades-navy); line-height: 1.1; margin-bottom: 8px; }
+  .card-title span { font-style: italic; }
+  .birth-date { font-size: 13px; color: var(--text-soft); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 12px; line-height: 1.8; }
+  .card-symbol { font-size: 48px; margin: 16px 0 8px; opacity: 0.85; color: var(--spades-navy); }
+  .section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--gold-light); }
+  .output-block { background: var(--card-bg); border: 1px solid var(--gold-light); border-radius: 2px; padding: 36px 40px; margin-bottom: 24px; position: relative; }
+  .output-block::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--spades-navy); border-radius: 2px 0 0 2px; }
+  .output-type { font-size: 10px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--spades-mid); margin-bottom: 16px; }
+  .output-block h3 { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 400; color: var(--text-dark); margin-bottom: 16px; line-height: 1.2; }
+  .output-block p { font-size: 15px; line-height: 1.75; color: var(--text-mid); margin-bottom: 14px; }
+  .output-block p:last-child { margin-bottom: 0; }
+  .energy-block { background: var(--spades-navy); border: none; }
+  .energy-block::before { background: var(--gold); }
+  .energy-block .output-type { color: var(--gold-light); }
+  .energy-block h3 { color: white; font-size: 30px; }
+  .energy-block p { color: rgba(255,255,255,0.88); font-size: 16px; }
+  .energy-cta { display: inline-block; margin-top: 20px; font-size: 12px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold-light); border-bottom: 1px solid var(--gold-light); padding-bottom: 2px; }
+  .hooks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+  .hook-item { background: var(--blush); border-radius: 2px; padding: 20px; }
+  .hook-label { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--spades-mid); margin-bottom: 8px; display: block; }
+  .hook-item p { font-size: 14px; line-height: 1.6; color: var(--text-dark); margin: 0; }
+  .spread-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--gold-light); border-radius: 2px; overflow: hidden; background: var(--card-bg); }
+  .spread-cell { padding: 12px 20px; border-bottom: 1px solid var(--gold-light); border-right: 1px solid var(--gold-light); }
+  .spread-cell:nth-child(even) { border-right: none; }
+  .spread-cell:nth-last-child(-n+2) { border-bottom: none; }
+  .spread-key { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-soft); display: block; margin-bottom: 3px; }
+  .spread-val { font-family: 'Cormorant Garamond', serif; font-size: 17px; color: var(--text-dark); font-weight: 500; }
+  .connections-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .connection-block { background: var(--card-bg); border: 1px solid var(--gold-light); border-radius: 2px; padding: 20px; text-align: center; }
+  .connection-label { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-soft); display: block; margin-bottom: 10px; }
+  .connection-cards { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .card-pill { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 500; color: var(--spades-navy); background: var(--blush); border-radius: 2px; padding: 4px 12px; }
+  .states-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+  .state-block { padding: 24px; border-radius: 2px; }
+  .state-locked { background: rgba(61,122,111,0.08); border: 1px solid rgba(61,122,111,0.25); }
+  .state-unattended { background: rgba(181,64,106,0.06); border: 1px solid rgba(181,64,106,0.2); }
+  .state-title { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 12px; display: block; }
+  .state-locked .state-title { color: var(--emerald); }
+  .state-unattended .state-title { color: var(--magenta); }
+  .state-block ul { list-style: none; padding: 0; }
+  .state-block ul li { font-size: 14px; line-height: 1.6; color: var(--text-mid); padding: 4px 0; padding-left: 14px; position: relative; }
+  .state-locked ul li::before { content: '→'; position: absolute; left: 0; color: var(--emerald); font-size: 12px; }
+  .state-unattended ul li::before { content: '→'; position: absolute; left: 0; color: var(--magenta); font-size: 12px; }
+  .prc-note { background: var(--blush); border: 1px solid var(--gold-light); border-radius: 2px; padding: 14px 20px; margin-bottom: 16px; font-size: 13px; color: var(--text-mid); line-height: 1.6; }
+  .prc-note strong { color: var(--spades-mid); font-weight: 600; }
+  .seven-note { background: rgba(30,45,74,0.06); border: 1px solid rgba(30,45,74,0.2); border-radius: 2px; padding: 14px 20px; margin-bottom: 16px; font-size: 13px; color: var(--text-mid); line-height: 1.6; }
+  .seven-note strong { color: var(--spades-navy); font-weight: 600; }
+  .footer { text-align: center; margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--gold-light); }
+  .footer p { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-style: italic; color: var(--text-soft); }
+  @media (max-width: 600px) {
+    .hooks-grid, .states-grid, .connections-grid { grid-template-columns: 1fr; }
+    .spread-grid { grid-template-columns: 1fr; }
+    .spread-cell { border-right: none !important; }
+    .card-title { font-size: 38px; }
+    .output-block { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <span class="suit-tag">Spades Suit — Work, Transformation & Karmic Inheritance</span>
+    <div class="card-symbol">♠</div>
+    <h1 class="card-title"><span>Seven</span> of Spades</h1>
+    <p class="birth-date">January 7th &nbsp;·&nbsp; February 5th &nbsp;·&nbsp; March 3rd &nbsp;·&nbsp; April 1st</p>
+  </div>
+
+  <div class="section-label">Energy of the Day</div>
+  <div class="output-block energy-block">
+    <div class="output-type">Daily Card Feature</div>
+    <h3>Trust. Keep going. The wisdom is already inside you.</h3>
+    <p>Seven of Spades energy is quietly powerful, spiritually grounded, and built for the kind of perseverance that does not require external validation to sustain itself. Today the frequency is steady and clear. The main invitation of this card is trust, not in circumstances, which may or may not be cooperating, but in the guidance that is already available through the intuition. Follow that guidance today before the doubt gets loud.</p>
+    <p>Watch the tendency toward escapism or fantasy when circumstances feel difficult. The Seven of Spades is protected by a high spiritual force, but even that protection is not as powerful as the card's own actions and attitudes. Today, act from the higher perspective rather than waiting for the situation to improve first.</p>
+    <span class="energy-cta">Today's invitation: trust the guidance and keep moving</span>
+  </div>
+
+  <div class="section-label">Report Description</div>
+  <div class="output-block">
+    <div class="output-type">For use inside BABE Signature Reports</div>
+    <h3>The Card of Faith</h3>
+
+    <p>The Seven of Spades is one of the most spiritual cards in the deck. The source material says this directly and pairs it with a specific instruction: these people are here to learn to trust and keep going in spite of circumstances. That is not passive acceptance. It is an active, conscious practice of maintaining forward movement when the external evidence is not cooperating. The Card of Faith name is earned through the specific quality of perseverance this Birthprint develops, often through significant challenge in the areas of work and health where the main tests come.</p>
+
+    <p>The King of Diamonds underlying influence in the Jupiter position mandates something specific and important: the Seven of Spades must live the higher values it knows if it is to access the blessings and power that are inherently available to it. This is not aspirational guidance. It is a structural requirement. The card that thinks, speaks, and acts from a higher perspective receives the corresponding protection and success. The one that deviates from what it knows to be right encounters what the source material calls innumerable ills. The alignment is not optional. It is the specific operating condition for this card's success.</p>
+
+    <p>The card works quietly, often behind the scenes, and is genuinely willing to remain in that position. This is not self-effacement driven by lack of confidence. It is a deliberate and principled choice that this card makes because the contribution matters more than the credit. The Seven of Spades tends to become a leader not by claiming authority but by being the person others consistently turn to. The wisdom, the counsel, the reliability in business, and the faithfulness in love are all qualities that produce genuine authority over time without requiring the card to announce itself.</p>
+
+    <p>The romantic and relational life for this card is built on respect and admiration rather than demonstration. The emotions run deep and lasting. The women with this card are often drawn to partners who are older or carry a quality of mental authority. The Seven of Spades tends to have many friends but few genuine loves. The depth of the relational investment is real. The number of relationships that meet the standard the card holds internally is small. The challenge in love is the card's own indecision, specifically named in the source material as working against it in this domain.</p>
+
+    <p>Nothing can stop the Seven of Spades but itself. That is a specific and powerful statement. The protection is real. The potential is real. The capacity for success in any domain where the higher values are being lived is real. The only genuine obstacle is the card's own departure from what it knows to be right, whether through escapism, through the rut of comfort, through indecision, or through the stubbornness that can entrench a position past the point where it is serving anything.</p>
+
+    <div class="states-grid">
+      <div class="state-block state-locked">
+        <span class="state-title">Locked In</span>
+        <ul>
+          <li>Trusts and keeps going regardless of what circumstances are presenting</li>
+          <li>Lives the higher values it knows rather than waiting for the situation to reward that choice first</li>
+          <li>Thinks, speaks, and acts from the higher perspective and accesses the protection and success that follow</li>
+          <li>Works hard and maintains strict honesty as the specific operating conditions for this card's success</li>
+          <li>Develops the intuition deliberately and follows its guidance even when it conflicts with what is comfortable</li>
+        </ul>
+      </div>
+      <div class="state-block state-unattended">
+        <span class="state-title">Unattended</span>
+        <ul>
+          <li>Deviates from what it knows to be right and encounters the consequences the card specifically warns against</li>
+          <li>Uses fantasy and escapism as a way of managing difficulty rather than moving through it</li>
+          <li>Lets the stubbornness entrench a comfortable rut rather than protect a genuine principle</li>
+          <li>Lets its own indecision in love and romance consistently work against the relational depth the card is capable of</li>
+          <li>Disregards the wisdom that is intended to guide this card and loses access to the inherent protection</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Content Generator</div>
+  <div class="output-block">
+    <div class="output-type">Angles, Hooks & Avatar Connections</div>
+    <h3>Content Angles</h3>
+    <div class="hooks-grid">
+      <div class="hook-item">
+        <span class="hook-label">Hook 1 — Trust and Keep Going</span>
+        <p>The Seven of Spades is here to learn to trust and keep going in spite of circumstances. Not when circumstances cooperate. In spite of them. That is an active practice not a passive acceptance. It is one of the most demanding and most rewarding specific lessons in the entire deck.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 2 — Nothing Can Stop Them But Themselves</span>
+        <p>The protection available to the Seven of Spades is real and high. The only genuine obstacle the source material names is the card's own actions and attitudes. Nothing external can stop this card when it is living what it knows. The source of the obstacles, when they appear, is always closer to home than it looks.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 3 — The Quiet Leader</span>
+        <p>The Seven of Spades works quietly, often behind the scenes, and is genuinely willing to stay there. That is not self-effacement. It is the card choosing contribution over credit. The authority it builds through wisdom and reliability tends to exceed what louder leadership produces. The people who seek out this card's counsel know what they have access to even when the card itself does not announce it.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 4 — The Higher Values Mandate</span>
+        <p>The Seven of Spades must live the higher values it knows in order to access the blessings and power available to it. That is a structural requirement not a moral aspiration. Think, speak, and act from the higher perspective and the protection activates. Deviate from what is known and the consequences are specific and consistent. There is no neutral position for this card.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 5 — Spiritual Victory</span>
+        <p>The Seven of Spades is called the card of Spiritual Victory. That is the domain where this card's power is most fully expressed. Not competitive achievement. Not social dominance. The specific victory of maintaining higher values through challenge, of trusting when circumstances give no reason to, of leading by serving when the world would understand leading by claiming.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 6 — Four Birthdays, One Deep Frequency</span>
+        <p>January 7th through April 1st. Four dates at the very start of the year carrying the most spiritually developed frequency in the Spades suit. The Card of Faith. Wise beyond years. Loving quietly and deeply. Teaching by doing. Leading by serving. And carrying the understanding that everything they do will be accounted for, one way or another.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 28px;">
+      <div class="section-label">Avatar Resonance</div>
+      <div class="hooks-grid">
+        <div class="hook-item">
+          <span class="hook-label">Grace — The Religious Deconstructor</span>
+          <p>The Seven of Spades whose high spiritual force was channelled through an institution and is now being redirected. The card requires alignment with higher values not with any particular framework that claims to hold them. Grace's deconstruction is the card refusing to stay in a structure that no longer serves the actual wisdom. What comes after matters more.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Rachel — The Done-the-Work Woman</span>
+          <p>The Seven of Spades in the indecision pattern specifically in the relational domain. The card's own indecision works against it here. Rachel knows what she knows. The specific work is following the intuitive guidance into a committed direction rather than staying in the loop of assessment without movement.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Nicole — The Hollow Success</span>
+          <p>The Seven of Spades that has been living below the higher values mandate. The success is real. The alignment between what is being built and what the card actually knows to be right is not. The consequence is the specific hollow that accompanies achievement when the higher perspective has been set aside in favour of the comfortable or the expedient.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Jade — The Invisible Middle</span>
+          <p>The Seven of Spades working behind the scenes, willing to remain there, and experiencing the specific consequence of that willingness in a context that does not recognise what it has access to. Jade's quiet service is the card operating as designed. The question is whether the context she is in will eventually acknowledge the wisdom or whether the next chapter requires a different arena.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Tasha — The Single Mum</span>
+          <p>The Seven of Spades keeping going in spite of circumstances. Tasha's perseverance is the Card of Faith living exactly as it was designed to. The specific protection available to this card is activated through the honest, hard work she is already doing. Trust and keep going is not advice for this avatar. It is a description of what she is already doing.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Carmen — The Woman at 60 Rebuilding</span>
+          <p>The Seven of Spades at 60 with the accumulated wisdom and the self-confidence that comes from decades of living what it knows. Carmen is in the territory where this card's capacity as teacher and counsellor is most fully available. The Spiritual Victory this card was always moving toward is not behind her. It is what the rebuilding is actually for.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Life Spread</div>
+  <div style="margin-bottom: 24px;">
+    <div class="seven-note">
+      <strong>Seven Family Note:</strong> The Seven of Spades is one of the most spiritual cards in the deck and belongs to the Seven card family. Its life path carries special spiritual significance. The card is called the Card of Spiritual Victory.
+    </div>
+    <div class="prc-note">
+      <strong>PRC Note:</strong> Four Planetary Ruling Cards apply to this birth card. January 7th — 4 of Diamonds. February 5th — 2 of Spades. March 3rd — 8 of Hearts. April 1st — Jack of Diamonds.
+    </div>
+    <div class="spread-grid">
+      <div class="spread-cell"><span class="spread-key">Birth Card (BC)</span><span class="spread-val">Seven of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Planetary Ruling Card (PRC)</span><span class="spread-val">4♦ / 2♠ / 8♥ / J♦</span></div>
+      <div class="spread-cell"><span class="spread-key">Personality Card</span><span class="spread-val">—</span></div>
+      <div class="spread-cell"><span class="spread-key">Moon</span><span class="spread-val">9 of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Mercury</span><span class="spread-val">2 of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Venus</span><span class="spread-val">King of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Mars</span><span class="spread-val">Jack of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Jupiter</span><span class="spread-val">4 of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Saturn</span><span class="spread-val">4 of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Uranus</span><span class="spread-val">2 of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Neptune</span><span class="spread-val">8 of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Pluto</span><span class="spread-val">6 of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Result</span><span class="spread-val">6 of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Cosmic Lesson</span><span class="spread-val">Queen of Hearts</span></div>
+    </div>
+  </div>
+
+  <div class="section-label">Connections</div>
+  <div class="connections-grid">
+    <div class="connection-block">
+      <span class="connection-label">Karma Cards</span>
+      <div class="connection-cards"><span class="card-pill">K♦</span><span class="card-pill">8♥</span></div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Karma Cousins</span>
+      <div class="connection-cards"><span class="card-pill">3♣</span><span class="card-pill">7♥</span></div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Past Life Cards</span>
+      <div class="connection-cards"><span class="card-pill">6♠</span><span class="card-pill">8♠</span></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>The MillionHeiress BABE™ Card Library &nbsp;·&nbsp; Internal Reference Document</p>
+  </div>
+
+</div>
+</body>
+</html>

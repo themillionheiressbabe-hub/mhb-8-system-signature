@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nine of Diamonds — MHB Card Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --blush: #F5F0E8; --parchment: #FAF7F1; --magenta: #B5406A; --gold: #C9A96E; --gold-light: #E8D5A3; --emerald: #3D7A6F; --text-dark: #261E0F; --text-mid: #4A3E2C; --text-soft: #8A7A5E; --diamonds-amber: #8B6914; --diamonds-mid: #A07D1C; --card-bg: #FDFAF4; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--parchment); font-family: 'Outfit', sans-serif; color: var(--text-dark); min-height: 100vh; padding: 48px 24px; }
+  .page { max-width: 820px; margin: 0 auto; }
+  .header { text-align: center; margin-bottom: 56px; padding-bottom: 32px; border-bottom: 1px solid var(--gold-light); }
+  .suit-tag { font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; display: block; }
+  .card-title { font-family: 'Cormorant Garamond', serif; font-size: 52px; font-weight: 300; color: var(--diamonds-amber); line-height: 1.1; margin-bottom: 8px; }
+  .card-title span { font-style: italic; }
+  .birth-date { font-size: 13px; color: var(--text-soft); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 12px; line-height: 1.8; }
+  .card-symbol { font-size: 48px; margin: 16px 0 8px; opacity: 0.85; color: var(--diamonds-amber); }
+  .section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--gold-light); }
+  .output-block { background: var(--card-bg); border: 1px solid var(--gold-light); border-radius: 2px; padding: 36px 40px; margin-bottom: 24px; position: relative; }
+  .output-block::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--diamonds-amber); border-radius: 2px 0 0 2px; }
+  .output-type { font-size: 10px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--diamonds-mid); margin-bottom: 16px; }
+  .output-block h3 { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 400; color: var(--text-dark); margin-bottom: 16px; line-height: 1.2; }
+  .output-block p { font-size: 15px; line-height: 1.75; color: var(--text-mid); margin-bottom: 14px; }
+  .output-block p:last-child { margin-bottom: 0; }
+  .energy-block { background: var(--diamonds-amber); border: none; }
+  .energy-block::before { background: var(--gold); }
+  .energy-block .output-type { color: var(--gold-light); }
+  .energy-block h3 { color: white; font-size: 30px; }
+  .energy-block p { color: rgba(255,255,255,0.88); font-size: 16px; }
+  .energy-cta { display: inline-block; margin-top: 20px; font-size: 12px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold-light); border-bottom: 1px solid var(--gold-light); padding-bottom: 2px; }
+  .hooks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+  .hook-item { background: var(--blush); border-radius: 2px; padding: 20px; }
+  .hook-label { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--diamonds-mid); margin-bottom: 8px; display: block; }
+  .hook-item p { font-size: 14px; line-height: 1.6; color: var(--text-dark); margin: 0; }
+  .spread-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--gold-light); border-radius: 2px; overflow: hidden; background: var(--card-bg); }
+  .spread-cell { padding: 12px 20px; border-bottom: 1px solid var(--gold-light); border-right: 1px solid var(--gold-light); }
+  .spread-cell:nth-child(even) { border-right: none; }
+  .spread-cell:nth-last-child(-n+2) { border-bottom: none; }
+  .spread-key { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-soft); display: block; margin-bottom: 3px; }
+  .spread-val { font-family: 'Cormorant Garamond', serif; font-size: 17px; color: var(--text-dark); font-weight: 500; }
+  .connections-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .connection-block { background: var(--card-bg); border: 1px solid var(--gold-light); border-radius: 2px; padding: 20px; text-align: center; }
+  .connection-label { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-soft); display: block; margin-bottom: 10px; }
+  .connection-cards { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .card-pill { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 500; color: var(--diamonds-amber); background: var(--blush); border-radius: 2px; padding: 4px 12px; }
+  .states-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+  .state-block { padding: 24px; border-radius: 2px; }
+  .state-locked { background: rgba(61,122,111,0.08); border: 1px solid rgba(61,122,111,0.25); }
+  .state-unattended { background: rgba(181,64,106,0.06); border: 1px solid rgba(181,64,106,0.2); }
+  .state-title { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 12px; display: block; }
+  .state-locked .state-title { color: var(--emerald); }
+  .state-unattended .state-title { color: var(--magenta); }
+  .state-block ul { list-style: none; padding: 0; }
+  .state-block ul li { font-size: 14px; line-height: 1.6; color: var(--text-mid); padding: 4px 0; padding-left: 14px; position: relative; }
+  .state-locked ul li::before { content: '\2192'; position: absolute; left: 0; color: var(--emerald); font-size: 12px; }
+  .state-unattended ul li::before { content: '\2192'; position: absolute; left: 0; color: var(--magenta); font-size: 12px; }
+  .prc-note { background: var(--blush); border: 1px solid var(--gold-light); border-radius: 2px; padding: 14px 20px; margin-bottom: 16px; font-size: 13px; color: var(--text-mid); line-height: 1.6; }
+  .prc-note strong { color: var(--diamonds-mid); font-weight: 600; }
+  .footer { text-align: center; margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--gold-light); }
+  .footer p { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-style: italic; color: var(--text-soft); }
+  @media (max-width: 600px) { .hooks-grid, .states-grid, .connections-grid { grid-template-columns: 1fr; } .spread-grid { grid-template-columns: 1fr; } .card-title { font-size: 38px; } .output-block { padding: 24px 20px; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <span class="suit-tag">Diamonds Suit &mdash; Money, Worth &amp; Material Inheritance</span>
+    <div class="card-symbol">&#9830;</div>
+    <h1 class="card-title"><span>Nine</span> of Diamonds</h1>
+    <p class="birth-date">January 18th &nbsp;&middot;&nbsp; February 16th &nbsp;&middot;&nbsp; March 14th &nbsp;&middot;&nbsp; April 12th &nbsp;&middot;&nbsp; May 10th &nbsp;&middot;&nbsp; June 8th<br>July 6th &nbsp;&middot;&nbsp; August 4th &nbsp;&middot;&nbsp; September 2nd</p>
+  </div>
+
+  <div class="section-label">Energy of the Day</div>
+  <div class="output-block energy-block">
+    <div class="output-type">Daily Card Feature</div>
+    <h3>Give freely today. The holding on is what costs you.</h3>
+    <p>Nine of Diamonds energy is generous, universally aware, and built for the kind of giving that returns more than it costs. Today the frequency is open and completion-oriented. Something is ready to be released, whether that is a relationship dynamic, a financial attachment, a way of protecting yourself that has become more limiting than protective. Today, practice the letting go before the holding on causes the loss anyway.</p>
+    <p>Watch the impatience and the recklessness. The Nine of Diamonds moves fast and is drawn to what moves fast around it. Today, slow down before a decision that cannot be undone.</p>
+    <span class="energy-cta">Today's invitation: let go of something before it lets go of you</span>
+  </div>
+
+  <div class="section-label">Report Description</div>
+  <div class="output-block">
+    <div class="output-type">For use inside BABE Signature Reports</div>
+    <h3>The Card of Universal Values</h3>
+    <p>The Nine of Diamonds is here to complete a major chapter in its evolution. That framing is not abstract. It is the specific operating instruction of this Birthprint: let go, give, complete. The card that heeds that call tends toward the philanthropic, generous, happy, and productive end of its spectrum. The card that does not tends toward disappointment, remorse, and the specific dissatisfaction of a life that kept trying to hold what was always meant to pass through. There is no middle ground available to the Nine of Diamonds. Generous and protective or selfish and lonely. The path is chosen through daily practice more than through single decisions.</p>
+    <p>The giving is structural and real. The Nine of Diamonds is designed for a universal life and carries the heightened consciousness that comes from actually living it. The consciousness is not the reward for the giving. It is what happens when the card stops attaching to outcomes and lets the natural current of giving and receiving move through it without interference. The source material notes that the less the Nine of Diamonds concentrates on its own security, the better. That is a specific and counterintuitive instruction that tends to produce results when it is actually applied rather than intellectually agreed with.</p>
+    <p>The business capacity is real despite the losses that sometimes appear along the way. The Nine of Diamonds in selling, in creative enterprise, in any domain that involves moving things through rather than hoarding them, tends to do genuinely well. The impatience and the fast-moving nature that create the accident risk also produce the kind of decisive momentum that creative and commercial work rewards. The specific financial instruction is to keep money in proper perspective rather than making it the measure of security, and to have support for financial management rather than relying solely on the card's own judgment in this domain.</p>
+    <p>The Queen of Diamonds Karma Card is worth engaging with directly, particularly for women with this Birthprint. The Queen of Diamonds personality has a difficult life path and the Nine of Diamonds woman consistently navigating between her own generous universality and the Queen of Diamonds' more exacting, value-conscious quality creates a specific inner tension that runs throughout the life. Understanding it as a pattern rather than as personal failing changes the relationship with it significantly.</p>
+    <p>Marriage for this card tends to be karmic and often long lasting. The Nine of Diamonds does not enter the deepest relational commitments casually and when it does they tend to carry weight and duration that reflects the seriousness with which the card takes connection when it genuinely chooses it.</p>
+    <div class="states-grid">
+      <div class="state-block state-locked">
+        <span class="state-title">Locked In</span>
+        <ul>
+          <li>Gives generously and lets go of money, relationships, and outcomes without the attachment that produces the losses</li>
+          <li>Keeps money in proper perspective and supports financial management rather than relying solely on personal judgment</li>
+          <li>Channels the impatience and momentum into creative and commercial work rather than into reckless decisions</li>
+          <li>Lives the universal life that the Nine energy calls for and accesses the heightened consciousness that comes with it</li>
+          <li>Works with the Queen of Diamonds tension rather than being dominated by it</li>
+        </ul>
+      </div>
+      <div class="state-block state-unattended">
+        <span class="state-title">Unattended</span>
+        <ul>
+          <li>Holds what was always meant to pass through and experiences the disappointment and remorse that result</li>
+          <li>Concentrates on personal security and watches the flow of abundance that non-attachment would have produced stay blocked</li>
+          <li>Moves too fast, takes too many chances, and encounters the accident and recklessness pattern the card specifically warns against</li>
+          <li>Lets the selfish and lonely end of the Nine spectrum dominate and wonders why the generosity that defined earlier periods feels unavailable</li>
+          <li>Disregards the higher laws and encounters the misfortune the source material specifically names as the consequence</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Content Generator</div>
+  <div class="output-block">
+    <div class="output-type">Angles, Hooks &amp; Avatar Connections</div>
+    <h3>Content Angles</h3>
+    <div class="hooks-grid">
+      <div class="hook-item">
+        <span class="hook-label">Hook 1 &mdash; Let Go Before It Lets Go of You</span>
+        <p>The Nine of Diamonds is here to let go and complete. The holding on is what produces the losses. The giving is what produces the abundance. That is the specific operating instruction of this Birthprint and it tends to produce results when it is actually practised rather than intellectually agreed with.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 2 &mdash; The Universal Life</span>
+        <p>The Nine of Diamonds has the opportunity to experience first-hand the heightened consciousness that comes from living a universal life. That is not a vague spiritual aspiration. It is a specific quality of awareness available to this card when the giving and the letting go are consistently practised. Those on the positive side of this card's spectrum are genuinely happy and productive. The path there is through the giving, not around it.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 3 &mdash; No Middle Ground</span>
+        <p>The Nine of Diamonds is either philanthropic, generous, and protective or selfish, lonely, and dissatisfied. There is no settled middle position available. Every period of the life is trending toward one end or the other. The direction is chosen through daily practice more than through single decisions.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 4 &mdash; Security Is the Trap</span>
+        <p>The source material is specific: the less the Nine of Diamonds concentrates on its own security, the better. That is counterintuitive and it is accurate. The card that focuses on building personal security tends to find it elusive. The one that focuses on giving and letting flow tends to find that what it needs arrives. Non-attachment is not indifference. It is trust in the mechanism.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 5 &mdash; The Impatience That Creates Risk</span>
+        <p>The Nine of Diamonds is impatient and drawn to what moves fast. That quality produces commercial and creative momentum. It also produces the specific recklessness and accident risk the card is warned against. The same energy that makes this card effective in business needs to be consciously slowed before decisions that cannot be reversed.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 6 &mdash; Nine Birthdays, One Generous Frequency</span>
+        <p>January 18th through September 2nd. Nine dates across the year carrying the same universally aware, generosity-built, completion-oriented Nine of Diamonds frequency. Born for more. Giving freely. Always protecting the light. And learning, sometimes the hard way, that the holding on is what costs the most.</p>
+      </div>
+    </div>
+    <div style="margin-top: 28px;">
+      <div class="section-label">Avatar Resonance</div>
+      <div class="hooks-grid">
+        <div class="hook-item">
+          <span class="hook-label">Pauline &mdash; The Grief Reckoner</span>
+          <p>The Nine of Diamonds in the specific territory of letting go that this card is built for. Pauline's loss is the card's core curriculum at its most concentrated. The source material says those who heed the call to give and let go find their life filled with giving and fulfilment rather than disappointment and remorse. What the grief is teaching about release is the most important work this card does.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Nicole &mdash; The Hollow Success</span>
+          <p>The Nine of Diamonds who has been concentrating on security and finding that the abundance the card is capable of stays elusive. The hollow is the card on the selfish and lonely end of its spectrum not because of bad character but because the universal life has not yet been engaged with. The shift that changes this is the giving, not the achieving.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Diane &mdash; The Recently Divorced</span>
+          <p>The Nine of Diamonds completing a major chapter. The karmic marriage that ended is the card doing exactly what Nines do: completing cycles. The disappointment is real. So is the universal instruction underneath it. What gets released here makes room for what was always meant to come next.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Tasha &mdash; The Single Mum</span>
+          <p>The Nine of Diamonds giving generously from a position that does not always feel generous. Tasha's consistent giving to her children and her community is the card's best quality in full expression. The watch for her is whether the focus on security is blocking the flow that non-attachment would open. The source material says the less this card concentrates on security, the better.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Rachel &mdash; The Done-the-Work Woman</span>
+          <p>The Nine of Diamonds who has done substantial inner work but whose impatience with the pace of change keeps producing reckless pivots before what is already building has had time to arrive. The card is completion-oriented. The work is staying through the completion rather than moving before it fully lands.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Carmen &mdash; The Woman at 60 Rebuilding</span>
+          <p>The Nine of Diamonds at 60 with the full capacity for the universal life available. Carmen has moved through enough completions to understand the pattern. The rebuilding she is doing is the card finally choosing the philanthropic, generous, productive end of its spectrum deliberately rather than arriving there by accident.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Life Spread</div>
+  <div style="margin-bottom: 24px;">
+    <div class="prc-note">
+      <strong>PRC Note:</strong> Nine Planetary Ruling Cards apply. January 18th &mdash; 4 of Hearts. February 16th &mdash; 4 of Diamonds. March 14th &mdash; 2 of Spades. April 12th &mdash; King of Clubs. May 10th &mdash; 2 of Clubs. June 8th &mdash; 7 of Spades. July 6th &mdash; Jack of Clubs. August 4th &mdash; 9 of Diamonds. September 2nd &mdash; 7 of Spades.
+    </div>
+    <div class="spread-grid">
+      <div class="spread-cell"><span class="spread-key">Birth Card (BC)</span><span class="spread-val">Nine of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Planetary Ruling Card (PRC)</span><span class="spread-val">4&#9829; / 4&#9830; / 2&#9824; / K&#9827; / 2&#9827; / 7&#9824; / J&#9827; / 9&#9830; / 7&#9824;</span></div>
+      <div class="spread-cell"><span class="spread-key">Personality Card</span><span class="spread-val">&mdash;</span></div>
+      <div class="spread-cell"><span class="spread-key">Moon</span><span class="spread-val">Jack of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Mercury</span><span class="spread-val">7 of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Venus</span><span class="spread-val">2 of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Mars</span><span class="spread-val">King of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Jupiter</span><span class="spread-val">Jack of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Saturn</span><span class="spread-val">4 of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Uranus</span><span class="spread-val">4 of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Neptune</span><span class="spread-val">2 of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Pluto</span><span class="spread-val">8 of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Result</span><span class="spread-val">6 of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Cosmic Lesson</span><span class="spread-val">6 of Spades</span></div>
+    </div>
+  </div>
+
+  <div class="section-label">Connections</div>
+  <div class="connections-grid">
+    <div class="connection-block">
+      <span class="connection-label">Karma Cards</span>
+      <div class="connection-cards"><span class="card-pill">Q&#9830;</span><span class="card-pill">5&#9830;</span></div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Karma Cousins</span>
+      <div class="connection-cards"><span class="card-pill">3&#9830;</span><span class="card-pill">3&#9827;</span></div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Past Life Cards</span>
+      <div class="connection-cards"><span class="card-pill">8&#9830;</span><span class="card-pill">10&#9830;</span></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>The MillionHeiress BABE&#8482; Card Library &nbsp;&middot;&nbsp; Internal Reference Document</p>
+  </div>
+</div>
+</body>
+</html>

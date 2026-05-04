@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eight of Spades — MHB Card Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blush: #ECEEF2; --parchment: #F4F5F8; --magenta: #B5406A; --gold: #C9A96E; --gold-light: #E8D5A3; --emerald: #3D7A6F;
+    --text-dark: #0E1520; --text-mid: #2C3545; --text-soft: #6A7585; --spades-navy: #1E2D4A; --spades-mid: #2E4570; --card-bg: #F8F9FC;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--parchment); font-family: 'Outfit', sans-serif; color: var(--text-dark); min-height: 100vh; padding: 48px 24px; }
+  .page { max-width: 820px; margin: 0 auto; }
+  .header { text-align: center; margin-bottom: 56px; padding-bottom: 32px; border-bottom: 1px solid var(--gold-light); }
+  .suit-tag { font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; display: block; }
+  .card-title { font-family: 'Cormorant Garamond', serif; font-size: 52px; font-weight: 300; color: var(--spades-navy); line-height: 1.1; margin-bottom: 8px; }
+  .card-title span { font-style: italic; }
+  .birth-date { font-size: 13px; color: var(--text-soft); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 12px; line-height: 1.8; }
+  .card-symbol { font-size: 48px; margin: 16px 0 8px; opacity: 0.85; color: var(--spades-navy); }
+  .section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--gold-light); }
+  .output-block { background: var(--card-bg); border: 1px solid var(--gold-light); border-radius: 2px; padding: 36px 40px; margin-bottom: 24px; position: relative; }
+  .output-block::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--spades-navy); border-radius: 2px 0 0 2px; }
+  .output-type { font-size: 10px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--spades-mid); margin-bottom: 16px; }
+  .output-block h3 { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 400; color: var(--text-dark); margin-bottom: 16px; line-height: 1.2; }
+  .output-block p { font-size: 15px; line-height: 1.75; color: var(--text-mid); margin-bottom: 14px; }
+  .output-block p:last-child { margin-bottom: 0; }
+  .energy-block { background: var(--spades-navy); border: none; }
+  .energy-block::before { background: var(--gold); }
+  .energy-block .output-type { color: var(--gold-light); }
+  .energy-block h3 { color: white; font-size: 30px; }
+  .energy-block p { color: rgba(255,255,255,0.88); font-size: 16px; }
+  .energy-cta { display: inline-block; margin-top: 20px; font-size: 12px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold-light); border-bottom: 1px solid var(--gold-light); padding-bottom: 2px; }
+  .hooks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+  .hook-item { background: var(--blush); border-radius: 2px; padding: 20px; }
+  .hook-label { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--spades-mid); margin-bottom: 8px; display: block; }
+  .hook-item p { font-size: 14px; line-height: 1.6; color: var(--text-dark); margin: 0; }
+  .spread-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--gold-light); border-radius: 2px; overflow: hidden; background: var(--card-bg); }
+  .spread-cell { padding: 12px 20px; border-bottom: 1px solid var(--gold-light); border-right: 1px solid var(--gold-light); }
+  .spread-cell:nth-child(even) { border-right: none; }
+  .spread-cell:nth-last-child(-n+2) { border-bottom: none; }
+  .spread-key { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-soft); display: block; margin-bottom: 3px; }
+  .spread-val { font-family: 'Cormorant Garamond', serif; font-size: 17px; color: var(--text-dark); font-weight: 500; }
+  .connections-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .connection-block { background: var(--card-bg); border: 1px solid var(--gold-light); border-radius: 2px; padding: 20px; text-align: center; }
+  .connection-label { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-soft); display: block; margin-bottom: 10px; }
+  .connection-cards { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .card-pill { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 500; color: var(--spades-navy); background: var(--blush); border-radius: 2px; padding: 4px 12px; }
+  .states-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+  .state-block { padding: 24px; border-radius: 2px; }
+  .state-locked { background: rgba(61,122,111,0.08); border: 1px solid rgba(61,122,111,0.25); }
+  .state-unattended { background: rgba(181,64,106,0.06); border: 1px solid rgba(181,64,106,0.2); }
+  .state-title { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 12px; display: block; }
+  .state-locked .state-title { color: var(--emerald); }
+  .state-unattended .state-title { color: var(--magenta); }
+  .state-block ul { list-style: none; padding: 0; }
+  .state-block ul li { font-size: 14px; line-height: 1.6; color: var(--text-mid); padding: 4px 0; padding-left: 14px; position: relative; }
+  .state-locked ul li::before { content: '→'; position: absolute; left: 0; color: var(--emerald); font-size: 12px; }
+  .state-unattended ul li::before { content: '→'; position: absolute; left: 0; color: var(--magenta); font-size: 12px; }
+  .prc-note { background: var(--blush); border: 1px solid var(--gold-light); border-radius: 2px; padding: 14px 20px; margin-bottom: 16px; font-size: 13px; color: var(--text-mid); line-height: 1.6; }
+  .prc-note strong { color: var(--spades-mid); font-weight: 600; }
+  .footer { text-align: center; margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--gold-light); }
+  .footer p { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-style: italic; color: var(--text-soft); }
+  @media (max-width: 600px) {
+    .hooks-grid, .states-grid, .connections-grid { grid-template-columns: 1fr; }
+    .spread-grid { grid-template-columns: 1fr; }
+    .spread-cell { border-right: none !important; }
+    .card-title { font-size: 38px; }
+    .output-block { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <span class="suit-tag">Spades Suit — Work, Transformation & Karmic Inheritance</span>
+    <div class="card-symbol">♠</div>
+    <h1 class="card-title"><span>Eight</span> of Spades</h1>
+    <p class="birth-date">January 6th &nbsp;·&nbsp; February 4th &nbsp;·&nbsp; March 2nd</p>
+  </div>
+
+  <div class="section-label">Energy of the Day</div>
+  <div class="output-block energy-block">
+    <div class="output-type">Daily Card Feature</div>
+    <h3>The power is real. Use it constructively today.</h3>
+    <p>Eight of Spades energy is magnetic, hardworking, and built for the kind of output that energises others into action as a side effect. Today the frequency is strong and purposeful. This card has the heaviest obligation in the Spades suit to use its power for good and today that obligation is worth naming consciously before the day gets going. What is the power being directed toward today and does that direction serve something genuinely worth building?</p>
+    <p>Watch the pride in material status. The Eight of Spades can let financial and professional standing become a sore spot in close relationships. Today, notice if the pride is serving the relationship or competing with it.</p>
+    <span class="energy-cta">Today's invitation: direct the power constructively, not just competitively</span>
+  </div>
+
+  <div class="section-label">Report Description</div>
+  <div class="output-block">
+    <div class="output-type">For use inside BABE Signature Reports</div>
+    <h3>Power Through Work</h3>
+
+    <p>The Eight of Spades is called the power card of power cards. The Eight of Eights. The source material names it directly: this card has the heaviest burden and obligation to use its power for good. That is not metaphor. It is the specific operating condition of this Birthprint. The test is not whether the card has power. It does, in significant measure. The test is what it chooses to do with that power and whether it operates from higher values or from the fear pattern that can turn the same capacity toward self-destruction.</p>
+
+    <p>Success is almost easy for the Eight of Spades as long as it is willing to work. The workaholic tendency noted in the source material is a direct consequence of the card knowing it possesses great power and being genuinely motivated by the application of that power through sustained effort. The work is the channel. Not a means to an end. The actual mechanism through which this card accesses the satisfaction, the authority, and the transformative impact it is capable of. Obstacles are specifically named as a measure of the card's true abilities rather than as problems. This card handles challenge well because challenge reveals the quality of what it carries.</p>
+
+    <p>The profound healing power in this Birthprint is real and significant. When the Eight of Spades directs its energy toward the transformation of people's lives, whether through work, through service, through the magnetic charm it carries in public contexts, the results tend to be genuinely remarkable. That healing capacity is not limited to formal healthcare or therapy. It operates in any domain where the card is fully engaged with what it is doing and is directing the power toward the genuine benefit of someone else rather than toward its own advancement alone.</p>
+
+    <p>The biggest contradiction the source material names for this card is the desire for independence alongside the genuine need for universal love and companionship. The Eight of Spades wants to stand alone in its power and also to be genuinely known and loved. Those two things are not incompatible but they require deliberate management. The pride in material status that can become a sore spot in marriage and close relationships is the independence drive working against the need for genuine connection. Managing that tension is one of the specific relational disciplines this card is working on.</p>
+
+    <p>Money is named as the biggest test for this card's spiritual growth. Not in the sense that the Eight of Spades struggles to make it. This card can make money effectively. The test is whether money becomes an obstacle to the spiritual development the card is simultaneously capable of. Once that lesson is learned, the source material says nothing can stand in the way of success. The card that masters the money relationship tends to find everything else opens.</p>
+
+    <div class="states-grid">
+      <div class="state-block state-locked">
+        <span class="state-title">Locked In</span>
+        <ul>
+          <li>Directs the power consistently toward higher values and genuine service rather than toward personal advancement alone</li>
+          <li>Works hard and treats obstacles as the measure of what it actually carries rather than as evidence of failure</li>
+          <li>Develops and deploys the healing capacity deliberately in whatever domain the work occupies</li>
+          <li>Masters the money relationship so it enhances rather than obstacles the spiritual growth</li>
+          <li>Manages the independence and companionship tension without letting pride in status undermine the close relationships it needs</li>
+        </ul>
+      </div>
+      <div class="state-block state-unattended">
+        <span class="state-title">Unattended</span>
+        <ul>
+          <li>Operates from the fear pattern and uses the significant power in ways that ultimately work against the card's own interests</li>
+          <li>Lets the workaholic tendency consume the relationships and wellbeing that make the work worth doing</li>
+          <li>Allows pride in material status to become a consistent sore spot in close relationships</li>
+          <li>Treats money as the measure of success and lets it stand between the card and the spiritual development it is simultaneously capable of</li>
+          <li>Lets the indecision and emotional instability undermine the clear objectives the card specifically needs to set and maintain</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Content Generator</div>
+  <div class="output-block">
+    <div class="output-type">Angles, Hooks & Avatar Connections</div>
+    <h3>Content Angles</h3>
+    <div class="hooks-grid">
+      <div class="hook-item">
+        <span class="hook-label">Hook 1 — The Power Card of Power Cards</span>
+        <p>The Eight of Spades is the Eight of Eights. The heaviest obligation and the most significant power in the Spades suit. The test is not whether the power is there. It is what the card chooses to do with it. Higher values or the fear pattern. Those are the two directions available and the consequences of each are proportional to the power this card carries.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 2 — Obstacles Are the Measure</span>
+        <p>The Eight of Spades handles challenge well because the source material names obstacles as a measure of the card's true abilities. Not problems. Measures. The capacity to handle difficulty with composure and to use it to demonstrate what is actually there is one of the most distinctive qualities in this Birthprint.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 3 — The Healing Power</span>
+        <p>The Eight of Spades has a profound healing power. When it is directed, it can transform the lives of those it comes in contact with. That is not limited to formal healing contexts. It operates in any domain where the card is fully engaged and is directing its energy toward the genuine benefit of someone else rather than toward its own advancement alone.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 4 — The Biggest Test Is Money</span>
+        <p>The Eight of Spades biggest test for spiritual growth is its relationship with money. Not making it. This card can make money. The test is whether money becomes the obstacle to the spiritual development happening simultaneously. Once that lesson is learned, the source material says nothing can stand in the way of success. Before that, the financial success and the spiritual stagnation tend to coexist.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 5 — The Contradiction at the Core</span>
+        <p>The Eight of Spades wants independence and also deeply needs genuine love and companionship. That is the specific contradiction the source material names. Those two things are not incompatible but they require deliberate management. The pride in material status that consistently shows up in relationships is the independence drive working against the need it cannot acknowledge.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 6 — Three Birthdays, One Formidable Frequency</span>
+        <p>January 6th, February 4th, March 2nd. The most concentrated birthday range in the deck after the Aces. Three dates carrying the most powerful frequency in the Spades suit. Working harder than anyone knows. Believing in love without letting it distract from the work. And carrying the obligation to use what this card is built with for something genuinely worth building.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 28px;">
+      <div class="section-label">Avatar Resonance</div>
+      <div class="hooks-grid">
+        <div class="hook-item">
+          <span class="hook-label">Nicole — The Hollow Success</span>
+          <p>The Eight of Spades who has let money and material status become the primary measure and is experiencing the spiritual stagnation that comes with it. The success is real and significant. The hollowness is the card's biggest test playing out exactly as described. The next chapter is about learning the money relationship so that the spiritual growth that was being blocked can finally proceed.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Tasha — The Single Mum</span>
+          <p>The Eight of Spades working hard not just for herself but for the ones she loves. The source material is specific about this: the card is willing to work hard for those it loves and feels genuinely responsible for providing. Tasha is living the core expression of this card's relationship with work and care. The power being directed is real. The direction it is going is exactly where this card is built to point it.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Carmen — The Woman at 60 Rebuilding</span>
+          <p>The Eight of Spades who has worked through enough obstacles to have them confirmed as measures of what she actually carries. Carmen at 60 has the accumulated evidence of what this power is for and what it can do when properly directed. The rebuilding is the card finally applying what it has learned about money and spiritual growth simultaneously.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Jade — The Invisible Middle</span>
+          <p>The Eight of Spades whose magnetic charm and healing capacity have been entirely absorbed by domestic and family obligations. The power is fully present. The arena is too small for what the card was built to do. Jade's invisibility is the Eight of Spades without the work domain that would allow the card's defining quality, power through work, to actually express itself.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Diane — The Recently Divorced</span>
+          <p>The Eight of Spades whose pride in material status became the sore spot the source material specifically names. The contradiction between independence and the need for genuine companionship played out in the marriage and through the ending. The specific growth available in the aftermath is learning to hold both without the pride in standing undermining the connection.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Rachel — The Done-the-Work Woman</span>
+          <p>The Eight of Spades who has been doing the inner work but whose clear objectives keep shifting before they are achieved. The source material says this card specifically needs to set a definite objective and stick to it. Rachel's pattern of moving before the goal is reached is the indecision and restless urge for improvement operating without the stabilising commitment that this card's power requires to produce lasting results.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Life Spread</div>
+  <div style="margin-bottom: 24px;">
+    <div class="prc-note">
+      <strong>PRC Note:</strong> Three Planetary Ruling Cards apply to this birth card. January 6th — 3 of Clubs. February 4th — 3 of Spades. March 2nd — 9 of Hearts.
+    </div>
+    <div class="spread-grid">
+      <div class="spread-cell"><span class="spread-key">Birth Card (BC)</span><span class="spread-val">Eight of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Planetary Ruling Card (PRC)</span><span class="spread-val">3♣ / 3♠ / 9♥</span></div>
+      <div class="spread-cell"><span class="spread-key">Personality Card</span><span class="spread-val">—</span></div>
+      <div class="spread-cell"><span class="spread-key">Moon</span><span class="spread-val">10 of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Mercury</span><span class="spread-val">Ace of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Venus</span><span class="spread-val">Ace of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Mars</span><span class="spread-val">Queen of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Jupiter</span><span class="spread-val">5 of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Saturn</span><span class="spread-val">3 of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Uranus</span><span class="spread-val">3 of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Neptune</span><span class="spread-val">9 of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Pluto</span><span class="spread-val">7 of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Result</span><span class="spread-val">5 of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Cosmic Lesson</span><span class="spread-val">Queen of Spades</span></div>
+    </div>
+  </div>
+
+  <div class="section-label">Connections</div>
+  <div class="connections-grid">
+    <div class="connection-block">
+      <span class="connection-label">Karma Cards</span>
+      <div class="connection-cards"><span class="card-pill">K♣</span><span class="card-pill">6♣</span></div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Karma Cousins</span>
+      <div class="connection-cards"><span class="card-pill">2♠</span><span class="card-pill">2♦</span></div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Past Life Cards</span>
+      <div class="connection-cards"><span class="card-pill">7♠</span><span class="card-pill">9♠</span></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>The MillionHeiress BABE™ Card Library &nbsp;·&nbsp; Internal Reference Document</p>
+  </div>
+
+</div>
+</body>
+</html>

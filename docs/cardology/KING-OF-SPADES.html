@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>King of Spades — MHB Card Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blush: #ECEEF2; --parchment: #F4F5F8; --magenta: #B5406A; --gold: #C9A96E; --gold-light: #E8D5A3; --emerald: #3D7A6F;
+    --text-dark: #0E1520; --text-mid: #2C3545; --text-soft: #6A7585; --spades-navy: #1E2D4A; --spades-mid: #2E4570; --card-bg: #F8F9FC;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--parchment); font-family: 'Outfit', sans-serif; color: var(--text-dark); min-height: 100vh; padding: 48px 24px; }
+  .page { max-width: 820px; margin: 0 auto; }
+  .header { text-align: center; margin-bottom: 56px; padding-bottom: 32px; border-bottom: 1px solid var(--gold-light); }
+  .suit-tag { font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; display: block; }
+  .card-title { font-family: 'Cormorant Garamond', serif; font-size: 52px; font-weight: 300; color: var(--spades-navy); line-height: 1.1; margin-bottom: 8px; }
+  .card-title span { font-style: italic; }
+  .birth-date { font-size: 13px; color: var(--text-soft); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 12px; line-height: 1.8; }
+  .card-symbol { font-size: 48px; margin: 16px 0 8px; opacity: 0.85; color: var(--spades-navy); }
+  .master-badge { display: inline-block; margin-top: 14px; font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); border: 1px solid var(--gold); border-radius: 2px; padding: 4px 12px; opacity: 0.85; }
+  .section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--gold-light); }
+  .output-block { background: var(--card-bg); border: 1px solid var(--gold-light); border-radius: 2px; padding: 36px 40px; margin-bottom: 24px; position: relative; }
+  .output-block::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--spades-navy); border-radius: 2px 0 0 2px; }
+  .output-type { font-size: 10px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--spades-mid); margin-bottom: 16px; }
+  .output-block h3 { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 400; color: var(--text-dark); margin-bottom: 16px; line-height: 1.2; }
+  .output-block p { font-size: 15px; line-height: 1.75; color: var(--text-mid); margin-bottom: 14px; }
+  .output-block p:last-child { margin-bottom: 0; }
+  .energy-block { background: var(--spades-navy); border: none; }
+  .energy-block::before { background: var(--gold); }
+  .energy-block .output-type { color: var(--gold-light); }
+  .energy-block h3 { color: white; font-size: 30px; }
+  .energy-block p { color: rgba(255,255,255,0.88); font-size: 16px; }
+  .energy-cta { display: inline-block; margin-top: 20px; font-size: 12px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold-light); border-bottom: 1px solid var(--gold-light); padding-bottom: 2px; }
+  .hooks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+  .hook-item { background: var(--blush); border-radius: 2px; padding: 20px; }
+  .hook-label { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--spades-mid); margin-bottom: 8px; display: block; }
+  .hook-item p { font-size: 14px; line-height: 1.6; color: var(--text-dark); margin: 0; }
+  .spread-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--gold-light); border-radius: 2px; overflow: hidden; background: var(--card-bg); }
+  .spread-cell { padding: 12px 20px; border-bottom: 1px solid var(--gold-light); border-right: 1px solid var(--gold-light); }
+  .spread-cell:nth-child(even) { border-right: none; }
+  .spread-cell:nth-last-child(-n+2) { border-bottom: none; }
+  .spread-key { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-soft); display: block; margin-bottom: 3px; }
+  .spread-val { font-family: 'Cormorant Garamond', serif; font-size: 17px; color: var(--text-dark); font-weight: 500; }
+  .connections-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .connection-block { background: var(--card-bg); border: 1px solid var(--gold-light); border-radius: 2px; padding: 20px; text-align: center; }
+  .connection-label { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-soft); display: block; margin-bottom: 10px; }
+  .connection-cards { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .card-pill { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 500; color: var(--spades-navy); background: var(--blush); border-radius: 2px; padding: 4px 12px; }
+  .states-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+  .state-block { padding: 24px; border-radius: 2px; }
+  .state-locked { background: rgba(61,122,111,0.08); border: 1px solid rgba(61,122,111,0.25); }
+  .state-unattended { background: rgba(181,64,106,0.06); border: 1px solid rgba(181,64,106,0.2); }
+  .state-title { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 12px; display: block; }
+  .state-locked .state-title { color: var(--emerald); }
+  .state-unattended .state-title { color: var(--magenta); }
+  .state-block ul { list-style: none; padding: 0; }
+  .state-block ul li { font-size: 14px; line-height: 1.6; color: var(--text-mid); padding: 4px 0; padding-left: 14px; position: relative; }
+  .state-locked ul li::before { content: '→'; position: absolute; left: 0; color: var(--emerald); font-size: 12px; }
+  .state-unattended ul li::before { content: '→'; position: absolute; left: 0; color: var(--magenta); font-size: 12px; }
+  .single-birthday-note { background: rgba(30,45,74,0.06); border: 1px solid rgba(30,45,74,0.2); border-radius: 2px; padding: 14px 20px; margin-bottom: 16px; font-size: 13px; color: var(--text-mid); line-height: 1.6; }
+  .single-birthday-note strong { color: var(--spades-navy); font-weight: 600; }
+  .karma-note { background: rgba(30,45,74,0.06); border: 1px solid rgba(30,45,74,0.2); border-radius: 2px; padding: 14px 20px; margin-bottom: 16px; font-size: 13px; color: var(--text-mid); line-height: 1.6; }
+  .karma-note strong { color: var(--spades-navy); font-weight: 600; }
+  .footer { text-align: center; margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--gold-light); }
+  .footer p { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-style: italic; color: var(--text-soft); }
+  @media (max-width: 600px) {
+    .hooks-grid, .states-grid, .connections-grid { grid-template-columns: 1fr; }
+    .spread-grid { grid-template-columns: 1fr; }
+    .spread-cell { border-right: none !important; }
+    .card-title { font-size: 38px; }
+    .output-block { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <span class="suit-tag">Spades Suit — Work, Transformation & Karmic Inheritance</span>
+    <div class="card-symbol">♠</div>
+    <h1 class="card-title"><span>King</span> of Spades</h1>
+    <p class="birth-date">January 1st Only</p>
+    <span class="master-badge">The Last, Most Wise &amp; Powerful Card in the Deck</span>
+  </div>
+
+  <div class="section-label">Energy of the Day</div>
+  <div class="output-block energy-block">
+    <div class="output-type">Daily Card Feature</div>
+    <h3>You are the master. Act from that knowledge today.</h3>
+    <p>King of Spades energy is the pinnacle of the deck. Today the frequency is ancient, authoritative, and carrying the accumulated wisdom of the highest position available in the entire system. The specific invitation is not to perform the mastery but to act from it. This card commands without shouting. The source material says those who meet the King of Spades are on holy ground. Today, occupy that position rather than standing just outside it.</p>
+    <p>Watch the discontent that can become a permanent state. The King of Spades is often discontent even with all its abilities. Today, notice if that quality is being channelled as progressiveness that serves something larger, or as dissatisfaction that simply keeps the card from fully inhabiting what it already is.</p>
+    <span class="energy-cta">Today's invitation: be the master, not just the student of mastery</span>
+  </div>
+
+  <div class="section-label">Report Description</div>
+  <div class="output-block">
+    <div class="output-type">For use inside BABE Signature Reports</div>
+    <h3>The Master Card</h3>
+
+    <p>The King of Spades is the last card in the deck. The most wise and most powerful. It represents the ultimate spiritual energy and wisdom available in the Destiny Cards system. That is not an aspiration for this Birthprint. It is the structural reality of the position the card occupies. The question is never whether the King of Spades has wisdom. It is whether the recognition of the highest potential has arrived and whether the powers are being directed into constructive expression.</p>
+
+    <p>Masters of anything they decide to do. That is the source material's specific statement. Not capable of mastery in selected domains. Masters of whatever they choose to apply themselves to. The caveat is equally specific: unless the men decide to stay as Jacks. The King of Spades that has not engaged with the recognition of what it actually is tends to remain at a lower level of expression indefinitely, operating well below the capacity that the position carries. The card that does recognise and take up the responsibility of the King position tends to rise to the top of whatever it chooses.</p>
+
+    <p>The love and relationship indecision is the most personal challenge named for this card. The desire for love combined with uncertainty and indecision in personal affairs creates a lifelong emotional conflict that consistently disturbs the regulation of mental attitudes that the King of Spades most needs. Many forgo marriage entirely for a single life. The source material says: if marriage is not entered into early in life, there are likely to be no marriage at all. That is not a judgment. It is a specific pattern this card navigates throughout the life.</p>
+
+    <p>The discontent is real and consistent. With all their abilities, King of Spades people are often discontent. That can channel as progressiveness, as the restless forward movement that produces genuinely significant contribution. Or it can become the dissatisfaction that holds the card at the surface of its own potential, aware of the depth available but not willing to go there. The discontent, like all of the King of Spades qualities, is most useful when it is recognised and directed rather than simply experienced.</p>
+
+    <p>Fixed and unmovable once the King stage has been reached. No alternate. Free to move to any position in life to be more efficient, and never separated from the great wisdom or the high crown. The source material closes with a specific statement: if you meet someone born on January 1st, be wise. Get all the instructions they are willing to give. We are on holy ground. That is the recognition this card carries from the deck's perspective. The question is whether the King of Spades carries it from its own.</p>
+
+    <div class="states-grid">
+      <div class="state-block state-locked">
+        <span class="state-title">Locked In</span>
+        <ul>
+          <li>Recognises the highest potential and directs the powers into constructive expression rather than staying in the shade of what the card actually is</li>
+          <li>Channels the discontent as progressiveness that serves something larger rather than as dissatisfaction that keeps the card from inhabiting its own position</li>
+          <li>Goes within, to the spiritual realms, and penetrates the deepest secrets with the ease the card specifically has access to</li>
+          <li>Operates from mastery rather than performing competence, commanding without shouting, leading without announcing</li>
+          <li>Takes up the full responsibility of the King position rather than deciding to stay as a Jack</li>
+        </ul>
+      </div>
+      <div class="state-block state-unattended">
+        <span class="state-title">Unattended</span>
+        <ul>
+          <li>Remains in the shade of life, not recognising the gift or declining to take up the responsibility that comes with it</li>
+          <li>Lets the discontent become a permanent state of dissatisfaction rather than channelling it as the progressiveness it can also be</li>
+          <li>Stays at the Jack level, using the intelligence and charm without the depth and authority of the full King position</li>
+          <li>Lets the love and relationship indecision consistently disturb the mental regulation the card needs to operate at its highest</li>
+          <li>Is called a fanatic for the great truths it carries because it has not yet found the way to express them in forms the world can receive</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Content Generator</div>
+  <div class="output-block">
+    <div class="output-type">Angles, Hooks & Avatar Connections</div>
+    <h3>Content Angles</h3>
+    <div class="hooks-grid">
+      <div class="hook-item">
+        <span class="hook-label">Hook 1 — The Last, Most Wise Card</span>
+        <p>The King of Spades is the last card in the deck. The most wise and most powerful position in the entire system. That is the structural reality of this Birthprint. The work is not achieving the position. It is recognising it and taking up the responsibility that comes with it rather than remaining in the shade of what the card actually is.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 2 — Masters of Anything They Decide</span>
+        <p>Not capable of mastery in selected domains. Masters of whatever they choose to apply themselves to. That is the source material's specific statement about the King of Spades. The caveat is the decision to stay at a lower level of expression. The card that makes the other choice tends to rise to the top of whatever it chooses.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 3 — The Discontent That Could Be Progress</span>
+        <p>With all their abilities, King of Spades people are often discontent. That quality can become the restless progressiveness that drives genuinely significant contribution. Or it can become the dissatisfaction that keeps the card at the surface of its own potential indefinitely. The discontent is most useful when it is recognised and directed.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 4 — Holy Ground</span>
+        <p>The source material closes the King of Spades section with a specific statement: if you meet someone born on January 1st, be wise. Get all the instructions they are willing to give. We are on holy ground. That is the recognition the deck extends to this card. The question is whether the King of Spades holds the same recognition for itself.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 5 — Fixed and Unmovable at the Crown</span>
+        <p>Once the King stage has been reached, the source material says the King of Spades has no alternate. Is fixed and unmovable. Free to move to any position to be more efficient and never separated from the great wisdom or the high crown. That is the stability available on the other side of the recognition and the responsibility being fully taken up.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 6 — One Birthday, The Highest Frequency</span>
+        <p>January 1st. The first day of the year. One birthday in the entire year carrying the highest position in the deck. The Master Card. The pinnacle. Commanding without shouting. Earning the wisdom rather than inheriting it. And once the purpose is found, nothing can stop it.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 28px;">
+      <div class="section-label">Avatar Resonance</div>
+      <div class="hooks-grid">
+        <div class="hook-item">
+          <span class="hook-label">Nicole — The Hollow Success</span>
+          <p>The King of Spades who has risen to significant positions without recognising the highest position the card actually occupies in the deck. The success is genuine. The hollow is the mastery not yet fully inhabited. The card that performs competence rather than operating from mastery tends to build impressive things that do not carry the depth and authority of what the King of Spades is actually capable of.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Carmen — The Woman at 60 Rebuilding</span>
+          <p>The King of Spades who has come through suffering and the hard road to wisdom. The source material says some King of Spades people are big enough to meet their opportunities through exactly this path. Carmen at 60 is at the specific point where the King stage the source material describes is genuinely available. The rebuilding is the card finally inhabiting its own position.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Grace — The Religious Deconstructor</span>
+          <p>The King of Spades who has been carrying great truths and being called a fanatic for them. The source material names this specifically. Grace's deconstruction is the card refusing to have its wisdom contained by a framework that is misrepresenting it. What comes next is finding the form in which the great truths can be expressed in ways the world can receive rather than reject.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Rachel — The Done-the-Work Woman</span>
+          <p>The King of Spades in the discontent that can become progressiveness but has not yet fully turned that corner. The wisdom is present. The recognition of what the card actually is has not yet fully arrived. Rachel's stuckness is the King of Spades not yet inhabiting its own position with the authority the position actually carries.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Jade — The Invisible Middle</span>
+          <p>The King of Spades remaining in the shade of life. The source material says most King of Spades stay there. Jade's invisibility is the card in the position the source material says is the most common expression of this Birthprint. The specific move is the recognition. Everything else follows from that.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Amara — The Between-Two-Worlds Woman</span>
+          <p>The King of Spades carrying wisdom across cultural boundaries. The source material says the King of Spades is capable of managing the largest organisations. For Amara, the between-worlds position gives the mastery a specific range that single-context authority cannot reach. The wisdom that penetrates the deepest secrets is most valuable when it is deployed across the widest possible terrain.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Life Spread</div>
+  <div style="margin-bottom: 24px;">
+    <div class="single-birthday-note">
+      <strong>Birthday Note:</strong> The King of Spades has just one birthday in the entire year: January 1st. The first day of the year, the last and highest card in the deck. One Planetary Ruling Card applies: January 1st — 5 of Clubs.
+    </div>
+    <div class="karma-note">
+      <strong>Extended Karma Cards Note:</strong> The King of Spades carries six Karma Cards with no Karma Cousins. Karma Cards: 8 of Clubs, Jack of Hearts, Ace of Clubs, 2 of Hearts, 7 of Diamonds, and 9 of Hearts.
+    </div>
+    <div class="spread-grid">
+      <div class="spread-cell"><span class="spread-key">Birth Card (BC)</span><span class="spread-val">King of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Planetary Ruling Card (PRC)</span><span class="spread-val">5♣</span></div>
+      <div class="spread-cell"><span class="spread-key">Personality Card</span><span class="spread-val">King of Spades (Birth Card)</span></div>
+      <div class="spread-cell"><span class="spread-key">Moon</span><span class="spread-val">8 of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Mercury</span><span class="spread-val">3 of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Venus</span><span class="spread-val">Ace of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Mars</span><span class="spread-val">Queen of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Jupiter</span><span class="spread-val">10 of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Saturn</span><span class="spread-val">5 of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Uranus</span><span class="spread-val">3 of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Neptune</span><span class="spread-val">Ace of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Pluto</span><span class="spread-val">7 of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Result</span><span class="spread-val">7 of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Cosmic Lesson</span><span class="spread-val">5 of Spades</span></div>
+    </div>
+  </div>
+
+  <div class="section-label">Connections</div>
+  <div class="connections-grid">
+    <div class="connection-block">
+      <span class="connection-label">Karma Cards</span>
+      <div class="connection-cards">
+        <span class="card-pill">8♣</span><span class="card-pill">J♥</span><span class="card-pill">A♣</span>
+        <span class="card-pill">2♥</span><span class="card-pill">7♦</span><span class="card-pill">9♥</span>
+      </div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Karma Cousins</span>
+      <div class="connection-cards"><span class="card-pill" style="color: var(--text-soft); background: transparent; border: 1px solid var(--gold-light);">None</span></div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Past Life Cards</span>
+      <div class="connection-cards"><span class="card-pill">Q♠</span><span class="card-pill">A♥</span></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>The MillionHeiress BABE™ Card Library &nbsp;·&nbsp; Internal Reference Document</p>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>King of Hearts — MHB Card Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blush: #F5EDE6;
+    --parchment: #FAF6F1;
+    --magenta: #B5406A;
+    --gold: #C9A96E;
+    --gold-light: #E8D5A3;
+    --emerald: #3D7A6F;
+    --text-dark: #2C2420;
+    --text-mid: #5C4A44;
+    --text-soft: #8C7A74;
+    --hearts-red: #A63248;
+    --card-bg: #FFFAF7;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--parchment);
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-dark);
+    min-height: 100vh;
+    padding: 48px 24px;
+  }
+
+  .page { max-width: 820px; margin: 0 auto; }
+
+  .header {
+    text-align: center;
+    margin-bottom: 56px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--gold-light);
+  }
+
+  .suit-tag {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 52px;
+    font-weight: 300;
+    color: var(--hearts-red);
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+
+  .card-title span { font-style: italic; }
+
+  .birth-date {
+    font-size: 13px;
+    color: var(--text-soft);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 12px;
+  }
+
+  .card-symbol {
+    font-size: 48px;
+    margin: 16px 0 8px;
+    opacity: 0.85;
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--gold-light);
+  }
+
+  .output-block {
+    background: var(--card-bg);
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    padding: 36px 40px;
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  .output-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--magenta);
+    border-radius: 2px 0 0 2px;
+  }
+
+  .output-type {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--magenta);
+    margin-bottom: 16px;
+  }
+
+  .output-block h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+
+  .output-block p {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text-mid);
+    margin-bottom: 14px;
+  }
+
+  .output-block p:last-child { margin-bottom: 0; }
+
+  .energy-block { background: var(--hearts-red); border: none; }
+  .energy-block::before { background: var(--gold); }
+  .energy-block .output-type { color: var(--gold-light); }
+  .energy-block h3 { color: white; font-size: 30px; }
+  .energy-block p { color: rgba(255,255,255,0.88); font-size: 16px; }
+
+  .energy-cta {
+    display: inline-block;
+    margin-top: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    border-bottom: 1px solid var(--gold);
+    padding-bottom: 2px;
+  }
+
+  .hooks-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .hook-item {
+    background: var(--blush);
+    border-radius: 2px;
+    padding: 20px;
+  }
+
+  .hook-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--magenta);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .hook-item p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-dark);
+    margin: 0;
+  }
+
+  .spread-section { margin-bottom: 24px; }
+
+  .spread-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    overflow: hidden;
+    background: var(--card-bg);
+  }
+
+  .spread-cell {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--gold-light);
+    border-right: 1px solid var(--gold-light);
+  }
+
+  .spread-cell:nth-child(even) { border-right: none; }
+  .spread-cell:nth-last-child(-n+2) { border-bottom: none; }
+
+  .spread-key {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .spread-val {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    color: var(--text-dark);
+    font-weight: 500;
+  }
+
+  .connections-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .connection-block {
+    background: var(--card-bg);
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .connection-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .connection-cards {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .card-pill {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--magenta);
+    background: var(--blush);
+    border-radius: 2px;
+    padding: 4px 12px;
+  }
+
+  .states-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .state-block { padding: 24px; border-radius: 2px; }
+
+  .state-locked {
+    background: rgba(61, 122, 111, 0.08);
+    border: 1px solid rgba(61, 122, 111, 0.25);
+  }
+
+  .state-unattended {
+    background: rgba(181, 64, 106, 0.06);
+    border: 1px solid rgba(181, 64, 106, 0.2);
+  }
+
+  .state-title {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .state-locked .state-title { color: var(--emerald); }
+  .state-unattended .state-title { color: var(--magenta); }
+
+  .state-block ul { list-style: none; padding: 0; }
+
+  .state-block ul li {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-mid);
+    padding: 4px 0;
+    padding-left: 14px;
+    position: relative;
+  }
+
+  .state-locked ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--emerald);
+    font-size: 12px;
+  }
+
+  .state-unattended ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--magenta);
+    font-size: 12px;
+  }
+
+  .prc-note {
+    background: var(--blush);
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    padding: 14px 20px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: var(--text-mid);
+    line-height: 1.6;
+  }
+
+  .prc-note strong { color: var(--magenta); font-weight: 600; }
+
+  .footer {
+    text-align: center;
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--gold-light);
+  }
+
+  .footer p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    font-style: italic;
+    color: var(--text-soft);
+  }
+
+  @media (max-width: 600px) {
+    .hooks-grid, .states-grid, .connections-grid { grid-template-columns: 1fr; }
+    .spread-grid { grid-template-columns: 1fr; }
+    .spread-cell { border-right: none !important; }
+    .card-title { font-size: 38px; }
+    .output-block { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <span class="suit-tag">Hearts Suit — Relationships, Love & Emotional Inheritance</span>
+    <div class="card-symbol">♥</div>
+    <h1 class="card-title"><span>King</span> of Hearts</h1>
+    <p class="birth-date">June 30th &nbsp;·&nbsp; July 28th &nbsp;·&nbsp; August 26th &nbsp;·&nbsp; September 24th &nbsp;·&nbsp; October 22nd &nbsp;·&nbsp; November 20th &nbsp;·&nbsp; December 18th &nbsp;·&nbsp; The Father Card</p>
+  </div>
+
+  <!-- ENERGY OF THE DAY -->
+  <div class="section-label">Energy of the Day</div>
+  <div class="output-block energy-block">
+    <div class="output-type">Daily Card Feature</div>
+    <h3>Gentleness is not weakness. It is the most advanced form of strength.</h3>
+    <p>King of Hearts energy rules from love, not from control. Today the frequency is steady, warm, and quietly authoritative. People feel safe around you. That is not accidental. It is the card doing what it was built to do. The question today is whether you are bringing that quality consciously or waiting for someone to ask for it.</p>
+    <p>Watch for overbearing tendencies if you feel let down by someone close. The King of Hearts responds to betrayal by tightening. Today, notice the impulse before it lands.</p>
+    <span class="energy-cta">Today's invitation: lead with gentleness deliberately</span>
+  </div>
+
+  <!-- REPORT DESCRIPTION -->
+  <div class="section-label">Report Description</div>
+  <div class="output-block">
+    <div class="output-type">For use inside BABE Signature Reports</div>
+    <h3>The Father Card</h3>
+
+    <p>The King of Hearts stands at the top of the Hearts suit. In the Destiny Cards system, Kings represent the highest expression of their suit, the fully realised authority. The King of Hearts carries that authority in the domain of love, family, and emotional mastery. This is not a card that is learning how to love or developing the capacity for it. This is a card that carries an ancient, accumulated understanding of love as the most powerful force there is, and has the responsibility of demonstrating that in how it moves through the world.</p>
+
+    <p>The quality that defines this card above all others is the ability to make people feel safe. Not flattered. Not impressed. Safe. There is a difference. The King of Hearts creates an atmosphere of genuine protection and care that others feel before anything is said. People bring their hardest things to this card. They confide what they would not tell others. They relax in ways they cannot always explain. That quality is not performance. It is the natural emanation of a card that genuinely cares and knows how to hold what it is given.</p>
+
+    <p>From past lives, the King of Hearts brings forward a mastery of emotional intelligence and family stewardship. This is not a first attempt at these things. The knowledge flows in. The intuition is strong. There is often a psychic quality to how this card reads situations and people, a knowing that arrives without needing to be assembled from evidence. That gift deserves to be taken seriously rather than explained away as good judgment.</p>
+
+    <p>The Father Card name reflects something real. The King of Hearts is devoted to the people it claims as family, which is not always biological. The inner circle of this card is chosen carefully and loved deeply. The pattern to name clearly is that this devotion, when it is divided between family and profession, can leave the spouse or primary partner consistently coming last. Not from lack of love. From a capacity for love so wide that it spreads across too many relationships at once, and the one who is closest, who has assumed she is safe, is often the one who receives the least direct attention.</p>
+
+    <p>The mental capacity here is sharp and practically oriented. Business, trading, teaching, group leadership, psychology, philosophy, all of these resonate with this card. The knowledge acquisition is continuous and the intuitive intelligence means things land quickly. The specific watch is the tendency to accumulate knowledge without always applying it. Understanding something deeply and living it are two different things, and the King of Hearts sometimes lives at that gap.</p>
+
+    <p>When this card is betrayed by someone it has loved and trusted, the response can be overbearing. The gentleness that defines the King of Hearts at its best can harden when the trust has been broken. That is a pattern worth watching because the hardening, however understandable, is not this card's natural state and tends to damage the relationships around it far more than the original betrayal did.</p>
+
+    <div class="states-grid">
+      <div class="state-block state-locked">
+        <span class="state-title">Locked In</span>
+        <ul>
+          <li>Leads from love without needing recognition, validation, or authority to be granted</li>
+          <li>Distributes devotion intentionally so the people closest do not become invisible</li>
+          <li>Applies the accumulated knowledge to actual living rather than holding it in reserve</li>
+          <li>Trusts and acts on the intuitive intelligence rather than waiting for external confirmation</li>
+          <li>Responds to betrayal with the same emotional mastery that defines the card at its best</li>
+        </ul>
+      </div>
+      <div class="state-block state-unattended">
+        <span class="state-title">Unattended</span>
+        <ul>
+          <li>Spreads devotion so widely across family and profession that the primary partner becomes quietly invisible</li>
+          <li>Hardens in response to betrayal and loses the gentleness that is the actual source of the power</li>
+          <li>Accumulates knowledge without applying it and wonders why understanding alone does not produce change</li>
+          <li>Becomes overbearing when the authority is not respected rather than holding the centre with grace</li>
+          <li>Allows the fear pattern that can develop from repeated disappointment to quietly erode the natural confidence</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT GENERATOR -->
+  <div class="section-label">Content Generator</div>
+  <div class="output-block">
+    <div class="output-type">Angles, Hooks & Avatar Connections</div>
+    <h3>Content Angles</h3>
+    <div class="hooks-grid">
+      <div class="hook-item">
+        <span class="hook-label">Hook 1 — Safety as Power</span>
+        <p>The King of Hearts does not make people feel impressed. It makes them feel safe. That is a specific and rare quality and most people who carry it have no idea how powerful it actually is. What would it mean to deploy that deliberately rather than just let it happen passively?</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 2 — The Devoted One Who Gets Last</span>
+        <p>The King of Hearts loves everyone it claims as family. The pattern is that the person closest, the one who has assumed they are safe, often receives the least direct attention. Not from lack of love. From a love so wide it spreads thin in every direction except the one right in front of it.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 3 — When the King Hardens</span>
+        <p>The King of Hearts is genuinely gentle. Until it feels betrayed. When that happens, the gentleness can harden into something controlling and overbearing that does not look like the same card at all. That pattern is worth examining. Because the hardening tends to damage what it was trying to protect.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 4 — Knowledge vs. Living It</span>
+        <p>The King of Hearts accumulates knowledge quickly and deeply. The specific gap in this card is between understanding something and actually applying it. Knowing how love works and loving well in practice are two different things. The card sometimes lives in the first and calls it the second.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 5 — The Chosen Family</span>
+        <p>The King of Hearts chooses its inner circle carefully and loves that circle with everything. The people this card claims as family, biological or chosen, are genuinely held. Consider yourself lucky if you are in that circle. And if you are the King of Hearts, consider who you have allowed in and whether the devotion has been reciprocated honestly.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 6 — Seven Birthdays, One Frequency</span>
+        <p>June 30th through December 18th. The widest birthday spread in the Hearts suit, covering the full sweep of summer into winter. Seven dates carrying the same steady, warm, quietly powerful King of Hearts frequency. The Father Card. The one at the top of the suit. The one who rules by love and has the most to lose when that love is not honoured.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 28px;">
+      <div class="section-label">Avatar Resonance</div>
+      <div class="hooks-grid">
+        <div class="hook-item">
+          <span class="hook-label">Tasha — The Single Mum</span>
+          <p>The King of Hearts carrying both roles. Father Card and Mother Card simultaneously. Tasha is running the full weight of this card without the partnership that was supposed to share it. The question the card asks her is whether she is leading from love or from the exhaustion of being the only one at the top of the suit.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Jade — The Invisible Middle</span>
+          <p>The King of Hearts who has become invisible to the culture while holding everyone else together. Jade is the safety that others feel without crediting. The card says: the authority is real even when it is not announced. The question is whether she believes that about herself when no one is telling her.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Pauline — The Grief Reckoner</span>
+          <p>The King of Hearts knows from past lives how to let go of loved ones even while feeling the pain of it. Pauline is being asked to draw on exactly that knowledge now. The card says she has done this before at soul level. The grief is real. The capacity to move through it with grace is also real and already present.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Diane — The Recently Divorced</span>
+          <p>The King of Hearts who gave devotion to a marriage and the marriage ended. The hardening pattern is the specific risk post-divorce for this card. Diane needs to hear that closing down in response to betrayal is understandable and also not her natural state. The gentleness is the power. Protecting it matters.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Carmen — The Woman at 60 Rebuilding</span>
+          <p>The King of Hearts at 60 has the full accumulated weight of the emotional mastery this card carries across lifetimes. Carmen is not starting over. She is finally stepping into the fullest version of what she has always been. The authority that comes from that much lived experience is not something that needs to be built. It just needs to be claimed.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Nicole — The Hollow Success</span>
+          <p>The King of Hearts who has built something impressive in the professional domain and has quietly neglected the family and devotional domain that gives this card its actual meaning. Nicole's hollowness is the King of Hearts separated from its source. The professional achievement is real. It is just not the point of the card.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIFE SPREAD -->
+  <div class="section-label">Life Spread</div>
+  <div class="spread-section">
+    <div class="prc-note">
+      <strong>PRC Note:</strong> Seven Planetary Ruling Cards apply to this birth card. June 30th — 2 of Hearts. July 28th — King of Hearts. August 26th — King of Diamonds. September 24th — 6 of Hearts. October 22nd — 6 of Hearts. November 20th — 4 of Clubs + 4 of Spades. December 18th — 2 of Diamonds.
+    </div>
+    <div class="spread-grid">
+      <div class="spread-cell">
+        <span class="spread-key">Birth Card (BC)</span>
+        <span class="spread-val">King of Hearts</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Planetary Ruling Card (PRC)</span>
+        <span class="spread-val">2♥ / K♥ / K♦ / 6♥ / 6♥ / 4♣+4♠ / 2♦</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Personality Card</span>
+        <span class="spread-val">King of Hearts (Birth Card)</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Moon</span>
+        <span class="spread-val">2 of Hearts</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Mercury</span>
+        <span class="spread-val">King of Diamonds</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Venus</span>
+        <span class="spread-val">6 of Hearts</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Mars</span>
+        <span class="spread-val">4 of Clubs</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Jupiter</span>
+        <span class="spread-val">2 of Diamonds</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Saturn</span>
+        <span class="spread-val">Jack of Spades</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Uranus</span>
+        <span class="spread-val">8 of Clubs</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Neptune</span>
+        <span class="spread-val">6 of Diamonds</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Pluto</span>
+        <span class="spread-val">4 of Spades</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Result</span>
+        <span class="spread-val">10 of Spades</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Cosmic Lesson</span>
+        <span class="spread-val">10 of Diamonds</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONNECTIONS -->
+  <div class="section-label">Connections</div>
+  <div class="connections-grid">
+    <div class="connection-block">
+      <span class="connection-label">Karma Cards</span>
+      <div class="connection-cards">
+        <span class="card-pill">2♣</span>
+        <span class="card-pill">9♠</span>
+      </div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Karma Cousins</span>
+      <div class="connection-cards">
+        <span class="card-pill">A♠</span>
+        <span class="card-pill">6♠</span>
+      </div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Past Life Cards</span>
+      <div class="connection-cards">
+        <span class="card-pill">Q♥</span>
+        <span class="card-pill">A♣</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <p>The MillionHeiress BABE™ Card Library &nbsp;·&nbsp; Internal Reference Document</p>
+  </div>
+
+</div>
+</body>
+</html>

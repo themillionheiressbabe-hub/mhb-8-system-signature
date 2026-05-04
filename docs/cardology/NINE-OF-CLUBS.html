@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nine of Clubs — MHB Card Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blush: #F0EDE8;
+    --parchment: #FAF8F4;
+    --magenta: #B5406A;
+    --gold: #C9A96E;
+    --gold-light: #E8D5A3;
+    --emerald: #3D7A6F;
+    --text-dark: #1E2820;
+    --text-mid: #3A4A3E;
+    --text-soft: #7A8A7E;
+    --clubs-green: #2C4A3E;
+    --clubs-mid: #3D6B5A;
+    --card-bg: #F8FAF8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--parchment);
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-dark);
+    min-height: 100vh;
+    padding: 48px 24px;
+  }
+
+  .page { max-width: 820px; margin: 0 auto; }
+
+  .header {
+    text-align: center;
+    margin-bottom: 56px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--gold-light);
+  }
+
+  .suit-tag {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 52px;
+    font-weight: 300;
+    color: var(--clubs-green);
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+
+  .card-title span { font-style: italic; }
+
+  .birth-date {
+    font-size: 13px;
+    color: var(--text-soft);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 12px;
+    line-height: 1.8;
+  }
+
+  .card-symbol {
+    font-size: 48px;
+    margin: 16px 0 8px;
+    opacity: 0.85;
+    color: var(--clubs-green);
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--gold-light);
+  }
+
+  .output-block {
+    background: var(--card-bg);
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    padding: 36px 40px;
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  .output-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--clubs-green);
+    border-radius: 2px 0 0 2px;
+  }
+
+  .output-type {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--clubs-mid);
+    margin-bottom: 16px;
+  }
+
+  .output-block h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+
+  .output-block p {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text-mid);
+    margin-bottom: 14px;
+  }
+
+  .output-block p:last-child { margin-bottom: 0; }
+
+  .energy-block { background: var(--clubs-green); border: none; }
+  .energy-block::before { background: var(--gold); }
+  .energy-block .output-type { color: var(--gold-light); }
+  .energy-block h3 { color: white; font-size: 30px; }
+  .energy-block p { color: rgba(255,255,255,0.88); font-size: 16px; }
+
+  .energy-cta {
+    display: inline-block;
+    margin-top: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    border-bottom: 1px solid var(--gold);
+    padding-bottom: 2px;
+  }
+
+  .hooks-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .hook-item {
+    background: var(--blush);
+    border-radius: 2px;
+    padding: 20px;
+  }
+
+  .hook-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--clubs-mid);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .hook-item p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-dark);
+    margin: 0;
+  }
+
+  .spread-section { margin-bottom: 24px; }
+
+  .spread-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    overflow: hidden;
+    background: var(--card-bg);
+  }
+
+  .spread-cell {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--gold-light);
+    border-right: 1px solid var(--gold-light);
+  }
+
+  .spread-cell:nth-child(even) { border-right: none; }
+  .spread-cell:nth-last-child(-n+2) { border-bottom: none; }
+
+  .spread-key {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .spread-val {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    color: var(--text-dark);
+    font-weight: 500;
+  }
+
+  .connections-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .connection-block {
+    background: var(--card-bg);
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .connection-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .connection-cards {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .card-pill {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--clubs-green);
+    background: var(--blush);
+    border-radius: 2px;
+    padding: 4px 12px;
+  }
+
+  .states-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .state-block { padding: 24px; border-radius: 2px; }
+
+  .state-locked {
+    background: rgba(61, 122, 111, 0.08);
+    border: 1px solid rgba(61, 122, 111, 0.25);
+  }
+
+  .state-unattended {
+    background: rgba(181, 64, 106, 0.06);
+    border: 1px solid rgba(181, 64, 106, 0.2);
+  }
+
+  .state-title {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .state-locked .state-title { color: var(--emerald); }
+  .state-unattended .state-title { color: var(--magenta); }
+
+  .state-block ul { list-style: none; padding: 0; }
+
+  .state-block ul li {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-mid);
+    padding: 4px 0;
+    padding-left: 14px;
+    position: relative;
+  }
+
+  .state-locked ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--emerald);
+    font-size: 12px;
+  }
+
+  .state-unattended ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--magenta);
+    font-size: 12px;
+  }
+
+  .prc-note {
+    background: var(--blush);
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    padding: 14px 20px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: var(--text-mid);
+    line-height: 1.6;
+  }
+
+  .prc-note strong { color: var(--clubs-mid); font-weight: 600; }
+
+  .footer {
+    text-align: center;
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--gold-light);
+  }
+
+  .footer p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    font-style: italic;
+    color: var(--text-soft);
+  }
+
+  @media (max-width: 600px) {
+    .hooks-grid, .states-grid, .connections-grid { grid-template-columns: 1fr; }
+    .spread-grid { grid-template-columns: 1fr; }
+    .spread-cell { border-right: none !important; }
+    .card-title { font-size: 38px; }
+    .output-block { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <span class="suit-tag">Clubs Suit — Thinking, Communication & Mental Inheritance</span>
+    <div class="card-symbol">♣</div>
+    <h1 class="card-title"><span>Nine</span> of Clubs</h1>
+    <p class="birth-date">January 31st &nbsp;·&nbsp; February 29th &nbsp;·&nbsp; March 27th &nbsp;·&nbsp; April 25th &nbsp;·&nbsp; May 23rd &nbsp;·&nbsp; June 21st<br>July 19th &nbsp;·&nbsp; August 17th &nbsp;·&nbsp; September 15th &nbsp;·&nbsp; October 13th &nbsp;·&nbsp; November 11th &nbsp;·&nbsp; December 9th</p>
+  </div>
+
+  <!-- ENERGY OF THE DAY -->
+  <div class="section-label">Energy of the Day</div>
+  <div class="output-block energy-block">
+    <div class="output-type">Daily Card Feature</div>
+    <h3>What you know is meant to be given away.</h3>
+    <p>Nine of Clubs energy is expansive, adventurous, and built for the kind of knowing that comes through experience rather than study. Today the frequency is generous and wide-ranging. Something you understand, have lived through, have arrived at the hard way, is worth sharing today. Not performing. Sharing. There is a difference and this card knows it.</p>
+    <p>Watch the negative thinking pattern. The Nine of Clubs mind can accumulate enormous wisdom and then turn that same intelligence against itself. Today, notice when the thinking is building something and when it is dismantling something that should be left intact.</p>
+    <span class="energy-cta">Today's invitation: give away one thing you know</span>
+  </div>
+
+  <!-- REPORT DESCRIPTION -->
+  <div class="section-label">Report Description</div>
+  <div class="output-block">
+    <div class="output-type">For use inside BABE Signature Reports</div>
+    <h3>The Card of Universal Knowledge</h3>
+
+    <p>The Nine of Clubs is here to complete a major cycle in the soul's development. That language is not decorative. It means this Birthprint has come into this life carrying the accumulated experience of many previous cycles and the specific task of this one is to bring that wealth of knowledge into genuine service. Not to accumulate more. Not to hold what has been gathered. To give it away. To enlighten, to teach, to share the understanding that has been earned across a long arc of experience, in a way that actually changes something for the people who receive it.</p>
+
+    <p>The consciousness available to this card is genuinely expanded. The range of what the Nine of Clubs can hold in mind, the breadth of interest, the depth of understanding across multiple domains, the pull toward universal knowledge rather than specialised expertise, all of this reflects a mind that has been gathering for a long time. The challenge that sits alongside that expansion is the negative thinking pattern that is named directly as one of the card's primary obstacles. The same mind capable of extraordinary insight is equally capable of extraordinary self-sabotage when the negative patterns accumulated across past lives are allowed to run without examination.</p>
+
+    <p>The adventurer quality in this card is real and structural. The Nine of Clubs is drawn to risk, to experience, to the kind of knowledge that only comes through doing something rather than reading about it. Extreme experience, physical challenge, the willingness to gamble on a genuine hunch, these are part of how this card gathers the raw material it will eventually distill into wisdom. The watch is when the risk-taking becomes escapism, when pleasure-seeking and self-indulgence start consuming the energy that the larger mission needs.</p>
+
+    <p>The emotional landscape of this card is significant. Home and family matter deeply. The desire for deep, sustained love is genuine. The vulnerability in close relationships, the over-dependence, the fear of losing loved ones that can tip into jealousy and obsession, these are the emotional patterns worth naming clearly and working with deliberately. The sensitivity that makes this card so capable of genuine connection is the same sensitivity that makes the relational wounds land so hard when they do.</p>
+
+    <p>Work stabilises for the Nine of Clubs later than for many other cards, typically not settling into something solid before the mid-thirties. Before that, the range of experience and the adventurous instinct tend to produce a scattered-looking career history that is actually the card gathering the breadth it will need. After that consolidation, the direction tends to become clearer and the contribution more sustained. Partnerships and collaborative structures tend to serve this card better than solo ventures or formal leadership.</p>
+
+    <p>The self-healing capacity in this Birthprint is significant. The Nine of Clubs has genuine power to resolve physical and mental difficulties through the quality of its own consciousness. When the negative thinking is addressed, when the inner environment is deliberately cultivated, the recuperative capacity of this card is remarkable. The illness is almost always rooted in the emotional and mental life rather than in purely physical causes.</p>
+
+    <div class="states-grid">
+      <div class="state-block state-locked">
+        <span class="state-title">Locked In</span>
+        <ul>
+          <li>Gives the accumulated knowledge to the world rather than hoarding it or hedging it</li>
+          <li>Examines and releases the negative mental patterns rather than letting them run as inherited default</li>
+          <li>Uses adventure and experience as genuine knowledge-gathering rather than as escape</li>
+          <li>Develops the emotional self-awareness that keeps the relational sensitivity from becoming destructive</li>
+          <li>Maintains the inner environment deliberately as the foundation of the self-healing capacity</li>
+        </ul>
+      </div>
+      <div class="state-block state-unattended">
+        <span class="state-title">Unattended</span>
+        <ul>
+          <li>Lets the negative thinking pattern consume the intelligence that should be going somewhere useful</li>
+          <li>Lets pleasure-seeking and self-indulgence substitute for the larger mission the card came to fulfil</li>
+          <li>Allows fear of losing loved ones to tip into the jealousy and obsession pattern</li>
+          <li>Stays in the gathering phase indefinitely and never moves into the giving phase</li>
+          <li>Allows materialism and the financial pressure to compromise the spiritual values the card requires</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT GENERATOR -->
+  <div class="section-label">Content Generator</div>
+  <div class="output-block">
+    <div class="output-type">Angles, Hooks & Avatar Connections</div>
+    <h3>Content Angles</h3>
+    <div class="hooks-grid">
+      <div class="hook-item">
+        <span class="hook-label">Hook 1 — The Completion Card</span>
+        <p>The Nine of Clubs is here to complete a major soul cycle. That means the knowledge accumulated across a long arc of experience is meant to be given away in this lifetime. Not stored. Not protected. Given. The card that keeps gathering without ever giving is not fulfilling its mission. At some point the gathering becomes avoidance.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 2 — The Negative Thinking Pattern</span>
+        <p>The Nine of Clubs carries expanded consciousness and a documented tendency toward negative thinking. The same intelligence that produces the insight also produces the self-sabotage when the inherited mental patterns are not examined. This is not a minor footnote. It is named as a primary obstacle. The card that addresses this directly tends to look like a different card entirely.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 3 — Adventure as Knowledge</span>
+        <p>The Nine of Clubs gathers knowledge through experience rather than through study alone. The adventurous instinct, the willingness to take risks, the pull toward the unfamiliar, these are how this card builds what it will eventually have to give. The risk is not recklessness. It is the method. The watch is when experience-seeking becomes a substitute for the larger purpose rather than preparation for it.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 4 — The Self-Healing Power</span>
+        <p>The Nine of Clubs has remarkable capacity to resolve its own physical and mental difficulties through the quality of inner life. Most illness in this card traces back to the emotional and mental environment. When the negative patterns are addressed and the inner life is cultivated, the recuperative capacity becomes one of this card's most significant practical assets.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 5 — Love and the Fear of Losing It</span>
+        <p>The Nine of Clubs wants deep, sustained love and is vulnerable in exactly that domain. The sensitivity is real. The fear of losing what is loved is also real. When that fear runs unchecked it can become the jealousy and obsession pattern that damages the very relationships it is trying to protect. Naming the fear clearly is the first step toward working with it rather than being run by it.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 6 — Twelve Birthdays, One Universal Frequency</span>
+        <p>January 31st through December 9th. Twelve dates spanning every season carrying the same expansive, adventure-driven, knowledge-gathering Nine of Clubs frequency. The Giver of Knowledge. The one who came here to complete something significant and give away everything gathered in the process. The card that has already paid most of its dues and may not know it yet.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 28px;">
+      <div class="section-label">Avatar Resonance</div>
+      <div class="hooks-grid">
+        <div class="hook-item">
+          <span class="hook-label">Rachel — The Done-the-Work Woman</span>
+          <p>The Nine of Clubs who has been in the gathering phase for a very long time and has not yet made the move into giving. Rachel's stuckness is the completion card that has not yet completed. The knowledge is fully present. The negative thinking is what keeps cycling her back to the start. The question is not what else she needs to learn. It is what she is ready to give away.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Zara — The Young Independent</span>
+          <p>The Nine of Clubs in the adventure and experience-gathering phase. Everything Zara is doing, the risk-taking, the exploration, the refusal to settle prematurely, is the card doing what it needs to do at this stage. The specific thing she needs to hear is that this phase has a purpose and a direction. It is not indefinite. At some point it turns into something she gives.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Pauline — The Grief Reckoner</span>
+          <p>The Nine of Clubs fear of losing loved ones brought into direct confrontation with actual loss. Pauline is living the pattern this card carries in its most concentrated form. The fear did not prevent the loss. What the card asks now is whether the grief becomes the thing that finally releases the negative mental patterns around love and loss, or whether it deepens them. That choice is available.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Amara — The Between-Two-Worlds Woman</span>
+          <p>The Nine of Clubs builds wisdom through cross-cultural experience and benefits from foreign connections in business. For Amara, the between-worlds life is not just personal complexity. It is the specific texture of knowledge this card is gathering. The wisdom she carries about living across cultural boundaries is rare and something that others genuinely need.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Nicole — The Hollow Success</span>
+          <p>The Nine of Clubs that allowed materialism to compromise the spiritual values the card requires. The financial success is real. So is the instruction that the card cannot be totally materialistic without paying a cost. Nicole is paying that cost. The path back to the mission is not giving up the success. It is putting it in its proper place relative to the larger purpose.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Carmen — The Woman at 60 Rebuilding</span>
+          <p>The Nine of Clubs right in the territory where the work stabilises and the contribution becomes most significant. Carmen has gathered the breadth of experience this card requires and is now at the stage where giving it away becomes the primary work. At 60, the Nine of Clubs is not approaching the end of something. It is arriving at what the whole thing was for.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIFE SPREAD -->
+  <div class="section-label">Life Spread</div>
+  <div class="spread-section">
+    <div class="prc-note">
+      <strong>PRC Note:</strong> Twelve Planetary Ruling Cards apply to this birth card. January 31st — 4 of Clubs. February 29th — 2 of Diamonds. March 27th — King of Hearts. April 25th — 2 of Hearts. May 23rd — 9 of Spades. June 21st — 9 of Spades. July 19th — Jack of Hearts. August 17th — 9 of Clubs. September 15th — 9 of Spades. October 13th — 2 of Hearts. November 11th — King of Hearts + Jack of Spades. December 9th — King of Diamonds.
+    </div>
+    <div class="spread-grid">
+      <div class="spread-cell">
+        <span class="spread-key">Birth Card (BC)</span>
+        <span class="spread-val">Nine of Clubs</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Planetary Ruling Card (PRC)</span>
+        <span class="spread-val">4♣ / 2♦ / K♥ / 2♥ / 9♠ / 9♠ / J♥ / 9♣ / 9♠ / 2♥ / K♥+J♠ / K♦</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Personality Card</span>
+        <span class="spread-val">—</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Moon</span>
+        <span class="spread-val">Jack of Hearts</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Mercury</span>
+        <span class="spread-val">9 of Spades</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Venus</span>
+        <span class="spread-val">2 of Hearts</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Mars</span>
+        <span class="spread-val">King of Hearts</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Jupiter</span>
+        <span class="spread-val">King of Diamonds</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Saturn</span>
+        <span class="spread-val">6 of Hearts</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Uranus</span>
+        <span class="spread-val">4 of Clubs</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Neptune</span>
+        <span class="spread-val">2 of Diamonds</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Pluto</span>
+        <span class="spread-val">Jack of Spades</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Result</span>
+        <span class="spread-val">8 of Clubs</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Cosmic Lesson</span>
+        <span class="spread-val">6 of Diamonds</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONNECTIONS -->
+  <div class="section-label">Connections</div>
+  <div class="connections-grid">
+    <div class="connection-block">
+      <span class="connection-label">Karma Cards</span>
+      <div class="connection-cards">
+        <span class="card-pill">Q♥</span>
+        <span class="card-pill">6♦</span>
+      </div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Karma Cousins</span>
+      <div class="connection-cards">
+        <span class="card-pill">10♠</span>
+        <span class="card-pill">3♠</span>
+      </div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Past Life Cards</span>
+      <div class="connection-cards">
+        <span class="card-pill">8♣</span>
+        <span class="card-pill">10♣</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <p>The MillionHeiress BABE™ Card Library &nbsp;·&nbsp; Internal Reference Document</p>
+  </div>
+
+</div>
+</body>
+</html>

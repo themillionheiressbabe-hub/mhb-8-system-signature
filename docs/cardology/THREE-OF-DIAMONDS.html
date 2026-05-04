@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Three of Diamonds — MHB Card Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blush: #F5F0E8; --parchment: #FAF7F1; --magenta: #B5406A; --gold: #C9A96E; --gold-light: #E8D5A3; --emerald: #3D7A6F;
+    --text-dark: #261E0F; --text-mid: #4A3E2C; --text-soft: #8A7A5E; --diamonds-amber: #8B6914; --diamonds-mid: #A07D1C; --card-bg: #FDFAF4;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--parchment); font-family: 'Outfit', sans-serif; color: var(--text-dark); min-height: 100vh; padding: 48px 24px; }
+  .page { max-width: 820px; margin: 0 auto; }
+  .header { text-align: center; margin-bottom: 56px; padding-bottom: 32px; border-bottom: 1px solid var(--gold-light); }
+  .suit-tag { font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; display: block; }
+  .card-title { font-family: 'Cormorant Garamond', serif; font-size: 52px; font-weight: 300; color: var(--diamonds-amber); line-height: 1.1; margin-bottom: 8px; }
+  .card-title span { font-style: italic; }
+  .birth-date { font-size: 13px; color: var(--text-soft); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 12px; line-height: 1.8; }
+  .card-symbol { font-size: 48px; margin: 16px 0 8px; opacity: 0.85; color: var(--diamonds-amber); }
+  .section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--gold-light); }
+  .output-block { background: var(--card-bg); border: 1px solid var(--gold-light); border-radius: 2px; padding: 36px 40px; margin-bottom: 24px; position: relative; }
+  .output-block::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--diamonds-amber); border-radius: 2px 0 0 2px; }
+  .output-type { font-size: 10px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--diamonds-mid); margin-bottom: 16px; }
+  .output-block h3 { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 400; color: var(--text-dark); margin-bottom: 16px; line-height: 1.2; }
+  .output-block p { font-size: 15px; line-height: 1.75; color: var(--text-mid); margin-bottom: 14px; }
+  .output-block p:last-child { margin-bottom: 0; }
+  .energy-block { background: var(--diamonds-amber); border: none; }
+  .energy-block::before { background: var(--gold); }
+  .energy-block .output-type { color: var(--gold-light); }
+  .energy-block h3 { color: white; font-size: 30px; }
+  .energy-block p { color: rgba(255,255,255,0.88); font-size: 16px; }
+  .energy-cta { display: inline-block; margin-top: 20px; font-size: 12px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold-light); border-bottom: 1px solid var(--gold-light); padding-bottom: 2px; }
+  .hooks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+  .hook-item { background: var(--blush); border-radius: 2px; padding: 20px; }
+  .hook-label { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--diamonds-mid); margin-bottom: 8px; display: block; }
+  .hook-item p { font-size: 14px; line-height: 1.6; color: var(--text-dark); margin: 0; }
+  .spread-section { margin-bottom: 24px; }
+  .spread-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--gold-light); border-radius: 2px; overflow: hidden; background: var(--card-bg); }
+  .spread-cell { padding: 12px 20px; border-bottom: 1px solid var(--gold-light); border-right: 1px solid var(--gold-light); }
+  .spread-cell:nth-child(even) { border-right: none; }
+  .spread-cell:nth-last-child(-n+2) { border-bottom: none; }
+  .spread-key { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-soft); display: block; margin-bottom: 3px; }
+  .spread-val { font-family: 'Cormorant Garamond', serif; font-size: 17px; color: var(--text-dark); font-weight: 500; }
+  .connections-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .connection-block { background: var(--card-bg); border: 1px solid var(--gold-light); border-radius: 2px; padding: 20px; text-align: center; }
+  .connection-label { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-soft); display: block; margin-bottom: 10px; }
+  .connection-cards { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .card-pill { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 500; color: var(--diamonds-amber); background: var(--blush); border-radius: 2px; padding: 4px 12px; }
+  .states-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+  .state-block { padding: 24px; border-radius: 2px; }
+  .state-locked { background: rgba(61,122,111,0.08); border: 1px solid rgba(61,122,111,0.25); }
+  .state-unattended { background: rgba(181,64,106,0.06); border: 1px solid rgba(181,64,106,0.2); }
+  .state-title { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 12px; display: block; }
+  .state-locked .state-title { color: var(--emerald); }
+  .state-unattended .state-title { color: var(--magenta); }
+  .state-block ul { list-style: none; padding: 0; }
+  .state-block ul li { font-size: 14px; line-height: 1.6; color: var(--text-mid); padding: 4px 0; padding-left: 14px; position: relative; }
+  .state-locked ul li::before { content: '→'; position: absolute; left: 0; color: var(--emerald); font-size: 12px; }
+  .state-unattended ul li::before { content: '→'; position: absolute; left: 0; color: var(--magenta); font-size: 12px; }
+  .prc-note { background: var(--blush); border: 1px solid var(--gold-light); border-radius: 2px; padding: 14px 20px; margin-bottom: 16px; font-size: 13px; color: var(--text-mid); line-height: 1.6; }
+  .prc-note strong { color: var(--diamonds-mid); font-weight: 600; }
+  .footer { text-align: center; margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--gold-light); }
+  .footer p { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-style: italic; color: var(--text-soft); }
+  @media (max-width: 600px) {
+    .hooks-grid, .states-grid, .connections-grid { grid-template-columns: 1fr; }
+    .spread-grid { grid-template-columns: 1fr; }
+    .spread-cell { border-right: none !important; }
+    .card-title { font-size: 38px; }
+    .output-block { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <span class="suit-tag">Diamonds Suit — Money, Worth & Material Inheritance</span>
+    <div class="card-symbol">♦</div>
+    <h1 class="card-title"><span>Three</span> of Diamonds</h1>
+    <p class="birth-date">January 24th &nbsp;·&nbsp; February 22nd &nbsp;·&nbsp; March 20th &nbsp;·&nbsp; April 18th &nbsp;·&nbsp; May 16th &nbsp;·&nbsp; June 14th<br>July 12th &nbsp;·&nbsp; August 10th &nbsp;·&nbsp; September 8th &nbsp;·&nbsp; October 6th &nbsp;·&nbsp; November 4th &nbsp;·&nbsp; December 2nd</p>
+  </div>
+
+  <div class="section-label">Energy of the Day</div>
+  <div class="output-block energy-block">
+    <div class="output-type">Daily Card Feature</div>
+    <h3>You already know what's right. The question is whether you're listening.</h3>
+    <p>Three of Diamonds energy is creative, restless, and pulled in multiple directions at once. Today the frequency is alive with possibility and complicated by indecision. The card carries a built-in compass that always points toward what is right. The pattern is trying to ignore what that compass is indicating because the easier option is more immediately appealing. Today, check the compass first.</p>
+    <p>The metaphysical pull is strong today. If something is drawing you toward deeper inquiry, follow it. This card finds genuine peace through that channel and today is a good day to remember that.</p>
+    <span class="energy-cta">Today's invitation: listen to what you already know</span>
+  </div>
+
+  <div class="section-label">Report Description</div>
+  <div class="output-block">
+    <div class="output-type">For use inside BABE Signature Reports</div>
+    <h3>The Undecided Values Card</h3>
+
+    <p>The Three of Diamonds is considered one of the more challenging life paths in the deck, particularly for women. The source material says this directly and it is worth receiving without softening it into something more comfortable. The challenge is specific: indecision in values. Not ignorance of what is right. Consistent indecision about whether to act on that knowing. The Three of Diamonds always knows what is right and wrong. The struggle is that it sometimes tries to ignore what it knows when what it knows is inconvenient.</p>
+
+    <p>The Six of Hearts as Karma Card brings past life relational patterns that create ongoing challenges in the affectional life. These are not random difficulties. They are specific lessons that are being repeated from previous cycles and will continue to repeat until they are genuinely understood and integrated. The creativity, the intelligence, and the spiritual capacity that this card carries are all present and significant. What consistently creates obstacles is the indecision and the temptation to choose the easier or more materially advantageous path when a harder, more principled one is being indicated.</p>
+
+    <p>The metaphysical interest is not a hobby. It is a functional necessity for this card. The source material is specific: without cultivating the spiritual dimension, the later life can be deeply disappointing, regardless of what has been materially accumulated. With it, the same card finds peace, wisdom, and a quality of contentment that the creative restlessness was always pointing toward. The three nines in the Life Path indicate completion energy and the potential for significant spiritual accomplishment in the later years when the work has been done.</p>
+
+    <p>The creative capacity here is genuine and wide-ranging. Acting, writing, politics, any domain that requires the ability to inhabit different perspectives and communicate with range, these fit naturally. The work must involve freedom, variety, and movement. Routine consistently produces the kind of enthusiastic stagnation that this card cannot sustain. The best professional results come through work that allows the Three of Diamonds to try many things, build connections with powerful and influential people, and contribute something genuinely creative to the world.</p>
+
+    <p>The element of sacrifice is consistent in this Birthprint. There tends to be someone, often a child or a younger person, for whom real sacrifices are made. The source material suggests that accepting the responsibility of service through love unlocks a significant spiritual healing power within this card. The sacrifice that is resisted and resented does not produce the same result. It is the one that is genuinely embraced that changes something.</p>
+
+    <p>The divine mission quality that some Three of Diamonds people discover is worth naming. When it arrives, it tends to arrive as a clarity about what the creative gifts are actually for. Not performance. Not accumulation. Service of a higher purpose. Those who find that direction and follow it tend to experience the kind of peace and contentment that the card was always seeking through other means.</p>
+
+    <div class="states-grid">
+      <div class="state-block state-locked">
+        <span class="state-title">Locked In</span>
+        <ul>
+          <li>Acts on what is already known to be right rather than trying to ignore it when it is inconvenient</li>
+          <li>Cultivates the metaphysical and spiritual dimension as a genuine operating tool, not a side interest</li>
+          <li>Channels the creative range toward a purpose that is larger than personal gain</li>
+          <li>Accepts the sacrifices this life path includes and finds the spiritual healing power that acceptance unlocks</li>
+          <li>Chooses freedom and variety in work and points that energy toward something genuinely worth building</li>
+        </ul>
+      </div>
+      <div class="state-block state-unattended">
+        <span class="state-title">Unattended</span>
+        <ul>
+          <li>Knows what is right and consistently tries to ignore or override that knowing</li>
+          <li>Neglects the spiritual dimension and sets up the disappointing later life the source material specifically warns against</li>
+          <li>Lets the indecision in values spill into the relational life and repeat the karma rather than resolving it</li>
+          <li>Uses creative energy in ways that feel compromising and wonders why the satisfaction stays hollow</li>
+          <li>Resents the sacrifices the life path includes rather than finding what is available through accepting them</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Content Generator</div>
+  <div class="output-block">
+    <div class="output-type">Angles, Hooks & Avatar Connections</div>
+    <h3>Content Angles</h3>
+    <div class="hooks-grid">
+      <div class="hook-item">
+        <span class="hook-label">Hook 1 — She Already Knows</span>
+        <p>The Three of Diamonds always knows what is right. The specific struggle is acting on that knowing when something more convenient is available. The indecision is not about not knowing. It is about whether to honour what is known when honouring it costs something. That distinction changes the entire conversation about what kind of help this card actually needs.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 2 — The Later Years Warning</span>
+        <p>The source material is specific: the Three of Diamonds later life can be deeply disappointing unless the spiritual dimension has been developed. Three nines in the Life Path means completion energy and the potential for wisdom. Whether that potential is realised depends entirely on whether the metaphysical cultivation happened along the way. This is not a minor footnote. It is the long-game instruction.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 3 — The Values That Keep Shifting</span>
+        <p>The Three of Diamonds is trying different things on for size. Different values, different directions, different versions of what matters and what is worth building toward. That is the actual curriculum of this life path. The work is not to stop trying things on. It is to eventually settle on the truth and commit to it. Most Three of Diamonds people know when they have found it. The question is whether they let themselves stop searching once they do.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 4 — The Sacrifice That Unlocks Something</span>
+        <p>The Three of Diamonds is regularly asked to make sacrifices for someone. Often a child or someone younger. The source material says that genuinely accepting that responsibility of service through love unlocks a spiritual healing power inside this card that cannot be accessed any other way. The sacrifice resisted produces nothing. The sacrifice embraced produces something transformative.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 5 — The Divine Mission</span>
+        <p>Some Three of Diamonds people discover a clear direction where the creative gifts serve a higher purpose. When that clarity arrives, the restlessness that characterises so much of this life path tends to settle. Not because life gets easier. Because the creativity finally has somewhere worthy to go. The question is not whether that mission is available. It is whether the searching is going to continue past the point where it has already been found.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 6 — Twelve Birthdays, One Conflicted Brilliance</span>
+        <p>January 24th through December 2nd. Twelve dates across every season carrying the same creative, conflicted, spiritually capable Three of Diamonds frequency. The storm and the stillness. Dreaming big, loving bigger, and spending a lifetime balancing doubt and destiny. One of the more challenging life paths in the deck. Also one of the most potentially significant when the spiritual dimension is actually developed.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 28px;">
+      <div class="section-label">Avatar Resonance</div>
+      <div class="hooks-grid">
+        <div class="hook-item">
+          <span class="hook-label">Pauline — The Grief Reckoner</span>
+          <p>The Three of Diamonds carrying the sacrifice element of the life path through one of its most acute expressions. Pauline has been in service to someone else's life and is now reckoning with the inheritance of that. The card says: accepting the responsibility of what this life path has asked of her unlocks something. The grief is real. So is the spiritual healing power that acceptance makes available.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Grace — The Religious Deconstructor</span>
+          <p>The Three of Diamonds interest in metaphysics is specifically noted as a necessity rather than an optional pursuit. Grace's deconstruction of her religious structure is the card clearing the way for the genuine spiritual cultivation that has been underneath the institutional framework all along. What she builds in its place matters more than what she has left.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Rachel — The Done-the-Work Woman</span>
+          <p>The Three of Diamonds who knows what is right and keeps not quite acting on it when the easier option is available. Rachel's stuckness is the indecision in values playing out in real time. The insight is genuinely present. The specific obstacle is the gap between knowing and the willingness to commit to what is known even when it costs something.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Nicole — The Hollow Success</span>
+          <p>The Three of Diamonds creative energy pointed toward material accumulation rather than toward the higher purpose the card is actually built for. Nicole's hollowness is the three nines telling the card that the later life disappointment is arriving early. The course correction is not more achievement. It is finding the direction where the creativity genuinely serves something larger.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Tasha — The Single Mum</span>
+          <p>The Three of Diamonds in the sacrifice element of the life path, making real sacrifices for her children. The card says this is not just obligation. It is the specific terrain through which this card accesses its own spiritual healing power. Whether Tasha experiences the sacrifice as a burden or as something she has genuinely chosen changes everything about what it produces.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Carmen — The Woman at 60 Rebuilding</span>
+          <p>The Three of Diamonds at 60 is right at the threshold between the disappointing later life and the one where the spiritual cultivation produces the peace and wisdom the card was always pointing toward. Carmen's work now is not to start over. It is to look clearly at which path the last few decades were actually building toward and make the deliberate choice about which direction the next chapter goes.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Life Spread</div>
+  <div class="spread-section">
+    <div class="prc-note">
+      <strong>PRC Note:</strong> Twelve Planetary Ruling Cards apply to this birth card. January 24th — 9 of Clubs. February 22nd — 9 of Spades. March 20th — 9 of Spades or 7 of Diamonds. April 18th — 7 of Diamonds. May 16th — 7 of Hearts. June 14th — Ace of Spades. July 12th — 5 of Clubs. August 10th — 3 of Diamonds. September 8th — Ace of Spades. October 6th — 7 of Hearts. November 4th — 7 of Diamonds + 2 of Hearts. December 2nd — 5 of Spades.
+    </div>
+    <div class="spread-grid">
+      <div class="spread-cell"><span class="spread-key">Birth Card (BC)</span><span class="spread-val">Three of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Planetary Ruling Card (PRC)</span><span class="spread-val">9♣ / 9♠ / 9♠ or 7♦ / 7♦ / 7♥ / A♠ / 5♣ / 3♦ / A♠ / 7♥ / 7♦+2♥ / 5♠</span></div>
+      <div class="spread-cell"><span class="spread-key">Personality Card</span><span class="spread-val">—</span></div>
+      <div class="spread-cell"><span class="spread-key">Moon</span><span class="spread-val">5 of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Mercury</span><span class="spread-val">Ace of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Venus</span><span class="spread-val">7 of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Mars</span><span class="spread-val">7 of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Jupiter</span><span class="spread-val">5 of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Saturn</span><span class="spread-val">Jack of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Uranus</span><span class="spread-val">9 of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Neptune</span><span class="spread-val">9 of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Pluto</span><span class="spread-val">2 of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Result</span><span class="spread-val">King of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Cosmic Lesson</span><span class="spread-val">King of Diamonds</span></div>
+    </div>
+  </div>
+
+  <div class="section-label">Connections</div>
+  <div class="connections-grid">
+    <div class="connection-block">
+      <span class="connection-label">Karma Cards</span>
+      <div class="connection-cards"><span class="card-pill">6♥</span><span class="card-pill">Q♦</span></div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Karma Cousins</span>
+      <div class="connection-cards"><span class="card-pill">4♣</span><span class="card-pill">9♦</span></div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Past Life Cards</span>
+      <div class="connection-cards"><span class="card-pill">2♦</span><span class="card-pill">4♦</span></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>The MillionHeiress BABE™ Card Library &nbsp;·&nbsp; Internal Reference Document</p>
+  </div>
+
+</div>
+</body>
+</html>

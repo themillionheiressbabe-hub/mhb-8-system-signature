@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Five of Spades — MHB Card Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --blush: #ECEEF2; --parchment: #F4F5F8; --magenta: #B5406A; --gold: #C9A96E; --gold-light: #E8D5A3; --emerald: #3D7A6F; --text-dark: #0E1520; --text-mid: #2C3545; --text-soft: #6A7585; --spades-navy: #1E2D4A; --spades-mid: #2E4570; --card-bg: #F8F9FC; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--parchment); font-family: 'Outfit', sans-serif; color: var(--text-dark); min-height: 100vh; padding: 48px 24px; }
+  .page { max-width: 820px; margin: 0 auto; }
+  .header { text-align: center; margin-bottom: 56px; padding-bottom: 32px; border-bottom: 1px solid var(--gold-light); }
+  .suit-tag { font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; display: block; }
+  .card-title { font-family: 'Cormorant Garamond', serif; font-size: 52px; font-weight: 300; color: var(--spades-navy); line-height: 1.1; margin-bottom: 8px; }
+  .card-title span { font-style: italic; }
+  .birth-date { font-size: 13px; color: var(--text-soft); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 12px; line-height: 1.8; }
+  .card-symbol { font-size: 48px; margin: 16px 0 8px; opacity: 0.85; color: var(--spades-navy); }
+  .section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--gold-light); }
+  .output-block { background: var(--card-bg); border: 1px solid var(--gold-light); border-radius: 2px; padding: 36px 40px; margin-bottom: 24px; position: relative; }
+  .output-block::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--spades-navy); border-radius: 2px 0 0 2px; }
+  .output-type { font-size: 10px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--spades-mid); margin-bottom: 16px; }
+  .output-block h3 { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 400; color: var(--text-dark); margin-bottom: 16px; line-height: 1.2; }
+  .output-block p { font-size: 15px; line-height: 1.75; color: var(--text-mid); margin-bottom: 14px; }
+  .output-block p:last-child { margin-bottom: 0; }
+  .energy-block { background: var(--spades-navy); border: none; }
+  .energy-block::before { background: var(--gold); }
+  .energy-block .output-type { color: var(--gold-light); }
+  .energy-block h3 { color: white; font-size: 30px; }
+  .energy-block p { color: rgba(255,255,255,0.88); font-size: 16px; }
+  .energy-cta { display: inline-block; margin-top: 20px; font-size: 12px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold-light); border-bottom: 1px solid var(--gold-light); padding-bottom: 2px; }
+  .hooks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+  .hook-item { background: var(--blush); border-radius: 2px; padding: 20px; }
+  .hook-label { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--spades-mid); margin-bottom: 8px; display: block; }
+  .hook-item p { font-size: 14px; line-height: 1.6; color: var(--text-dark); margin: 0; }
+  .spread-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--gold-light); border-radius: 2px; overflow: hidden; background: var(--card-bg); }
+  .spread-cell { padding: 12px 20px; border-bottom: 1px solid var(--gold-light); border-right: 1px solid var(--gold-light); }
+  .spread-cell:nth-child(even) { border-right: none; }
+  .spread-cell:nth-last-child(-n+2) { border-bottom: none; }
+  .spread-key { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-soft); display: block; margin-bottom: 3px; }
+  .spread-val { font-family: 'Cormorant Garamond', serif; font-size: 17px; color: var(--text-dark); font-weight: 500; }
+  .connections-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .connection-block { background: var(--card-bg); border: 1px solid var(--gold-light); border-radius: 2px; padding: 20px; text-align: center; }
+  .connection-label { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-soft); display: block; margin-bottom: 10px; }
+  .connection-cards { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .card-pill { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 500; color: var(--spades-navy); background: var(--blush); border-radius: 2px; padding: 4px 12px; }
+  .states-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+  .state-block { padding: 24px; border-radius: 2px; }
+  .state-locked { background: rgba(61,122,111,0.08); border: 1px solid rgba(61,122,111,0.25); }
+  .state-unattended { background: rgba(181,64,106,0.06); border: 1px solid rgba(181,64,106,0.2); }
+  .state-title { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 12px; display: block; }
+  .state-locked .state-title { color: var(--emerald); }
+  .state-unattended .state-title { color: var(--magenta); }
+  .state-block ul { list-style: none; padding: 0; }
+  .state-block ul li { font-size: 14px; line-height: 1.6; color: var(--text-mid); padding: 4px 0; padding-left: 14px; position: relative; }
+  .state-locked ul li::before { content: 'arr'; content: '\2192'; position: absolute; left: 0; color: var(--emerald); font-size: 12px; }
+  .state-unattended ul li::before { content: '\2192'; position: absolute; left: 0; color: var(--magenta); font-size: 12px; }
+  .prc-note { background: var(--blush); border: 1px solid var(--gold-light); border-radius: 2px; padding: 14px 20px; margin-bottom: 16px; font-size: 13px; color: var(--text-mid); line-height: 1.6; }
+  .prc-note strong { color: var(--spades-mid); font-weight: 600; }
+  .footer { text-align: center; margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--gold-light); }
+  .footer p { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-style: italic; color: var(--text-soft); }
+  @media (max-width: 600px) { .hooks-grid, .states-grid, .connections-grid { grid-template-columns: 1fr; } .spread-grid { grid-template-columns: 1fr; } .card-title { font-size: 38px; } .output-block { padding: 24px 20px; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <span class="suit-tag">Spades Suit — Work, Transformation &amp; Karmic Inheritance</span>
+    <div class="card-symbol">&#9824;</div>
+    <h1 class="card-title"><span>Five</span> of Spades</h1>
+    <p class="birth-date">January 9th &nbsp;&middot;&nbsp; February 7th &nbsp;&middot;&nbsp; March 5th &nbsp;&middot;&nbsp; April 3rd &nbsp;&middot;&nbsp; May 1st</p>
+  </div>
+
+  <div class="section-label">Energy of the Day</div>
+  <div class="output-block energy-block">
+    <div class="output-type">Daily Card Feature</div>
+    <h3>The movement is for growth. Keep that distinction clear today.</h3>
+    <p>Five of Spades energy is loyal, spiritually restless, and built for genuine soul growth through experience. Today the frequency is moving. Something is shifting and the instinct is to help, contribute, keep going. That instinct is sound. The question is whether the movement is toward something or just away from something. Check the direction before you commit today.</p>
+    <p>Watch the sacrifice pattern. The Five of Spades gives more than is required without protest. Today notice if what is being given is genuinely chosen or just happening by default.</p>
+    <span class="energy-cta">Today's invitation: move toward something, not just away</span>
+  </div>
+
+  <div class="section-label">Report Description</div>
+  <div class="output-block">
+    <div class="output-type">For use inside BABE Signature Reports</div>
+    <h3>The Card of the Wanderer</h3>
+    <p>The Five of Spades is a card of change and travel, but not in the way most Fives express that quality. Where other Fives are restless for personal freedom, the Five of Spades wants change for the sake of improvement. Not just for itself but for the people it loves. The restlessness in this card is primarily spiritual, a genuine striving for soul growth, for truth, for the next level of initiation that the card is always approaching whether it is consciously aware of that process or not.</p>
+    <p>The loyalty in this Birthprint is exceptional. The Five of Spades loves deeply and permanently. When love is chosen it is committed to without condition. The specific pattern alongside that loyalty is the suffering it tends to produce. The people this card loves often bring anxiety and heartache. That is not a reason to love less. It is a pattern to understand so it can be navigated with eyes open rather than repeatedly surprised by.</p>
+    <p>Sacrifice is woven into this life path at a structural level. Often from childhood, often again in marriage, the Five of Spades is asked to give something up. The Jack of Hearts in the life spread is the card of love. Whatever sacrifice is required does not produce rebellion in this card. It accepts, gives freely, and moves forward. That graceful acceptance is one of the most spiritually significant qualities in this Birthprint.</p>
+    <p>The work environment requires attention. There tend to be difficulties with coworkers and workplace dynamics. Partnership-based work is specifically recommended. The business dealings note is important: the Five of Spades does not always make the best deals for itself and needs to develop the discernment to recognise when terms are not actually favourable before committing.</p>
+    <p>The intuitive and psychic capacity is real. The attraction to the occult and spiritual dimensions is not a detour. It is the card following what it was built for. Marriages and serious partnerships made after 40 are specifically noted as more beneficial in both personal and professional terms. Lawsuits are specifically noted as better settled outside the courtroom. Money often comes in association with love or marriage.</p>
+    <div class="states-grid">
+      <div class="state-block state-locked">
+        <span class="state-title">Locked In</span>
+        <ul>
+          <li>Understands the spiritual nature of the restlessness and follows it toward genuine soul growth</li>
+          <li>Loves deeply and accepts the suffering it sometimes produces as part of the path</li>
+          <li>Accepts required sacrifices with grace and receives what they make available</li>
+          <li>Develops the intuitive capacity deliberately and uses it as a primary navigating tool</li>
+          <li>Takes care in business dealings and recognises unfavourable terms before committing</li>
+        </ul>
+      </div>
+      <div class="state-block state-unattended">
+        <span class="state-title">Unattended</span>
+        <ul>
+          <li>Mistakes the spiritual restlessness for ordinary discontentment and moves without direction</li>
+          <li>Is repeatedly surprised by the suffering the love relationships produce rather than holding it as a known pattern</li>
+          <li>Makes poor business deals through not attending carefully enough to terms before committing</li>
+          <li>Gives sacrifice after sacrifice without recognising when the giving has gone past what serves either party</li>
+          <li>Lets workplace difficulties accumulate into formal disputes rather than resolving through partnership</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Content Generator</div>
+  <div class="output-block">
+    <div class="output-type">Angles, Hooks &amp; Avatar Connections</div>
+    <h3>Content Angles</h3>
+    <div class="hooks-grid">
+      <div class="hook-item">
+        <span class="hook-label">Hook 1 — Moving for Growth, Not Freedom</span>
+        <p>The Five of Spades is not restless for personal freedom. It is restless for soul growth. The difference is significant. When that distinction is clear, the direction of the wandering changes entirely.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 2 — Loves Deeply. Often Painfully.</span>
+        <p>The Five of Spades loves permanently. The specific pattern that comes with that love is that the people chosen often bring heartache. Understanding it means entering love with both the depth and the clarity about what the path sometimes requires.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 3 — The Sacrifice That Does Not Rebel</span>
+        <p>The Five of Spades accepts sacrifice without resentment. Whatever is given does not produce rebellion. That graceful acceptance is one of the most spiritually significant qualities in this entire Birthprint.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 4 — The Business Deal Warning</span>
+        <p>The Five of Spades does not always make the best deals for itself. The relational intelligence is strong. The commercial negotiation instinct needs deliberate development. Knowing this going into a significant transaction changes the outcome.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 5 — After 40, Better Partnerships</span>
+        <p>Early partnerships often bring disappointment for this card. Those made after 40 are specifically noted as more beneficial personally and professionally. The earlier patterns are not failures. They are the teaching that makes the later ones possible.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 6 — Five Birthdays, One Moving Frequency</span>
+        <p>January 9th through May 1st. Five dates at the start of the year. Loyal, spiritually restless, sacrifice-accepting. Made to move. Built to help and heal. Never expected the life to be easy. Still keeps going anyway.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 28px;">
+      <div class="section-label">Avatar Resonance</div>
+      <div class="hooks-grid">
+        <div class="hook-item">
+          <span class="hook-label">Pauline — The Grief Reckoner</span>
+          <p>The Five of Spades whose love brought heartache in its most acute form. The source material says this card is willing to witness suffering and still help, still love, still keep going. That quality is not passive resignation. It is the card at its most spiritually developed.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Tasha — The Single Mum</span>
+          <p>The Five of Spades accepting the sacrifices of the early years without rebellion. The card says no sacrifice is too big for the ones she loves. The question is whether the acceptance is genuinely chosen or whether the cost has outrun what was asked.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Amara — The Between-Two-Worlds Woman</span>
+          <p>The Five of Spades whose connection to foreign interests and cross-cultural partnerships is specifically beneficial. For Amara, the movement between worlds is the card operating exactly as it was designed to.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Grace — The Religious Deconstructor</span>
+          <p>The Five of Spades whose attraction to spiritual dimensions was channelled through a high-control environment. Grace leaving is the card outgrowing the container rather than the spirituality itself. What she is moving toward matters more.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Diane — The Recently Divorced</span>
+          <p>The Five of Spades whose early partnership brought the disappointment the pattern warns about. The partnership made with clearer eyes after this is specifically noted as more beneficial. The ending is not the final word.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Rachel — The Done-the-Work Woman</span>
+          <p>The Five of Spades approaching initiation on a spiritual quest that has been running for a long time. The specific insight at this stage is that the soul growth being sought is not in the next insight. It is in the application of what is already known.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Life Spread</div>
+  <div style="margin-bottom: 24px;">
+    <div class="prc-note">
+      <strong>PRC Note:</strong> Five Planetary Ruling Cards apply to this birth card. January 9th — King of Hearts. February 7th — King of Diamonds. March 5th — 6 of Hearts. April 3rd — 9 of Spades. May 1st — 9 of Clubs.
+    </div>
+    <div class="spread-grid">
+      <div class="spread-cell"><span class="spread-key">Birth Card (BC)</span><span class="spread-val">Five of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Planetary Ruling Card (PRC)</span><span class="spread-val">K&#9829; / K&#9830; / 6&#9829; / 9&#9824; / 9&#9827;</span></div>
+      <div class="spread-cell"><span class="spread-key">Personality Card</span><span class="spread-val">&#8212;</span></div>
+      <div class="spread-cell"><span class="spread-key">Moon</span><span class="spread-val">7 of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Mercury</span><span class="spread-val">Jack of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Venus</span><span class="spread-val">9 of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Mars</span><span class="spread-val">9 of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Jupiter</span><span class="spread-val">2 of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Saturn</span><span class="spread-val">King of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Uranus</span><span class="spread-val">King of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Neptune</span><span class="spread-val">6 of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Pluto</span><span class="spread-val">4 of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Result</span><span class="spread-val">2 of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Cosmic Lesson</span><span class="spread-val">Jack of Spades</span></div>
+    </div>
+  </div>
+
+  <div class="section-label">Connections</div>
+  <div class="connections-grid">
+    <div class="connection-block">
+      <span class="connection-label">Karma Cards</span>
+      <div class="connection-cards"><span class="card-pill">10&#9829;</span><span class="card-pill">4&#9830;</span></div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Karma Cousins</span>
+      <div class="connection-cards"><span class="card-pill">J&#9827;</span><span class="card-pill">5&#9829;</span></div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Past Life Cards</span>
+      <div class="connection-cards"><span class="card-pill">4&#9824;</span><span class="card-pill">6&#9824;</span></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>The MillionHeiress BABE&#8482; Card Library &nbsp;&middot;&nbsp; Internal Reference Document</p>
+  </div>
+</div>
+</body>
+</html>

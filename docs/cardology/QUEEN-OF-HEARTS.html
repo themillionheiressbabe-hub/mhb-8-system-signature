@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Queen of Hearts — MHB Card Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blush: #F5EDE6;
+    --parchment: #FAF6F1;
+    --magenta: #B5406A;
+    --gold: #C9A96E;
+    --gold-light: #E8D5A3;
+    --emerald: #3D7A6F;
+    --text-dark: #2C2420;
+    --text-mid: #5C4A44;
+    --text-soft: #8C7A74;
+    --hearts-red: #A63248;
+    --card-bg: #FFFAF7;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--parchment);
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-dark);
+    min-height: 100vh;
+    padding: 48px 24px;
+  }
+
+  .page { max-width: 820px; margin: 0 auto; }
+
+  .header {
+    text-align: center;
+    margin-bottom: 56px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--gold-light);
+  }
+
+  .suit-tag {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 52px;
+    font-weight: 300;
+    color: var(--hearts-red);
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+
+  .card-title span { font-style: italic; }
+
+  .birth-date {
+    font-size: 13px;
+    color: var(--text-soft);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 12px;
+  }
+
+  .card-symbol {
+    font-size: 48px;
+    margin: 16px 0 8px;
+    opacity: 0.85;
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--gold-light);
+  }
+
+  .output-block {
+    background: var(--card-bg);
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    padding: 36px 40px;
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  .output-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--magenta);
+    border-radius: 2px 0 0 2px;
+  }
+
+  .output-type {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--magenta);
+    margin-bottom: 16px;
+  }
+
+  .output-block h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+
+  .output-block p {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text-mid);
+    margin-bottom: 14px;
+  }
+
+  .output-block p:last-child { margin-bottom: 0; }
+
+  .energy-block { background: var(--hearts-red); border: none; }
+  .energy-block::before { background: var(--gold); }
+  .energy-block .output-type { color: var(--gold-light); }
+  .energy-block h3 { color: white; font-size: 30px; }
+  .energy-block p { color: rgba(255,255,255,0.88); font-size: 16px; }
+
+  .energy-cta {
+    display: inline-block;
+    margin-top: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    border-bottom: 1px solid var(--gold);
+    padding-bottom: 2px;
+  }
+
+  .hooks-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .hook-item {
+    background: var(--blush);
+    border-radius: 2px;
+    padding: 20px;
+  }
+
+  .hook-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--magenta);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .hook-item p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-dark);
+    margin: 0;
+  }
+
+  .spread-section { margin-bottom: 24px; }
+
+  .spread-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    overflow: hidden;
+    background: var(--card-bg);
+  }
+
+  .spread-cell {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--gold-light);
+    border-right: 1px solid var(--gold-light);
+  }
+
+  .spread-cell:nth-child(even) { border-right: none; }
+  .spread-cell:nth-last-child(-n+2) { border-bottom: none; }
+
+  .spread-key {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .spread-val {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    color: var(--text-dark);
+    font-weight: 500;
+  }
+
+  .connections-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .connection-block {
+    background: var(--card-bg);
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .connection-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .connection-cards {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .card-pill {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--magenta);
+    background: var(--blush);
+    border-radius: 2px;
+    padding: 4px 12px;
+  }
+
+  .states-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .state-block { padding: 24px; border-radius: 2px; }
+
+  .state-locked {
+    background: rgba(61, 122, 111, 0.08);
+    border: 1px solid rgba(61, 122, 111, 0.25);
+  }
+
+  .state-unattended {
+    background: rgba(181, 64, 106, 0.06);
+    border: 1px solid rgba(181, 64, 106, 0.2);
+  }
+
+  .state-title {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .state-locked .state-title { color: var(--emerald); }
+  .state-unattended .state-title { color: var(--magenta); }
+
+  .state-block ul { list-style: none; padding: 0; }
+
+  .state-block ul li {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-mid);
+    padding: 4px 0;
+    padding-left: 14px;
+    position: relative;
+  }
+
+  .state-locked ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--emerald);
+    font-size: 12px;
+  }
+
+  .state-unattended ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--magenta);
+    font-size: 12px;
+  }
+
+  .prc-note {
+    background: var(--blush);
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    padding: 14px 20px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: var(--text-mid);
+    line-height: 1.6;
+  }
+
+  .prc-note strong { color: var(--magenta); font-weight: 600; }
+
+  .footer {
+    text-align: center;
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--gold-light);
+  }
+
+  .footer p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    font-style: italic;
+    color: var(--text-soft);
+  }
+
+  @media (max-width: 600px) {
+    .hooks-grid, .states-grid, .connections-grid { grid-template-columns: 1fr; }
+    .spread-grid { grid-template-columns: 1fr; }
+    .spread-cell { border-right: none !important; }
+    .card-title { font-size: 38px; }
+    .output-block { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <span class="suit-tag">Hearts Suit — Relationships, Love & Emotional Inheritance</span>
+    <div class="card-symbol">♥</div>
+    <h1 class="card-title"><span>Queen</span> of Hearts</h1>
+    <p class="birth-date">July 29th &nbsp;·&nbsp; August 27th &nbsp;·&nbsp; September 25th &nbsp;·&nbsp; October 23rd &nbsp;·&nbsp; November 21st &nbsp;·&nbsp; December 19th &nbsp;·&nbsp; The Mother Card</p>
+  </div>
+
+  <!-- ENERGY OF THE DAY -->
+  <div class="section-label">Energy of the Day</div>
+  <div class="output-block energy-block">
+    <div class="output-type">Daily Card Feature</div>
+    <h3>Your sensitivity is not the problem. It's the signal.</h3>
+    <p>Queen of Hearts energy is warm, magnetic, and deeply intuitive. Today the frequency is nurturing and creative, with a strong pull toward beauty and genuine human connection. The psychic sensitivity is turned up. What you are picking up from the people around you today is real. Trust it rather than rationalising it away.</p>
+    <p>Watch the people-pleasing pull though. The Queen of Hearts wants to be liked and that is not always a safe instinct. Today, let kindness lead. Let truth lead with it.</p>
+    <span class="energy-cta">Today's invitation: be warm and be discerning at the same time</span>
+  </div>
+
+  <!-- REPORT DESCRIPTION -->
+  <div class="section-label">Report Description</div>
+  <div class="output-block">
+    <div class="output-type">For use inside BABE Signature Reports</div>
+    <h3>The Mother Card</h3>
+
+    <p>The Queen of Hearts is a double Neptune card. What that means in practice is that the idealism, the psychic sensitivity, the pull toward beauty, love, and a world that is kinder than it often is, these are not occasional qualities in this Birthprint. They are the water this card swims in. They are structural. When they are guided by truth and grounded in reality, the Queen of Hearts is one of the most genuinely magnetic and nourishing presences in any room. When they are not, the same qualities become a vulnerability.</p>
+
+    <p>This is the Mother Card. Not mother as limitation. Mother as archetype. The capacity to love unconditionally, to hold space for others in difficulty, to nurture what is growing in the people around her, to see potential before it is realised, all of that is present here in abundance. The Queen of Hearts has come here to love well and to demonstrate through her actual life what that looks like when it is done without conditions.</p>
+
+    <p>The psychic ability in this Birthprint is real and often underused. The Queen of Hearts absorbs what is happening in a room without needing anyone to tell her. She knows things before they have been confirmed. She senses what is unspoken in the people she loves. This is not imagination. It is a functional capacity that, when trusted and developed, gives her an edge in relationships and in work that is genuinely rare.</p>
+
+    <p>The mental capacity here is stronger than this card typically gets credit for. The Queen of Hearts can be underestimated intellectually, sometimes by herself. The intelligence is real, the expressive capacity is strong, and with genuine education and mental discipline there is very little this card cannot achieve. The block tends to be the emotional life pulling focus from the intellectual one, or a tendency to get bored before the full depth of a subject has been explored.</p>
+
+    <p>Financially this card is well-positioned when she applies herself deliberately. The arts, beauty, personal products, home, hospitality, all of these resonate naturally and tend to produce genuine results. The challenge is the tendency toward the good life without the work that sustains it. Self-indulgence and the avoidance of effort are the specific shadows worth naming here, not because they are inevitable but because the double Neptune energy makes comfort and beauty so appealing that the discipline required to build something lasting can feel like the enemy.</p>
+
+    <p>The warning in this card is specific and worth delivering directly: the Queen of Hearts wants to be liked. That desire, when it runs without checks, leads her toward people who are not good for her. Who use her warmth and generosity for their own purposes. Who mistake her kindness for softness and her love for availability. The work is not to become cold or cautious. It is to hold the warmth and develop the discernment at the same time. Both are possible. Both are necessary.</p>
+
+    <div class="states-grid">
+      <div class="state-block state-locked">
+        <span class="state-title">Locked In</span>
+        <ul>
+          <li>Loves with full warmth and holds clear boundaries within it</li>
+          <li>Trusts and develops the psychic sensitivity as a deliberate tool</li>
+          <li>Applies intellectual capacity with discipline and does not undersell it</li>
+          <li>Builds financial stability through the creative and artistic gifts that come naturally</li>
+          <li>Chooses people based on what is actually true rather than what she hopes might be true</li>
+        </ul>
+      </div>
+      <div class="state-block state-unattended">
+        <span class="state-title">Unattended</span>
+        <ul>
+          <li>Lets the desire to be liked override the discernment that would protect her</li>
+          <li>Retreats into the good life and uses comfort as a substitute for building something real</li>
+          <li>Allows the emotional life to consistently override the intellectual capacity</li>
+          <li>Ignores the psychic signals and then wonders why she didn't see it coming</li>
+          <li>Idealises people past the point where the evidence is clearly telling a different story</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT GENERATOR -->
+  <div class="section-label">Content Generator</div>
+  <div class="output-block">
+    <div class="output-type">Angles, Hooks & Avatar Connections</div>
+    <h3>Content Angles</h3>
+    <div class="hooks-grid">
+      <div class="hook-item">
+        <span class="hook-label">Hook 1 — The Double Neptune Card</span>
+        <p>The Queen of Hearts is a double Neptune card. What that means is that the idealism, the beauty-seeking, the psychic sensitivity are not occasional qualities. They are the foundation. When they are guided by truth they produce something extraordinary. When they aren't, they produce a life built on what she wished were true rather than what is.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 2 — Warmth and Discernment</span>
+        <p>The Queen of Hearts wants to be liked. That is not a character flaw. It becomes one when it overrides the discernment that would protect her. The work is not to become less warm. It is to hold the warmth and develop the discernment simultaneously. Both are available. Both are necessary.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 3 — The Psychic Capacity You Call Intuition</span>
+        <p>The Queen of Hearts absorbs what is happening in a room without being told. She knows things before they are confirmed. She senses what is unspoken. Most Queen of Hearts women call this intuition and treat it as a vague feeling rather than a precise tool. It is more precise than that. The question is whether she trusts it.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 4 — The Intelligence Nobody Accounts For</span>
+        <p>The Queen of Hearts gets underestimated intellectually. Sometimes by herself. The mental capacity is real. The expressive ability is real. With actual discipline and genuine education this card can go very far. The block is usually the emotional life pulling focus or the tendency to get bored before the depth has been fully explored.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 5 — Mother as Archetype, Not Role</span>
+        <p>The Mother Card does not mean she has to have children or define herself through them. It means she carries an archetypal nurturing frequency that shows up whether she is raising children, leading a team, tending a creative practice, or holding space for friends in difficulty. The mother energy is the quality. The application is hers to choose.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 6 — Six Birthdays, One Frequency</span>
+        <p>July 29th through December 19th. Six dates across the back half of the year carrying the same warm, magnetic, deeply feeling Queen of Hearts frequency. The double Neptune card. The Mother Card. The one who sees beauty before anyone else does and pays for it when she forgets to also see clearly.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 28px;">
+      <div class="section-label">Avatar Resonance</div>
+      <div class="hooks-grid">
+        <div class="hook-item">
+          <span class="hook-label">Tasha — The Single Mum</span>
+          <p>The Mother Card living the mother role at full capacity with no off switch. Tasha is running the Queen of Hearts archetype in its most demanding form. The card asks: is the nurturing coming from a full place or from the only identity that still feels solid? Both look the same from the outside. They feel very different from the inside.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Diane — The Recently Divorced</span>
+          <p>The Queen of Hearts who built her identity around love and the relationship. The card is very specific about this pattern. The idealism gets attached to a person and when the person cannot hold that weight, the structure comes down. Diane needs to hear that the capacity for love that defined that marriage is still entirely hers. It was never his.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Nicole — The Hollow Success</span>
+          <p>The Queen of Hearts with the intellectual and creative capacity fully operational but the love life and the inner life underdeveloped. Nicole has been building the impressive thing. The card says the satisfaction she's looking for is not in more achievement. It's in the domain she has been quietly neglecting.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Carmen — The Woman at 60 Rebuilding</span>
+          <p>The Queen of Hearts at 60 finally has the perspective to hold the warmth and the discernment at the same time. Carmen no longer needs to choose between being loving and being clear-eyed. At this stage the card's full capacity becomes available in a way it couldn't be when the idealism was still running the show.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Grace — The Religious Deconstructor</span>
+          <p>The double Neptune card in a high-control religious environment is a specific kind of vulnerability. The idealism and the desire to be loved and accepted in a community can override the discernment for years. Grace has already done the hard part. The work now is rebuilding trust in the inner signal that was always there.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Rachel — The Done-the-Work Woman</span>
+          <p>The Queen of Hearts who has developed enormous insight but keeps attracting the same dynamic. The psychic sensitivity is present. The discernment about people is present. The pattern is the desire to be liked, to be helpful, to believe in the person in front of her, overriding what she already knows. That's the specific sticking point this card produces.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIFE SPREAD -->
+  <div class="section-label">Life Spread</div>
+  <div class="spread-section">
+    <div class="prc-note">
+      <strong>PRC Note:</strong> Six Planetary Ruling Cards apply to this birth card. July 29th — Queen of Hearts. August 27th — 10 of Clubs. September 25th — 8 of Diamonds. October 23rd — 8 of Diamonds or King of Spades + 5 of Clubs. November 21st — King of Spades + 5 of Clubs. December 19th — 3 of Hearts.
+    </div>
+    <div class="spread-grid">
+      <div class="spread-cell">
+        <span class="spread-key">Birth Card (BC)</span>
+        <span class="spread-val">Queen of Hearts</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Planetary Ruling Card (PRC)</span>
+        <span class="spread-val">Q♥ / 10♣ / 8♦ / 8♦ or K♠+5♣ / K♠+5♣ / 3♥</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Personality Card</span>
+        <span class="spread-val">Queen of Hearts (Birth Card)</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Moon</span>
+        <span class="spread-val">6 of Spades</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Mercury</span>
+        <span class="spread-val">10 of Clubs</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Venus</span>
+        <span class="spread-val">8 of Diamonds</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Mars</span>
+        <span class="spread-val">King of Spades</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Jupiter</span>
+        <span class="spread-val">3 of Hearts</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Saturn</span>
+        <span class="spread-val">Ace of Clubs</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Uranus</span>
+        <span class="spread-val">Queen of Clubs</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Neptune</span>
+        <span class="spread-val">10 of Spades</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Pluto</span>
+        <span class="spread-val">5 of Clubs</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Result</span>
+        <span class="spread-val">3 of Diamonds</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Cosmic Lesson</span>
+        <span class="spread-val">Ace of Spades</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONNECTIONS -->
+  <div class="section-label">Connections</div>
+  <div class="connections-grid">
+    <div class="connection-block">
+      <span class="connection-label">Karma Cards</span>
+      <div class="connection-cards">
+        <span class="card-pill">10♠</span>
+        <span class="card-pill">9♣</span>
+      </div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Karma Cousins</span>
+      <div class="connection-cards">
+        <span class="card-pill">4♥</span>
+        <span class="card-pill">6♦</span>
+      </div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Past Life Cards</span>
+      <div class="connection-cards">
+        <span class="card-pill">J♥</span>
+        <span class="card-pill">K♥</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <p>The MillionHeiress BABE™ Card Library &nbsp;·&nbsp; Internal Reference Document</p>
+  </div>
+
+</div>
+</body>
+</html>

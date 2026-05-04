@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eight of Diamonds — MHB Card Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --blush: #F5F0E8; --parchment: #FAF7F1; --magenta: #B5406A; --gold: #C9A96E; --gold-light: #E8D5A3; --emerald: #3D7A6F; --text-dark: #261E0F; --text-mid: #4A3E2C; --text-soft: #8A7A5E; --diamonds-amber: #8B6914; --diamonds-mid: #A07D1C; --card-bg: #FDFAF4; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--parchment); font-family: 'Outfit', sans-serif; color: var(--text-dark); min-height: 100vh; padding: 48px 24px; }
+  .page { max-width: 820px; margin: 0 auto; }
+  .header { text-align: center; margin-bottom: 56px; padding-bottom: 32px; border-bottom: 1px solid var(--gold-light); }
+  .suit-tag { font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; display: block; }
+  .card-title { font-family: 'Cormorant Garamond', serif; font-size: 52px; font-weight: 300; color: var(--diamonds-amber); line-height: 1.1; margin-bottom: 8px; }
+  .card-title span { font-style: italic; }
+  .birth-date { font-size: 13px; color: var(--text-soft); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 12px; line-height: 1.8; }
+  .card-symbol { font-size: 48px; margin: 16px 0 8px; opacity: 0.85; color: var(--diamonds-amber); }
+  .section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--gold-light); }
+  .output-block { background: var(--card-bg); border: 1px solid var(--gold-light); border-radius: 2px; padding: 36px 40px; margin-bottom: 24px; position: relative; }
+  .output-block::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--diamonds-amber); border-radius: 2px 0 0 2px; }
+  .output-type { font-size: 10px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--diamonds-mid); margin-bottom: 16px; }
+  .output-block h3 { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 400; color: var(--text-dark); margin-bottom: 16px; line-height: 1.2; }
+  .output-block p { font-size: 15px; line-height: 1.75; color: var(--text-mid); margin-bottom: 14px; }
+  .output-block p:last-child { margin-bottom: 0; }
+  .energy-block { background: var(--diamonds-amber); border: none; }
+  .energy-block::before { background: var(--gold); }
+  .energy-block .output-type { color: var(--gold-light); }
+  .energy-block h3 { color: white; font-size: 30px; }
+  .energy-block p { color: rgba(255,255,255,0.88); font-size: 16px; }
+  .energy-cta { display: inline-block; margin-top: 20px; font-size: 12px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold-light); border-bottom: 1px solid var(--gold-light); padding-bottom: 2px; }
+  .hooks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+  .hook-item { background: var(--blush); border-radius: 2px; padding: 20px; }
+  .hook-label { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--diamonds-mid); margin-bottom: 8px; display: block; }
+  .hook-item p { font-size: 14px; line-height: 1.6; color: var(--text-dark); margin: 0; }
+  .spread-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--gold-light); border-radius: 2px; overflow: hidden; background: var(--card-bg); }
+  .spread-cell { padding: 12px 20px; border-bottom: 1px solid var(--gold-light); border-right: 1px solid var(--gold-light); }
+  .spread-cell:nth-child(even) { border-right: none; }
+  .spread-cell:nth-last-child(-n+2) { border-bottom: none; }
+  .spread-key { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-soft); display: block; margin-bottom: 3px; }
+  .spread-val { font-family: 'Cormorant Garamond', serif; font-size: 17px; color: var(--text-dark); font-weight: 500; }
+  .connections-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .connection-block { background: var(--card-bg); border: 1px solid var(--gold-light); border-radius: 2px; padding: 20px; text-align: center; }
+  .connection-label { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-soft); display: block; margin-bottom: 10px; }
+  .connection-cards { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .card-pill { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 500; color: var(--diamonds-amber); background: var(--blush); border-radius: 2px; padding: 4px 12px; }
+  .states-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+  .state-block { padding: 24px; border-radius: 2px; }
+  .state-locked { background: rgba(61,122,111,0.08); border: 1px solid rgba(61,122,111,0.25); }
+  .state-unattended { background: rgba(181,64,106,0.06); border: 1px solid rgba(181,64,106,0.2); }
+  .state-title { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 12px; display: block; }
+  .state-locked .state-title { color: var(--emerald); }
+  .state-unattended .state-title { color: var(--magenta); }
+  .state-block ul { list-style: none; padding: 0; }
+  .state-block ul li { font-size: 14px; line-height: 1.6; color: var(--text-mid); padding: 4px 0; padding-left: 14px; position: relative; }
+  .state-locked ul li::before { content: '\2192'; position: absolute; left: 0; color: var(--emerald); font-size: 12px; }
+  .state-unattended ul li::before { content: '\2192'; position: absolute; left: 0; color: var(--magenta); font-size: 12px; }
+  .prc-note { background: var(--blush); border: 1px solid var(--gold-light); border-radius: 2px; padding: 14px 20px; margin-bottom: 16px; font-size: 13px; color: var(--text-mid); line-height: 1.6; }
+  .prc-note strong { color: var(--diamonds-mid); font-weight: 600; }
+  .footer { text-align: center; margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--gold-light); }
+  .footer p { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-style: italic; color: var(--text-soft); }
+  @media (max-width: 600px) { .hooks-grid, .states-grid, .connections-grid { grid-template-columns: 1fr; } .spread-grid { grid-template-columns: 1fr; } .card-title { font-size: 38px; } .output-block { padding: 24px 20px; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <span class="suit-tag">Diamonds Suit &mdash; Money, Worth &amp; Material Inheritance</span>
+    <div class="card-symbol">&#9830;</div>
+    <h1 class="card-title"><span>Eight</span> of Diamonds</h1>
+    <p class="birth-date">January 19th &nbsp;&middot;&nbsp; February 17th &nbsp;&middot;&nbsp; March 15th &nbsp;&middot;&nbsp; April 13th &nbsp;&middot;&nbsp; May 11th &nbsp;&middot;&nbsp; June 9th<br>July 7th &nbsp;&middot;&nbsp; August 5th &nbsp;&middot;&nbsp; September 3rd &nbsp;&middot;&nbsp; October 1st</p>
+  </div>
+
+  <div class="section-label">Energy of the Day</div>
+  <div class="output-block energy-block">
+    <div class="output-type">Daily Card Feature</div>
+    <h3>You were built to shine. Do it without apology today.</h3>
+    <p>Eight of Diamonds energy is powerful, value-sharp, and built for visibility. Today the frequency is high and confident. The Sun Card energy is available fully right now. The specific invitation is to direct the power inward rather than outward, toward self-mastery rather than toward changing the world around you. When the power is directed well, the shine is natural and the respect follows without being demanded.</p>
+    <p>Watch the dominating tendency. The Eight of Diamonds can push hard when it knows exactly what something is worth and others are not seeing it clearly. Today, let others reach their own conclusions without forcing the pace.</p>
+    <span class="energy-cta">Today's invitation: direct the power inward first</span>
+  </div>
+
+  <div class="section-label">Report Description</div>
+  <div class="output-block">
+    <div class="output-type">For use inside BABE Signature Reports</div>
+    <h3>The Sun Card</h3>
+    <p>The Eight of Diamonds is the Sun Card. The opportunity encoded in this Birthprint is to rise to great heights in this life. That is not performance language. It is a structural reality. The Crown Line position gives this card an independent nature and a level of authority that shows up consistently across contexts. Wherever the Eight of Diamonds goes, they tend to be recognised, respected, and placed in positions of authority. That dynamic is not something they need to manufacture. It happens because the card carries a genuine quality of leadership that others respond to before it has been formally announced.</p>
+    <p>The Eight power in this card is significant. The source material identifies the Eight of Diamonds as one of the most successful cards in the deck, with freedom of choice in the highest degree and the ability to choose any destiny it wants. The pitfall named is equally clear: love of power and love of money can throw this card completely out of balance. When those drives take over, success tends to continue but friends and love, which this card deeply needs, tend to drift away. The card's place is already high. The specific work is staying there without letting the ambition for more consume the relationships that make the height worth having.</p>
+    <p>The value intelligence of this card is exceptional. The Eight of Diamonds knows exactly what things and people are worth. That applies to financial assessment, to reading situations, and to evaluating whether what is being offered in any negotiation is genuinely fair. The ability to drive a hard bargain is real. The specific growth edge is applying that same intelligence to the inner life, to the values being lived rather than just the values being assessed in others.</p>
+    <p>The fickleness in love and the resistance to commitment are specific documented patterns. The independent, changeable nature that makes this card a powerful leader can make sustained emotional commitment genuinely challenging. The card tends toward trying to change loved ones rather than accepting them as they are, which consistently undermines the close relationships it simultaneously needs. Redirecting the power inward, specifically toward self-mastery, is the Queen of Spades Karma Card instruction. The inner peace and lasting satisfaction available to this card are on the other side of that practice.</p>
+    <p>Hard work is the specific mechanism through which this card achieves what it is built to achieve. Intuition combined with consistent effort produces results for the Eight of Diamonds that are genuinely impressive. The card that bypasses the work in favour of power or position alone tends to find the success shallower and less stable than what sustained effort produces.</p>
+    <div class="states-grid">
+      <div class="state-block state-locked">
+        <span class="state-title">Locked In</span>
+        <ul>
+          <li>Directs the power inward toward self-mastery rather than outward toward changing others</li>
+          <li>Uses the value intelligence and leadership capacity in service of something that genuinely matters</li>
+          <li>Maintains the close relationships the card needs without trying to change those in them</li>
+          <li>Works hard and lets the respect come naturally rather than demanding it</li>
+          <li>Keeps money and power in proper perspective rather than allowing them to become the primary organising principle</li>
+        </ul>
+      </div>
+      <div class="state-block state-unattended">
+        <span class="state-title">Unattended</span>
+        <ul>
+          <li>Lets the love of power and money throw the card out of balance and watches the friendships and love drift</li>
+          <li>Uses the dominating nature to force outcomes that would have arrived anyway with less force</li>
+          <li>Tries to change loved ones and consistently undermines the relationships the card simultaneously needs</li>
+          <li>Bypasses hard work in favour of position alone and finds the success shallower than expected</li>
+          <li>Operates from the fear pattern and uses the power in ways that ultimately work against the card's own interests</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Content Generator</div>
+  <div class="output-block">
+    <div class="output-type">Angles, Hooks &amp; Avatar Connections</div>
+    <h3>Content Angles</h3>
+    <div class="hooks-grid">
+      <div class="hook-item">
+        <span class="hook-label">Hook 1 &mdash; The Sun Card</span>
+        <p>The Eight of Diamonds is the Sun Card. The opportunity to rise to great heights is encoded in the Birthprint. Wherever this card goes it tends to be recognised and respected. That is not ambition. It is the natural consequence of what this card carries. The work is being worthy of the height rather than just occupying it.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 2 &mdash; The Pitfall of Power</span>
+        <p>The love of power and the love of money that enhances it is the specific pitfall named for this card. Success tends to continue when those drives take over. What drifts away is the friends and the love the Eight of Diamonds also deeply needs. The place is already high. The question is whether the ambition for more is worth what it costs.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 3 &mdash; Self-Mastery Is the Goal</span>
+        <p>The Queen of Spades Karma Card instruction for the Eight of Diamonds is to redirect the power inward toward self-mastery. The inner peace and lasting satisfaction available to this card are on the other side of that practice. The card that has mastered everyone else before mastering itself tends to find the success arrives but the peace does not.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 4 &mdash; Knows What Everything Is Worth</span>
+        <p>The Eight of Diamonds knows exactly what things and people are worth. That value intelligence is one of the most practically useful gifts in this Birthprint. In negotiation, in leadership, in the assessment of opportunity. The growth edge is applying that same precision to the inner life, to what the card's own choices are actually costing and returning.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 5 &mdash; Freedom of Choice in the Highest Degree</span>
+        <p>The source material identifies the Eight of Diamonds as having freedom of choice in the highest degree. It can choose any destiny it wants. The specific responsibility that comes with that freedom is that it makes the card fully accountable for the life it has. There is no circumstance to blame. There is only the choice that was made and the one being made now.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 6 &mdash; Ten Birthdays, One Luminous Frequency</span>
+        <p>January 19th through October 1st. Ten dates carrying the same powerful, value-intelligent, leadership-natural Eight of Diamonds frequency. You spot the real thing from a mile away. You know what glows from the inside out. And the work of this life is making sure that what is glowing brightest is not the gold but the soul behind it.</p>
+      </div>
+    </div>
+    <div style="margin-top: 28px;">
+      <div class="section-label">Avatar Resonance</div>
+      <div class="hooks-grid">
+        <div class="hook-item">
+          <span class="hook-label">Nicole &mdash; The Hollow Success</span>
+          <p>The Eight of Diamonds who has risen to great heights and found that love of power and money got there alongside her. The hollow is the card needing to redirect the power inward. The success is real. The self-mastery has not yet caught up with the achievement. That gap is what the Queen of Spades Karma Card is specifically pointing toward.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Diane &mdash; The Recently Divorced</span>
+          <p>The Eight of Diamonds whose independent, changeable nature and tendency to try to change loved ones rather than accept them contributed to the ending. The card says: the inner peace available to this Birthprint requires accepting others as they are. The pattern that produced the divorce is the same one the card has been working on. What changes after it is the willingness to do that differently.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Carmen &mdash; The Woman at 60 Rebuilding</span>
+          <p>The Eight of Diamonds at 60 finally directing the power inward after decades of pointing it outward. Carmen is at the specific threshold where self-mastery becomes the primary focus and the lasting peace the card was always capable of becomes genuinely available. The heights were always reachable. The inner version of them is what gets built now.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Rachel &mdash; The Done-the-Work Woman</span>
+          <p>The Eight of Diamonds who has done significant work but keeps bumping against the dominating tendency that pushes away the very things she is working toward. The card says: the power redirected inward produces the outcomes that forcing outward never quite delivers. Rachel's stuckness is the card still trying to change the world before it has finished the self-mastery work.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Zara &mdash; The Young Independent</span>
+          <p>The Eight of Diamonds early in the journey, with the full power present and the self-mastery practice not yet developed. Zara's independence and value intelligence are fully operational. The specific work at this stage is learning what the power is actually for before it has hardened into a pattern of domination or money worship that the card is specifically warned against.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Amara &mdash; The Between-Two-Worlds Woman</span>
+          <p>The Eight of Diamonds whose leadership authority and value intelligence operate across cultural contexts. The source material notes this card benefits from intelligent, career-minded women around it. For Amara, the between-worlds position gives the Eight of Diamonds access to a negotiation and leadership range that single-context operators cannot reach. That is a specific professional asset.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Life Spread</div>
+  <div style="margin-bottom: 24px;">
+    <div class="prc-note">
+      <strong>PRC Note:</strong> Ten Planetary Ruling Cards apply. January 19th &mdash; 10 of Spades. February 17th &mdash; 5 of Clubs. March 15th &mdash; 3 of Diamonds. April 13th &mdash; Ace of Diamonds. May 11th &mdash; 3 of Hearts. June 9th &mdash; King of Spades. July 7th &mdash; 10 of Clubs. August 5th &mdash; 8 of Diamonds. September 3rd &mdash; King of Spades. October 1st &mdash; 3 of Hearts.
+    </div>
+    <div class="spread-grid">
+      <div class="spread-cell"><span class="spread-key">Birth Card (BC)</span><span class="spread-val">Eight of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Planetary Ruling Card (PRC)</span><span class="spread-val">10&#9824; / 5&#9827; / 3&#9830; / A&#9830; / 3&#9829; / K&#9824; / 10&#9827; / 8&#9830; / K&#9824; / 3&#9829;</span></div>
+      <div class="spread-cell"><span class="spread-key">Personality Card</span><span class="spread-val">&mdash;</span></div>
+      <div class="spread-cell"><span class="spread-key">Moon</span><span class="spread-val">10 of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Mercury</span><span class="spread-val">King of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Venus</span><span class="spread-val">3 of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Mars</span><span class="spread-val">Ace of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Jupiter</span><span class="spread-val">Queen of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Saturn</span><span class="spread-val">10 of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Uranus</span><span class="spread-val">5 of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Neptune</span><span class="spread-val">3 of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Pluto</span><span class="spread-val">Ace of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Result</span><span class="spread-val">7 of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Cosmic Lesson</span><span class="spread-val">7 of Diamonds</span></div>
+    </div>
+  </div>
+
+  <div class="section-label">Connections</div>
+  <div class="connections-grid">
+    <div class="connection-block">
+      <span class="connection-label">Karma Cards</span>
+      <div class="connection-cards"><span class="card-pill">Q&#9824;</span><span class="card-pill">7&#9827;</span></div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Karma Cousins</span>
+      <div class="connection-cards"><span class="card-pill">10&#9830;</span><span class="card-pill">J&#9824;</span></div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Past Life Cards</span>
+      <div class="connection-cards"><span class="card-pill">7&#9830;</span><span class="card-pill">9&#9830;</span></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>The MillionHeiress BABE&#8482; Card Library &nbsp;&middot;&nbsp; Internal Reference Document</p>
+  </div>
+</div>
+</body>
+</html>

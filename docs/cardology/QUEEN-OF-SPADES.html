@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Queen of Spades — MHB Card Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blush: #ECEEF2; --parchment: #F4F5F8; --magenta: #B5406A; --gold: #C9A96E; --gold-light: #E8D5A3; --emerald: #3D7A6F;
+    --text-dark: #0E1520; --text-mid: #2C3545; --text-soft: #6A7585; --spades-navy: #1E2D4A; --spades-mid: #2E4570; --card-bg: #F8F9FC;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--parchment); font-family: 'Outfit', sans-serif; color: var(--text-dark); min-height: 100vh; padding: 48px 24px; }
+  .page { max-width: 820px; margin: 0 auto; }
+  .header { text-align: center; margin-bottom: 56px; padding-bottom: 32px; border-bottom: 1px solid var(--gold-light); }
+  .suit-tag { font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; display: block; }
+  .card-title { font-family: 'Cormorant Garamond', serif; font-size: 52px; font-weight: 300; color: var(--spades-navy); line-height: 1.1; margin-bottom: 8px; }
+  .card-title span { font-style: italic; }
+  .birth-date { font-size: 13px; color: var(--text-soft); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 12px; line-height: 1.8; }
+  .card-symbol { font-size: 48px; margin: 16px 0 8px; opacity: 0.85; color: var(--spades-navy); }
+  .section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--gold-light); }
+  .output-block { background: var(--card-bg); border: 1px solid var(--gold-light); border-radius: 2px; padding: 36px 40px; margin-bottom: 24px; position: relative; }
+  .output-block::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--spades-navy); border-radius: 2px 0 0 2px; }
+  .output-type { font-size: 10px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--spades-mid); margin-bottom: 16px; }
+  .output-block h3 { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 400; color: var(--text-dark); margin-bottom: 16px; line-height: 1.2; }
+  .output-block p { font-size: 15px; line-height: 1.75; color: var(--text-mid); margin-bottom: 14px; }
+  .output-block p:last-child { margin-bottom: 0; }
+  .energy-block { background: var(--spades-navy); border: none; }
+  .energy-block::before { background: var(--gold); }
+  .energy-block .output-type { color: var(--gold-light); }
+  .energy-block h3 { color: white; font-size: 30px; }
+  .energy-block p { color: rgba(255,255,255,0.88); font-size: 16px; }
+  .energy-cta { display: inline-block; margin-top: 20px; font-size: 12px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold-light); border-bottom: 1px solid var(--gold-light); padding-bottom: 2px; }
+  .hooks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+  .hook-item { background: var(--blush); border-radius: 2px; padding: 20px; }
+  .hook-label { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--spades-mid); margin-bottom: 8px; display: block; }
+  .hook-item p { font-size: 14px; line-height: 1.6; color: var(--text-dark); margin: 0; }
+  .spread-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--gold-light); border-radius: 2px; overflow: hidden; background: var(--card-bg); }
+  .spread-cell { padding: 12px 20px; border-bottom: 1px solid var(--gold-light); border-right: 1px solid var(--gold-light); }
+  .spread-cell:nth-child(even) { border-right: none; }
+  .spread-cell:nth-last-child(-n+2) { border-bottom: none; }
+  .spread-key { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-soft); display: block; margin-bottom: 3px; }
+  .spread-val { font-family: 'Cormorant Garamond', serif; font-size: 17px; color: var(--text-dark); font-weight: 500; }
+  .connections-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .connection-block { background: var(--card-bg); border: 1px solid var(--gold-light); border-radius: 2px; padding: 20px; text-align: center; }
+  .connection-label { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-soft); display: block; margin-bottom: 10px; }
+  .connection-cards { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .card-pill { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 500; color: var(--spades-navy); background: var(--blush); border-radius: 2px; padding: 4px 12px; }
+  .states-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+  .state-block { padding: 24px; border-radius: 2px; }
+  .state-locked { background: rgba(61,122,111,0.08); border: 1px solid rgba(61,122,111,0.25); }
+  .state-unattended { background: rgba(181,64,106,0.06); border: 1px solid rgba(181,64,106,0.2); }
+  .state-title { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 12px; display: block; }
+  .state-locked .state-title { color: var(--emerald); }
+  .state-unattended .state-title { color: var(--magenta); }
+  .state-block ul { list-style: none; padding: 0; }
+  .state-block ul li { font-size: 14px; line-height: 1.6; color: var(--text-mid); padding: 4px 0; padding-left: 14px; position: relative; }
+  .state-locked ul li::before { content: '→'; position: absolute; left: 0; color: var(--emerald); font-size: 12px; }
+  .state-unattended ul li::before { content: '→'; position: absolute; left: 0; color: var(--magenta); font-size: 12px; }
+  .prc-note { background: var(--blush); border: 1px solid var(--gold-light); border-radius: 2px; padding: 14px 20px; margin-bottom: 16px; font-size: 13px; color: var(--text-mid); line-height: 1.6; }
+  .prc-note strong { color: var(--spades-mid); font-weight: 600; }
+  .single-birthday-note { background: rgba(30,45,74,0.06); border: 1px solid rgba(30,45,74,0.2); border-radius: 2px; padding: 14px 20px; margin-bottom: 16px; font-size: 13px; color: var(--text-mid); line-height: 1.6; }
+  .single-birthday-note strong { color: var(--spades-navy); font-weight: 600; }
+  .footer { text-align: center; margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--gold-light); }
+  .footer p { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-style: italic; color: var(--text-soft); }
+  @media (max-width: 600px) {
+    .hooks-grid, .states-grid, .connections-grid { grid-template-columns: 1fr; }
+    .spread-grid { grid-template-columns: 1fr; }
+    .spread-cell { border-right: none !important; }
+    .card-title { font-size: 38px; }
+    .output-block { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <span class="suit-tag">Spades Suit — Work, Transformation & Karmic Inheritance</span>
+    <div class="card-symbol">♠</div>
+    <h1 class="card-title"><span>Queen</span> of Spades</h1>
+    <p class="birth-date">January 2nd Only</p>
+  </div>
+
+  <div class="section-label">Energy of the Day</div>
+  <div class="output-block energy-block">
+    <div class="output-type">Daily Card Feature</div>
+    <h3>Recognise your position. Then take responsibility for it.</h3>
+    <p>Queen of Spades energy is powerful, self-mastery-oriented, and sitting in one of the most authoritative positions in the entire deck. Today the frequency is clear and commanding. The card's crowning position in the divine plan is real. The specific invitation today is to recognise the power that is already present and take genuine responsibility for it rather than finding a smaller role to complain from.</p>
+    <p>Watch the secretiveness. The Queen of Spades is specifically warned against concealment of things that should be brought to light. Today, notice if anything is being held back that would be better expressed, shared, or addressed directly.</p>
+    <span class="energy-cta">Today's invitation: stand in the position this card was built for</span>
+  </div>
+
+  <div class="section-label">Report Description</div>
+  <div class="output-block">
+    <div class="output-type">For use inside BABE Signature Reports</div>
+    <h3>The Card of Self-Mastery</h3>
+
+    <p>The Queen of Spades judges by willingness to work and by the degree of devotion in the quest for wisdom. That is a significant standard and it is the specific lens through which this card evaluates everything, including herself. The crowning position in the divine plan that this card occupies is not aspirational. It is structural. The Queen of Spades sits in the Crown Line, co-ruling with the King of Spades, the card of wisdom. The question is never whether the position is available. It is whether the responsibility is being taken.</p>
+
+    <p>The source material names the specific paradox of this card directly: people of such power and authority are surprisingly not always found in positions of authority. They can end up in menial positions where they bitterly complain about their circumstances and never amount to much else. The card that does not recognise its own powerful gifts and take responsibility for its life can genuinely spend the entirety of it well below the level it was designed for. That is not a threat. It is an honest description of what the lack of self-mastery practice produces in a card this powerful.</p>
+
+    <p>Self-mastery is the prerequisite. The source material names it specifically as the thing symbolised by this card. Without it, the direct access to the spiritual pool of wisdom that this Birthprint carries remains largely inaccessible. With it, the card can rise to any height it desires. Teaching and healing are named as particularly powerful domains for the Queen of Spades. Good physicians are among the specific roles named, and the intellectual quality of the approach to that work, well-grounded in knowledge and skill rather than over-sympathy, reflects the disciplinarian quality that makes the Queen of Spades genuinely effective as a guide and healer.</p>
+
+    <p>The legal matters warning is specific. There is always trouble when legal matters arise and the Queen of Spades usually gets the short end in formal legal confrontations. Avoiding legal disputes and staying out of courtroom situations wherever possible is a practical instruction with real consequences for this card. Separately, the mixing of love and money is named as a consistent source of difficulty. Keeping those two domains genuinely separate is the specific relational and financial practice this card needs.</p>
+
+    <p>The extravagant taste and the love of quality are real and consistent features of this Birthprint. The early creative talents in acting, singing, or dancing can develop into a significant inspirational writing ability later in life. The Queen of Spades that finds the creative channel for the quality of perception it carries tends to produce something genuinely distinctive. The positive attitude instruction is, as it is for other powerful Spades cards, a practical health measure rather than optional encouragement.</p>
+
+    <div class="states-grid">
+      <div class="state-block state-locked">
+        <span class="state-title">Locked In</span>
+        <ul>
+          <li>Recognises the powerful gifts and takes responsibility for the life and position this card was designed for</li>
+          <li>Develops self-mastery as the specific prerequisite for accessing the full capacity of the Birthprint</li>
+          <li>Brings things to light rather than concealing what should be expressed or addressed</li>
+          <li>Keeps love and money genuinely separate and avoids legal confrontations wherever possible</li>
+          <li>Applies the teaching and healing capacity in whatever domain the work occupies and does so from knowledge and skill rather than from sentiment</li>
+        </ul>
+      </div>
+      <div class="state-block state-unattended">
+        <span class="state-title">Unattended</span>
+        <ul>
+          <li>Ends up in positions well below the card's actual level and bitterly complains rather than taking the responsibility that would change it</li>
+          <li>Avoids the self-mastery practice and stays out of reach of the direct access to spiritual wisdom this card carries</li>
+          <li>Conceals what should be brought to light and creates the specific problems that secretiveness produces for this card</li>
+          <li>Mixes love and money and engages in legal disputes and consistently gets the short end in both</li>
+          <li>Lets the powerful position go unrecognised and unexercised and wonders why the life does not reflect what the card is actually carrying</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Content Generator</div>
+  <div class="output-block">
+    <div class="output-type">Angles, Hooks & Avatar Connections</div>
+    <h3>Content Angles</h3>
+    <div class="hooks-grid">
+      <div class="hook-item">
+        <span class="hook-label">Hook 1 — The Crowning Position</span>
+        <p>The Queen of Spades sits in the very crowning position in the divine plan. That is a structural reality of this Birthprint, not an aspiration. The card co-rules with the King of Spades. The specific work is recognising that position and taking the responsibility it carries rather than finding smaller roles that are easier to occupy.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 2 — The Paradox of the Powerful Card</span>
+        <p>People of such power are surprisingly not always found in positions of authority. The Queen of Spades can end up in menial positions and bitterly complain there without ever recognising that the situation is entirely within their power to change. Recognising the gifts is the specific move. Taking responsibility follows from that recognition.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 3 — Self-Mastery Is the Prerequisite</span>
+        <p>The source material names self-mastery as the prerequisite symbolised by this card. Without it, the direct access to spiritual wisdom stays largely inaccessible. With it, the card can rise to any height it desires. The practice is not optional for this card. It is the specific operating condition for the full expression of what is actually here.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 4 — Avoid the Law, Train the Logic</span>
+        <p>The Queen of Spades is specifically warned to avoid legal matters and should not mix love and money. There is always trouble in formal legal contexts and the card usually gets the short end. That is a practical and consistent pattern. Staying out of courtrooms, keeping financial and relational domains genuinely separate, and training the mind in logic and reason rather than in argument for its own sake are the specific practices named.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 5 — Exalted in the Eyes of God</span>
+        <p>The source material closes the Queen of Spades section with a specific statement: they are exalted in the eyes of God. That is not hollow encouragement. It is a direct acknowledgment of the spiritual authority available to this card when the self-mastery and responsibility are fully engaged. The position was always real. The recognition of it is what changes everything.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 6 — One Birthday, One Singular Frequency</span>
+        <p>January 2nd. One date in the entire year. The rarest birthday range in the deck outside of the Joker. The Card of Self-Mastery. Learning by living. Not afraid to make a mess if it means discovering what matters. Valuing quality over flash, substance over noise. And carrying the crowning position in the divine plan whether it has been recognised yet or not.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 28px;">
+      <div class="section-label">Avatar Resonance</div>
+      <div class="hooks-grid">
+        <div class="hook-item">
+          <span class="hook-label">Nicole — The Hollow Success</span>
+          <p>The Queen of Spades in a position well below what the card was designed for, professionally successful but not at the level that would require the full self-mastery practice. The hollow is the crowning position not yet occupied. Nicole's next chapter is recognising the actual level this card operates at and taking the responsibility that comes with it.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Rachel — The Done-the-Work Woman</span>
+          <p>The Queen of Spades who has done significant inner work without yet fully engaging the self-mastery prerequisite at the depth this card requires. The restless and inquiring nature that makes quick learners of this card is running. The settling that comes after the many experiments, the genuine career direction and the self-mastery practice, is what is still being approached.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Carmen — The Woman at 60 Rebuilding</span>
+          <p>The Queen of Spades in the territory where the inspirational writing ability that develops later in life is specifically available. Carmen at 60 is rebuilding into the crowning position. The direct access to the spiritual pool of wisdom that the self-mastery practice opens is more available now than it has been at any earlier point. This is the card rising to the heights it desires.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Grace — The Religious Deconstructor</span>
+          <p>The Queen of Spades whose quest for wisdom was channelled through a specific structure and is now finding the form that can actually hold the depth of what this card carries without requiring the secretiveness and concealment that the card is specifically warned against. Grace's deconstruction is the card bringing things to light rather than keeping them contained in a framework that can no longer hold them.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Jade — The Invisible Middle</span>
+          <p>The Queen of Spades in the menial position that the source material specifically names as the paradox of this card. Jade's power and authority are fully present. The recognition of those gifts and the responsibility for rising from the current position have not yet been engaged with fully. The specific move is not external. It is the inner recognition that always precedes the outer change for this card.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Amara — The Between-Two-Worlds Woman</span>
+          <p>The Queen of Spades whose between-worlds position gives the teaching and healing capacities an unusual range. The card does excellent work with groups and benefits significantly from cross-cultural contexts. For Amara, the between-worlds navigation is not a complication of the Queen of Spades position. It is the specific arena in which the crowning role can be most fully expressed.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Life Spread</div>
+  <div style="margin-bottom: 24px;">
+    <div class="single-birthday-note">
+      <strong>Birthday Note:</strong> The Queen of Spades has just one birthday in the entire year: January 2nd. This is one of the rarest birth card ranges in the deck. One Planetary Ruling Card applies: January 2nd — King of Clubs.
+    </div>
+    <div class="spread-grid">
+      <div class="spread-cell"><span class="spread-key">Birth Card (BC)</span><span class="spread-val">Queen of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Planetary Ruling Card (PRC)</span><span class="spread-val">K♣</span></div>
+      <div class="spread-cell"><span class="spread-key">Personality Card</span><span class="spread-val">Queen of Spades (Birth Card)</span></div>
+      <div class="spread-cell"><span class="spread-key">Moon</span><span class="spread-val">5 of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Mercury</span><span class="spread-val">Jack of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Venus</span><span class="spread-val">9 of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Mars</span><span class="spread-val">7 of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Jupiter</span><span class="spread-val">2 of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Saturn</span><span class="spread-val">King of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Uranus</span><span class="spread-val">Jack of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Neptune</span><span class="spread-val">4 of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Pluto</span><span class="spread-val">4 of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Result</span><span class="spread-val">2 of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Cosmic Lesson</span><span class="spread-val">8 of Hearts</span></div>
+    </div>
+  </div>
+
+  <div class="section-label">Connections</div>
+  <div class="connections-grid">
+    <div class="connection-block">
+      <span class="connection-label">Karma Cards</span>
+      <div class="connection-cards"><span class="card-pill">10♦</span><span class="card-pill">8♦</span></div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Karma Cousins</span>
+      <div class="connection-cards"><span class="card-pill">Q♣</span><span class="card-pill">7♣</span></div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Past Life Cards</span>
+      <div class="connection-cards"><span class="card-pill">J♠</span><span class="card-pill">K♠</span></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>The MillionHeiress BABE™ Card Library &nbsp;·&nbsp; Internal Reference Document</p>
+  </div>
+
+</div>
+</body>
+</html>

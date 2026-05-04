@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Four of Clubs — MHB Card Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blush: #F0EDE8;
+    --parchment: #FAF8F4;
+    --magenta: #B5406A;
+    --gold: #C9A96E;
+    --gold-light: #E8D5A3;
+    --emerald: #3D7A6F;
+    --text-dark: #1E2820;
+    --text-mid: #3A4A3E;
+    --text-soft: #7A8A7E;
+    --clubs-green: #2C4A3E;
+    --clubs-mid: #3D6B5A;
+    --card-bg: #F8FAF8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--parchment);
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-dark);
+    min-height: 100vh;
+    padding: 48px 24px;
+  }
+
+  .page { max-width: 820px; margin: 0 auto; }
+
+  .header {
+    text-align: center;
+    margin-bottom: 56px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--gold-light);
+  }
+
+  .suit-tag {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 52px;
+    font-weight: 300;
+    color: var(--clubs-green);
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+
+  .card-title span { font-style: italic; }
+
+  .birth-date {
+    font-size: 13px;
+    color: var(--text-soft);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 12px;
+  }
+
+  .card-symbol {
+    font-size: 48px;
+    margin: 16px 0 8px;
+    opacity: 0.85;
+    color: var(--clubs-green);
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--gold-light);
+  }
+
+  .output-block {
+    background: var(--card-bg);
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    padding: 36px 40px;
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  .output-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--clubs-green);
+    border-radius: 2px 0 0 2px;
+  }
+
+  .output-type {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--clubs-mid);
+    margin-bottom: 16px;
+  }
+
+  .output-block h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+
+  .output-block p {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text-mid);
+    margin-bottom: 14px;
+  }
+
+  .output-block p:last-child { margin-bottom: 0; }
+
+  .energy-block { background: var(--clubs-green); border: none; }
+  .energy-block::before { background: var(--gold); }
+  .energy-block .output-type { color: var(--gold-light); }
+  .energy-block h3 { color: white; font-size: 30px; }
+  .energy-block p { color: rgba(255,255,255,0.88); font-size: 16px; }
+
+  .energy-cta {
+    display: inline-block;
+    margin-top: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    border-bottom: 1px solid var(--gold);
+    padding-bottom: 2px;
+  }
+
+  .hooks-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .hook-item {
+    background: var(--blush);
+    border-radius: 2px;
+    padding: 20px;
+  }
+
+  .hook-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--clubs-mid);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .hook-item p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-dark);
+    margin: 0;
+  }
+
+  .spread-section { margin-bottom: 24px; }
+
+  .spread-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    overflow: hidden;
+    background: var(--card-bg);
+  }
+
+  .spread-cell {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--gold-light);
+    border-right: 1px solid var(--gold-light);
+  }
+
+  .spread-cell:nth-child(even) { border-right: none; }
+  .spread-cell:nth-last-child(-n+2) { border-bottom: none; }
+
+  .spread-key {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .spread-val {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    color: var(--text-dark);
+    font-weight: 500;
+  }
+
+  .connections-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .connection-block {
+    background: var(--card-bg);
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .connection-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .connection-cards {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .card-pill {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--clubs-green);
+    background: var(--blush);
+    border-radius: 2px;
+    padding: 4px 12px;
+  }
+
+  .states-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .state-block { padding: 24px; border-radius: 2px; }
+
+  .state-locked {
+    background: rgba(61, 122, 111, 0.08);
+    border: 1px solid rgba(61, 122, 111, 0.25);
+  }
+
+  .state-unattended {
+    background: rgba(181, 64, 106, 0.06);
+    border: 1px solid rgba(181, 64, 106, 0.2);
+  }
+
+  .state-title {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .state-locked .state-title { color: var(--emerald); }
+  .state-unattended .state-title { color: var(--magenta); }
+
+  .state-block ul { list-style: none; padding: 0; }
+
+  .state-block ul li {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-mid);
+    padding: 4px 0;
+    padding-left: 14px;
+    position: relative;
+  }
+
+  .state-locked ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--emerald);
+    font-size: 12px;
+  }
+
+  .state-unattended ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--magenta);
+    font-size: 12px;
+  }
+
+  .prc-note {
+    background: var(--blush);
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    padding: 14px 20px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: var(--text-mid);
+    line-height: 1.6;
+  }
+
+  .prc-note strong { color: var(--clubs-mid); font-weight: 600; }
+
+  .footer {
+    text-align: center;
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--gold-light);
+  }
+
+  .footer p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    font-style: italic;
+    color: var(--text-soft);
+  }
+
+  @media (max-width: 600px) {
+    .hooks-grid, .states-grid, .connections-grid { grid-template-columns: 1fr; }
+    .spread-grid { grid-template-columns: 1fr; }
+    .spread-cell { border-right: none !important; }
+    .card-title { font-size: 38px; }
+    .output-block { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <span class="suit-tag">Clubs Suit — Thinking, Communication & Mental Inheritance</span>
+    <div class="card-symbol">♣</div>
+    <h1 class="card-title"><span>Four</span> of Clubs</h1>
+    <p class="birth-date">April 30th &nbsp;·&nbsp; May 28th &nbsp;·&nbsp; June 26th &nbsp;·&nbsp; July 24th &nbsp;·&nbsp; August 22nd &nbsp;·&nbsp; September 20th &nbsp;·&nbsp; October 18th &nbsp;·&nbsp; November 16th &nbsp;·&nbsp; December 14th</p>
+  </div>
+
+  <!-- ENERGY OF THE DAY -->
+  <div class="section-label">Energy of the Day</div>
+  <div class="output-block energy-block">
+    <div class="output-type">Daily Card Feature</div>
+    <h3>You know what you know. Trust that today.</h3>
+    <p>Four of Clubs energy is grounded, mentally sharp, and quietly certain. Today the frequency is stable and purposeful. This card does not second-guess its own intelligence and that quality is available to you right now. You have built something real in your mind over time. Let it do its work today without talking yourself out of it.</p>
+    <p>Watch the stubbornness though. Certainty is an asset. Certainty that stops listening is a liability. Today, hold your ground and stay curious at the same time.</p>
+    <span class="energy-cta">Today's invitation: lead with what you know</span>
+  </div>
+
+  <!-- REPORT DESCRIPTION -->
+  <div class="section-label">Report Description</div>
+  <div class="output-block">
+    <div class="output-type">For use inside BABE Signature Reports</div>
+    <h3>The Card of Mental Satisfaction</h3>
+
+    <p>The Four of Clubs is a card of genuine intellectual foundation. Where other cards are still searching for what they think, the Four of Clubs tends to know. The mind here has a natural stability and authority to it, a quality of having done the thinking, arriving at principles, and then building from those principles rather than continuously starting from scratch. That is a significant strength in a world that rewards the appearance of certainty but is full of people who are actually still figuring out what they stand for.</p>
+
+    <p>The hidden restlessness in this Birthprint is worth naming directly. The Karma Card brings a pull toward change, toward something new, toward progress, that sits underneath the stability and can be mistaken for dissatisfaction when it is actually something more constructive. The Four of Clubs that understands this about itself can channel that restlessness into genuine innovation and forward movement within a chosen domain. The one that doesn't understand it tends to let it quietly undermine what is being built, moving on before the foundations have fully set.</p>
+
+    <p>Stubbornness is the shadow side of intellectual certainty and this card has it. The Four of Clubs knows what it knows and does not change its mind easily or for reasons it does not find compelling. When the conviction is well-founded, that quality produces real results. When it tips into rigidity, the same quality becomes a wall that keeps useful information from getting through. The distinction is worth monitoring honestly. Being unmoved by poor arguments is different from being unmoved by good ones.</p>
+
+    <p>The love of argument in this card is genuine and usually productive. The Four of Clubs tends to win debates not through aggression but through preparation, through actually knowing the subject, through having thought through the counter-arguments before the conversation starts. Legal and legislative environments resonate naturally here. So does any domain where intellectual rigour and the ability to hold a position under pressure are valued.</p>
+
+    <p>The intuitive capacity in women with this Birthprint is specifically noted as exceptional. The combination of strong analytical intelligence and genuine extrasensory perception produces a particularly powerful reading of situations and people. This is not imagination. It is a functional intelligence that operates alongside the rational mind rather than in opposition to it. When both are trusted simultaneously the Four of Clubs has an edge that is genuinely difficult to match.</p>
+
+    <p>Love is named as the major life challenge. For a card with this level of mental certainty and intellectual self-sufficiency, the vulnerability that genuine intimacy requires can feel structurally uncomfortable. The Four of Clubs can build extraordinary things in the world of ideas and work. Building something equally solid in the relational domain requires a different kind of discipline, one that cannot be won through argument or secured through being right.</p>
+
+    <div class="states-grid">
+      <div class="state-block state-locked">
+        <span class="state-title">Locked In</span>
+        <ul>
+          <li>Channels the hidden restlessness into progress and innovation rather than letting it undermine what is built</li>
+          <li>Holds intellectual conviction firmly while remaining genuinely open to evidence that warrants revision</li>
+          <li>Trusts and applies the intuitive intelligence alongside the analytical one</li>
+          <li>Brings the same discipline and commitment to love that she applies to everything she builds</li>
+          <li>Uses the debating and persuasive capacity in service of something genuinely believed in</li>
+        </ul>
+      </div>
+      <div class="state-block state-unattended">
+        <span class="state-title">Unattended</span>
+        <ul>
+          <li>Lets the restlessness move her on before the foundations of what is being built have properly set</li>
+          <li>Mistakes rigidity for principle and stops the useful information from getting through</li>
+          <li>Applies intellectual self-sufficiency to relationships and wonders why genuine intimacy stays out of reach</li>
+          <li>Wins arguments and loses the relationship in the same move</li>
+          <li>Dismisses the intuitive intelligence because it does not fit the analytical framework</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT GENERATOR -->
+  <div class="section-label">Content Generator</div>
+  <div class="output-block">
+    <div class="output-type">Angles, Hooks & Avatar Connections</div>
+    <h3>Content Angles</h3>
+    <div class="hooks-grid">
+      <div class="hook-item">
+        <span class="hook-label">Hook 1 — Rooted and Restless</span>
+        <p>The Four of Clubs is stable and certain on the surface. Underneath is a genuine pull toward change and progress that never fully quiets. Those two things are not contradictions. They are the card's actual design. The restlessness is not a problem to manage. It is the engine of the innovation. The foundation is what makes it safe to move.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 2 — When Certainty Becomes a Wall</span>
+        <p>The Four of Clubs knows what it knows and does not change its mind easily. That is a strength. It becomes a liability when it stops distinguishing between poor arguments that deserve to be dismissed and good ones that deserve to be heard. Conviction and rigidity look identical from the outside. They feel different from the inside.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 3 — The Intuition Running Alongside the Logic</span>
+        <p>Four of Clubs women carry exceptional intuitive and extrasensory capacity alongside their analytical intelligence. Most of the time the analytical mind gets the credit and the intuitive one gets quietly sidelined. What changes when both are trusted simultaneously rather than one being used to override the other?</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 4 — Love as the Major Challenge</span>
+        <p>This card builds extraordinary things. Intellectual foundations, career achievements, bodies of knowledge. The specific challenge named for this Birthprint is love. Because genuine intimacy requires a kind of vulnerability that cannot be won through being right. For a card with this much intellectual certainty, that is a specific and meaningful ask.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 5 — The Builder of Knowledge</span>
+        <p>The Four of Clubs is called the Builder and Foundation of Knowledge. That is not a metaphor about being bookish. It means this card builds structures of understanding that others can learn from and stand on. The contribution to literature, philosophy, education, and public life that is available to this card is genuinely significant when the restlessness is channelled rather than indulged.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 6 — Nine Birthdays, One Frequency</span>
+        <p>April 30th through December 14th. Nine dates across three full seasons carrying the same grounded, intellectually certain, quietly restless Four of Clubs frequency. The Card of Mental Satisfaction. The paradox of the person who craves both roots and movement and has to figure out how to honour both without letting one undo the other.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 28px;">
+      <div class="section-label">Avatar Resonance</div>
+      <div class="hooks-grid">
+        <div class="hook-item">
+          <span class="hook-label">Nicole — The Hollow Success</span>
+          <p>The Four of Clubs who has built an extraordinary intellectual and professional foundation and is quietly aware that the love and relational domain has been left underdeveloped. The mental satisfaction the card promises has been delivered in work. The challenge it names is showing up exactly where Nicole is standing right now.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Rachel — The Done-the-Work Woman</span>
+          <p>The Four of Clubs who has done every kind of intellectual preparation for change and is still in the same place. The pattern is the restlessness being used to move around within the comfort zone rather than actually forward. The foundation is solid. The question is whether it is being used as a base to build from or a place to stay.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Jade — The Invisible Middle</span>
+          <p>The Four of Clubs managing everyone else's knowledge, schedules, and intellectual needs while her own mental life has been put on hold. The card is built to lead and to contribute at a level that matters. Jade's invisible labour is the Four of Clubs energy going entirely outward with nothing coming back in. The rebalance starts with naming that.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Carmen — The Woman at 60 Rebuilding</span>
+          <p>The Four of Clubs at 60 is in the specific territory where the restlessness and the foundation finally start working together rather than against each other. Carmen has the intellectual security of decades of building. The restlessness is no longer threatening the structure. It is pointing toward what gets built next. That is a powerful place to be.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Grace — The Religious Deconstructor</span>
+          <p>The Four of Clubs who built her intellectual and spiritual framework inside a high-control environment and is now outside it. The stubbornness that characterises this card becomes both a strength and a challenge in deconstruction. She will not be argued out of what she has genuinely come to know. The work is distinguishing that from what she was told to know.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Amara — The Between-Two-Worlds Woman</span>
+          <p>The Four of Clubs building intellectual and professional foundations across two cultural contexts simultaneously. The restlessness finds natural expression in movement between worlds. The challenge is building something solid enough to stand on in both without perpetually feeling like the ground is shifting. The card is actually designed for exactly this kind of complex construction.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIFE SPREAD -->
+  <div class="section-label">Life Spread</div>
+  <div class="spread-section">
+    <div class="prc-note">
+      <strong>PRC Note:</strong> Nine Planetary Ruling Cards apply to this birth card. April 30th — Jack of Spades. May 28th — 2 of Diamonds. June 26th — 6 of Hearts. July 24th — 4 of Clubs. August 22nd — 4 of Clubs + 2 of Diamonds. September 20th — 2 of Diamonds. October 18th — Jack of Spades. November 16th — 8 of Clubs + 8 of Spades. December 14th — 6 of Diamonds.
+    </div>
+    <div class="spread-grid">
+      <div class="spread-cell">
+        <span class="spread-key">Birth Card (BC)</span>
+        <span class="spread-val">Four of Clubs</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Planetary Ruling Card (PRC)</span>
+        <span class="spread-val">J♠ / 2♦ / 6♥ / 4♣ / 4♣+2♦ / 2♦ / J♠ / 8♣+8♠ / 6♦</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Personality Card</span>
+        <span class="spread-val">—</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Moon</span>
+        <span class="spread-val">6 of Hearts</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Mercury</span>
+        <span class="spread-val">2 of Diamonds</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Venus</span>
+        <span class="spread-val">Jack of Spades</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Mars</span>
+        <span class="spread-val">8 of Clubs</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Jupiter</span>
+        <span class="spread-val">6 of Diamonds</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Saturn</span>
+        <span class="spread-val">4 of Spades</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Uranus</span>
+        <span class="spread-val">10 of Hearts</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Neptune</span>
+        <span class="spread-val">10 of Diamonds</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Pluto</span>
+        <span class="spread-val">8 of Spades</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Result</span>
+        <span class="spread-val">Ace of Spades</span>
+      </div>
+      <div class="spread-cell">
+        <span class="spread-key">Cosmic Lesson</span>
+        <span class="spread-val">Ace of Diamonds</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONNECTIONS -->
+  <div class="section-label">Connections</div>
+  <div class="connections-grid">
+    <div class="connection-block">
+      <span class="connection-label">Karma Cards</span>
+      <div class="connection-cards">
+        <span class="card-pill">5♣</span>
+        <span class="card-pill">6♥</span>
+      </div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Karma Cousins</span>
+      <div class="connection-cards">
+        <span class="card-pill">5♥</span>
+        <span class="card-pill">3♦</span>
+      </div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Past Life Cards</span>
+      <div class="connection-cards">
+        <span class="card-pill">3♣</span>
+        <span class="card-pill">5♣</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <p>The MillionHeiress BABE™ Card Library &nbsp;·&nbsp; Internal Reference Document</p>
+  </div>
+
+</div>
+</body>
+</html>

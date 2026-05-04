@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Four of Diamonds — MHB Card Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blush: #F5F0E8; --parchment: #FAF7F1; --magenta: #B5406A; --gold: #C9A96E; --gold-light: #E8D5A3; --emerald: #3D7A6F;
+    --text-dark: #261E0F; --text-mid: #4A3E2C; --text-soft: #8A7A5E; --diamonds-amber: #8B6914; --diamonds-mid: #A07D1C; --card-bg: #FDFAF4;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--parchment); font-family: 'Outfit', sans-serif; color: var(--text-dark); min-height: 100vh; padding: 48px 24px; }
+  .page { max-width: 820px; margin: 0 auto; }
+  .header { text-align: center; margin-bottom: 56px; padding-bottom: 32px; border-bottom: 1px solid var(--gold-light); }
+  .suit-tag { font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; display: block; }
+  .card-title { font-family: 'Cormorant Garamond', serif; font-size: 52px; font-weight: 300; color: var(--diamonds-amber); line-height: 1.1; margin-bottom: 8px; }
+  .card-title span { font-style: italic; }
+  .birth-date { font-size: 13px; color: var(--text-soft); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 12px; line-height: 1.8; }
+  .card-symbol { font-size: 48px; margin: 16px 0 8px; opacity: 0.85; color: var(--diamonds-amber); }
+  .section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--gold-light); }
+  .output-block { background: var(--card-bg); border: 1px solid var(--gold-light); border-radius: 2px; padding: 36px 40px; margin-bottom: 24px; position: relative; }
+  .output-block::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--diamonds-amber); border-radius: 2px 0 0 2px; }
+  .output-type { font-size: 10px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--diamonds-mid); margin-bottom: 16px; }
+  .output-block h3 { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 400; color: var(--text-dark); margin-bottom: 16px; line-height: 1.2; }
+  .output-block p { font-size: 15px; line-height: 1.75; color: var(--text-mid); margin-bottom: 14px; }
+  .output-block p:last-child { margin-bottom: 0; }
+  .energy-block { background: var(--diamonds-amber); border: none; }
+  .energy-block::before { background: var(--gold); }
+  .energy-block .output-type { color: var(--gold-light); }
+  .energy-block h3 { color: white; font-size: 30px; }
+  .energy-block p { color: rgba(255,255,255,0.88); font-size: 16px; }
+  .energy-cta { display: inline-block; margin-top: 20px; font-size: 12px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold-light); border-bottom: 1px solid var(--gold-light); padding-bottom: 2px; }
+  .hooks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+  .hook-item { background: var(--blush); border-radius: 2px; padding: 20px; }
+  .hook-label { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--diamonds-mid); margin-bottom: 8px; display: block; }
+  .hook-item p { font-size: 14px; line-height: 1.6; color: var(--text-dark); margin: 0; }
+  .spread-section { margin-bottom: 24px; }
+  .spread-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--gold-light); border-radius: 2px; overflow: hidden; background: var(--card-bg); }
+  .spread-cell { padding: 12px 20px; border-bottom: 1px solid var(--gold-light); border-right: 1px solid var(--gold-light); }
+  .spread-cell:nth-child(even) { border-right: none; }
+  .spread-cell:nth-last-child(-n+2) { border-bottom: none; }
+  .spread-key { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-soft); display: block; margin-bottom: 3px; }
+  .spread-val { font-family: 'Cormorant Garamond', serif; font-size: 17px; color: var(--text-dark); font-weight: 500; }
+  .connections-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .connection-block { background: var(--card-bg); border: 1px solid var(--gold-light); border-radius: 2px; padding: 20px; text-align: center; }
+  .connection-label { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-soft); display: block; margin-bottom: 10px; }
+  .connection-cards { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .card-pill { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 500; color: var(--diamonds-amber); background: var(--blush); border-radius: 2px; padding: 4px 12px; }
+  .states-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+  .state-block { padding: 24px; border-radius: 2px; }
+  .state-locked { background: rgba(61,122,111,0.08); border: 1px solid rgba(61,122,111,0.25); }
+  .state-unattended { background: rgba(181,64,106,0.06); border: 1px solid rgba(181,64,106,0.2); }
+  .state-title { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 12px; display: block; }
+  .state-locked .state-title { color: var(--emerald); }
+  .state-unattended .state-title { color: var(--magenta); }
+  .state-block ul { list-style: none; padding: 0; }
+  .state-block ul li { font-size: 14px; line-height: 1.6; color: var(--text-mid); padding: 4px 0; padding-left: 14px; position: relative; }
+  .state-locked ul li::before { content: '→'; position: absolute; left: 0; color: var(--emerald); font-size: 12px; }
+  .state-unattended ul li::before { content: '→'; position: absolute; left: 0; color: var(--magenta); font-size: 12px; }
+  .prc-note { background: var(--blush); border: 1px solid var(--gold-light); border-radius: 2px; padding: 14px 20px; margin-bottom: 16px; font-size: 13px; color: var(--text-mid); line-height: 1.6; }
+  .prc-note strong { color: var(--diamonds-mid); font-weight: 600; }
+  .footer { text-align: center; margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--gold-light); }
+  .footer p { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-style: italic; color: var(--text-soft); }
+  @media (max-width: 600px) {
+    .hooks-grid, .states-grid, .connections-grid { grid-template-columns: 1fr; }
+    .spread-grid { grid-template-columns: 1fr; }
+    .spread-cell { border-right: none !important; }
+    .card-title { font-size: 38px; }
+    .output-block { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <span class="suit-tag">Diamonds Suit — Money, Worth & Material Inheritance</span>
+    <div class="card-symbol">♦</div>
+    <h1 class="card-title"><span>Four</span> of Diamonds</h1>
+    <p class="birth-date">January 23rd &nbsp;·&nbsp; February 21st &nbsp;·&nbsp; March 19th &nbsp;·&nbsp; April 17th &nbsp;·&nbsp; May 15th &nbsp;·&nbsp; June 13th<br>July 11th &nbsp;·&nbsp; August 9th &nbsp;·&nbsp; September 7th &nbsp;·&nbsp; October 5th &nbsp;·&nbsp; November 3rd &nbsp;·&nbsp; December 1st</p>
+  </div>
+
+  <div class="section-label">Energy of the Day</div>
+  <div class="output-block energy-block">
+    <div class="output-type">Daily Card Feature</div>
+    <h3>The protection is there. But it requires your effort first.</h3>
+    <p>Four of Diamonds energy is grounded, value-led, and built to reward consistent effort with real results. Today the frequency is practical and purposeful. The protection that this card carries is genuine but it is not passive. It activates through work. Whatever has been sitting idle today, waiting for the right conditions to begin, the right conditions are now. Start.</p>
+    <p>Watch the restlessness. The Five of Spades Karma Card brings an inner pull toward something different, something more, something not quite here. Today, notice if that pull is information or just discomfort with the effort that is being asked for.</p>
+    <span class="energy-cta">Today's invitation: put in the effort and watch the protection activate</span>
+  </div>
+
+  <div class="section-label">Report Description</div>
+  <div class="output-block">
+    <div class="output-type">For use inside BABE Signature Reports</div>
+    <h3>The Card of Solid Values</h3>
+
+    <p>The Four of Diamonds is a card of genuine financial protection. That protection is real and well-documented. The specific condition attached to it is equally real: nothing is received without effort. The Four of Diamonds does not receive windfalls. It builds. The rewards are there and they are substantial, but they arrive on the other side of consistent, applied effort rather than through luck or circumstance. Understanding this changes the relationship with the work itself. The effort is not an obstacle between this card and the reward. It is the mechanism through which the protection activates.</p>
+
+    <p>The inner restlessness from the Five of Spades Karma Card is a consistent undercurrent in this Birthprint. The Four wants to build and establish. The Five wants to move and change. Those two impulses live in the same person and they create a specific kind of dissatisfaction that can make it difficult for the Four of Diamonds to stay long enough in one place or one direction to receive what sustained effort produces. The work is learning to distinguish between restlessness that is pointing toward something real and restlessness that is the karma card expressing itself as discomfort with the necessary stability.</p>
+
+    <p>High ideals in love are a consistent pattern here. The Four of Diamonds tends to hold a standard for romantic relationships that real people find genuinely difficult to meet, not because the standard is wrong but because the card has not yet fully integrated the gap between the ideal and the actual. The karma in relationships is specifically named and some of those relationships are destined. The most difficult ones often carry the most valuable learning. The instruction is to stay present enough to receive what they are teaching rather than retreating into the ideal when reality gets complicated.</p>
+
+    <p>The social life here is abundant and genuine. The Four of Diamonds meets many people, builds real friendships, and tends to attract companionship naturally and consistently. The rut pattern applies in this domain too. The card can get very settled in its social world and stop growing within it. The cooperative activities, the group involvements, the religious or community organisations that often feature in this life path, all of these produce results when they are genuinely engaged with rather than used as comfortable background to the life.</p>
+
+    <p>The leadership and teaching capacity is real and often developed later than it could be. The intuitive gift, when cultivated and trusted, gives the Four of Diamonds a genuine edge in guiding others. The latter years are specifically noted as more financially protected. Those who remain active rather than retiring into passivity find genuine contentment there.</p>
+
+    <div class="states-grid">
+      <div class="state-block state-locked">
+        <span class="state-title">Locked In</span>
+        <ul>
+          <li>Puts in the consistent effort that activates the inherent protection and earns the real rewards</li>
+          <li>Distinguishes between useful restlessness and karma card discomfort and stays the course accordingly</li>
+          <li>Engages fully with the destined relationships rather than retreating to the ideal when they get difficult</li>
+          <li>Develops and trusts the intuitive gift as a genuine leadership and decision-making tool</li>
+          <li>Remains active and building through all phases of life rather than settling into passivity</li>
+        </ul>
+      </div>
+      <div class="state-block state-unattended">
+        <span class="state-title">Unattended</span>
+        <ul>
+          <li>Lets the restlessness prevent the sustained effort that is the specific mechanism for this card's rewards</li>
+          <li>Gets into a rut in relationships or work and stays there without the movement that would break it</li>
+          <li>Holds ideals about love so high that real relationships consistently fall short without being genuinely engaged with</li>
+          <li>Uses charm and social ease as a substitute for the harder work the card is actually being asked to do</li>
+          <li>Lets money worries run in the background and interfere with the success the protection was there to deliver</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Content Generator</div>
+  <div class="output-block">
+    <div class="output-type">Angles, Hooks & Avatar Connections</div>
+    <h3>Content Angles</h3>
+    <div class="hooks-grid">
+      <div class="hook-item">
+        <span class="hook-label">Hook 1 — The Protection That Requires Effort</span>
+        <p>The Four of Diamonds has genuine financial protection built into the Birthprint. The condition is that it only activates through effort. This is not a card that receives things passively. The work is the mechanism. When the card understands this, the relationship with effort changes from burden to activation. The effort is not in the way of the reward. It is how the reward arrives.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 2 — The Restlessness That Undermines the Building</span>
+        <p>The Four of Diamonds carries a Karma Card that brings inner restlessness and dissatisfaction. The builder in this card wants stability. The karma card wants movement. Those two things create a specific friction that, if not understood, consistently pulls the card away from the sustained effort that produces results just before those results would have arrived.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 3 — The Difficult Relationship That Teaches the Most</span>
+        <p>The Four of Diamonds has some strong relationship karma and some of the partnerships in this life are destined. The pattern noted is that the most difficult relationships often carry the most valuable learning. The card that retreats to the ideal rather than staying present through the difficult relationship tends to repeat the pattern rather than completing it.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 4 — Built This With My Own Hands</span>
+        <p>The Four of Diamonds does not inherit its financial security. It builds it. That is not a limitation. It is a source of a specific kind of pride and groundedness that received wealth does not produce. The satisfaction of knowing that what exists was earned and built through consistent effort is one of the things this card values most deeply about its own life.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 5 — The Later Years Reward</span>
+        <p>The Four of Diamonds latter years are specifically noted as more financially protected. For a card that has been working consistently throughout life, that protection is the compound interest of all the effort. The instruction is to stay active rather than retiring into passivity. The satisfaction available in those years is genuine and earned in a way that passive comfort is not.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 6 — Twelve Birthdays, One Grounded Frequency</span>
+        <p>January 23rd through December 1st. Twelve dates across every season carrying the same value-solid, effort-rewarding, social and restless Four of Diamonds frequency. Grounded but never ordinary. Built something real. Carrying the inner restlessness that makes staying put feel harder than it looks from the outside.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 28px;">
+      <div class="section-label">Avatar Resonance</div>
+      <div class="hooks-grid">
+        <div class="hook-item">
+          <span class="hook-label">Tasha — The Single Mum</span>
+          <p>The Four of Diamonds building the financial foundation through consistent effort with no guarantee of applause. Tasha is living the core pattern of this card. The protection is there. The effort is happening. The specific thing she needs to hear is that the compound returns of the sustained work she is doing are real, even when they are not yet visible.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Diane — The Recently Divorced</span>
+          <p>The Four of Diamonds whose most difficult relationship carried the most valuable learning. Diane is in the specific territory where this card's pattern is most instructive. The question is not what went wrong. It is what was being taught through the difficulty and whether the teaching is being received or whether the retreat to the ideal is already underway.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Rachel — The Done-the-Work Woman</span>
+          <p>The Four of Diamonds whose restlessness has been pulling her away from sustained effort just before the return would have arrived. The pattern of reaching the edge of what the work is building and then moving is specific to this Birthprint. Rachel's stuckness may be less about insight and more about staying in one direction long enough for the protection to actually activate.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Jade — The Invisible Middle</span>
+          <p>The Four of Diamonds in the rut. Not idle. Actually working hard. But the rut is the problem, not the work. Jade is building consistently in a direction that has not been deliberately chosen and is no longer genuinely growing. The Four of Diamonds needs to choose the direction deliberately and then apply the effort. The effort without direction produces the stuck feeling she is living right now.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Carmen — The Woman at 60 Rebuilding</span>
+          <p>The Four of Diamonds entering the specifically protected latter years. Carmen has put in the work. The compound returns of that consistent effort are available now in a way they were not before. The instruction to stay active is directly relevant. The satisfaction she can access at this stage, building something that is genuinely hers, is the fullest expression of what this card was always moving toward.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Nicole — The Hollow Success</span>
+          <p>The Four of Diamonds who built solid financial foundations and is experiencing the dissatisfaction that comes when the building has been pointed in the wrong direction. The effort and the protection are both real. What is missing is the values alignment. The card is called the Card of Solid Values. The hollowness is those values having drifted away from what the card actually stands for.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Life Spread</div>
+  <div class="spread-section">
+    <div class="prc-note">
+      <strong>PRC Note:</strong> Twelve Planetary Ruling Cards apply to this birth card. January 23rd — 10 of Clubs. February 21st — 8 of Diamonds. March 19th — 8 of Diamonds. April 17th — 6 of Clubs. May 15th — 8 of Hearts. June 13th — 2 of Spades. July 11th — 4 of Hearts. August 9th — 4 of Diamonds. September 7th — 2 of Spades. October 5th — 8 of Hearts. November 3rd — 6 of Clubs + King of Spades. December 1st — 6 of Spades.
+    </div>
+    <div class="spread-grid">
+      <div class="spread-cell"><span class="spread-key">Birth Card (BC)</span><span class="spread-val">Four of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Planetary Ruling Card (PRC)</span><span class="spread-val">10♣ / 8♦ / 8♦ / 6♣ / 8♥ / 2♠ / 4♥ / 4♦ / 2♠ / 8♥ / 6♣+K♠ / 6♠</span></div>
+      <div class="spread-cell"><span class="spread-key">Personality Card</span><span class="spread-val">—</span></div>
+      <div class="spread-cell"><span class="spread-key">Moon</span><span class="spread-val">4 of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Mercury</span><span class="spread-val">2 of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Venus</span><span class="spread-val">8 of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Mars</span><span class="spread-val">6 of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Jupiter</span><span class="spread-val">6 of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Saturn</span><span class="spread-val">Queen of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Uranus</span><span class="spread-val">10 of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Neptune</span><span class="spread-val">8 of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Pluto</span><span class="spread-val">King of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Result</span><span class="spread-val">3 of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Cosmic Lesson</span><span class="spread-val">Ace of Clubs</span></div>
+    </div>
+  </div>
+
+  <div class="section-label">Connections</div>
+  <div class="connections-grid">
+    <div class="connection-block">
+      <span class="connection-label">Karma Cards</span>
+      <div class="connection-cards"><span class="card-pill">5♠</span><span class="card-pill">5♥</span></div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Karma Cousins</span>
+      <div class="connection-cards"><span class="card-pill">10♥</span><span class="card-pill">5♣</span></div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Past Life Cards</span>
+      <div class="connection-cards"><span class="card-pill">3♦</span><span class="card-pill">5♦</span></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>The MillionHeiress BABE™ Card Library &nbsp;·&nbsp; Internal Reference Document</p>
+  </div>
+
+</div>
+</body>
+</html>

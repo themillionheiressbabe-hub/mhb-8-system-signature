@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Two of Diamonds — MHB Card Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blush: #F5F0E8;
+    --parchment: #FAF7F1;
+    --magenta: #B5406A;
+    --gold: #C9A96E;
+    --gold-light: #E8D5A3;
+    --emerald: #3D7A6F;
+    --text-dark: #261E0F;
+    --text-mid: #4A3E2C;
+    --text-soft: #8A7A5E;
+    --diamonds-amber: #8B6914;
+    --diamonds-mid: #A07D1C;
+    --card-bg: #FDFAF4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--parchment); font-family: 'Outfit', sans-serif; color: var(--text-dark); min-height: 100vh; padding: 48px 24px; }
+  .page { max-width: 820px; margin: 0 auto; }
+
+  .header { text-align: center; margin-bottom: 56px; padding-bottom: 32px; border-bottom: 1px solid var(--gold-light); }
+  .suit-tag { font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; display: block; }
+  .card-title { font-family: 'Cormorant Garamond', serif; font-size: 52px; font-weight: 300; color: var(--diamonds-amber); line-height: 1.1; margin-bottom: 8px; }
+  .card-title span { font-style: italic; }
+  .birth-date { font-size: 13px; color: var(--text-soft); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 12px; line-height: 1.8; }
+  .card-symbol { font-size: 48px; margin: 16px 0 8px; opacity: 0.85; color: var(--diamonds-amber); }
+
+  .section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--gold-light); }
+
+  .output-block { background: var(--card-bg); border: 1px solid var(--gold-light); border-radius: 2px; padding: 36px 40px; margin-bottom: 24px; position: relative; }
+  .output-block::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--diamonds-amber); border-radius: 2px 0 0 2px; }
+  .output-type { font-size: 10px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--diamonds-mid); margin-bottom: 16px; }
+  .output-block h3 { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 400; color: var(--text-dark); margin-bottom: 16px; line-height: 1.2; }
+  .output-block p { font-size: 15px; line-height: 1.75; color: var(--text-mid); margin-bottom: 14px; }
+  .output-block p:last-child { margin-bottom: 0; }
+
+  .energy-block { background: var(--diamonds-amber); border: none; }
+  .energy-block::before { background: var(--gold); }
+  .energy-block .output-type { color: var(--gold-light); }
+  .energy-block h3 { color: white; font-size: 30px; }
+  .energy-block p { color: rgba(255,255,255,0.88); font-size: 16px; }
+  .energy-cta { display: inline-block; margin-top: 20px; font-size: 12px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold-light); border-bottom: 1px solid var(--gold-light); padding-bottom: 2px; }
+
+  .hooks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+  .hook-item { background: var(--blush); border-radius: 2px; padding: 20px; }
+  .hook-label { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--diamonds-mid); margin-bottom: 8px; display: block; }
+  .hook-item p { font-size: 14px; line-height: 1.6; color: var(--text-dark); margin: 0; }
+
+  .spread-section { margin-bottom: 24px; }
+  .spread-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--gold-light); border-radius: 2px; overflow: hidden; background: var(--card-bg); }
+  .spread-cell { padding: 12px 20px; border-bottom: 1px solid var(--gold-light); border-right: 1px solid var(--gold-light); }
+  .spread-cell:nth-child(even) { border-right: none; }
+  .spread-cell:nth-last-child(-n+2) { border-bottom: none; }
+  .spread-key { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-soft); display: block; margin-bottom: 3px; }
+  .spread-val { font-family: 'Cormorant Garamond', serif; font-size: 17px; color: var(--text-dark); font-weight: 500; }
+
+  .connections-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .connection-block { background: var(--card-bg); border: 1px solid var(--gold-light); border-radius: 2px; padding: 20px; text-align: center; }
+  .connection-label { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-soft); display: block; margin-bottom: 10px; }
+  .connection-cards { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .card-pill { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 500; color: var(--diamonds-amber); background: var(--blush); border-radius: 2px; padding: 4px 12px; }
+
+  .states-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+  .state-block { padding: 24px; border-radius: 2px; }
+  .state-locked { background: rgba(61, 122, 111, 0.08); border: 1px solid rgba(61, 122, 111, 0.25); }
+  .state-unattended { background: rgba(181, 64, 106, 0.06); border: 1px solid rgba(181, 64, 106, 0.2); }
+  .state-title { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 12px; display: block; }
+  .state-locked .state-title { color: var(--emerald); }
+  .state-unattended .state-title { color: var(--magenta); }
+  .state-block ul { list-style: none; padding: 0; }
+  .state-block ul li { font-size: 14px; line-height: 1.6; color: var(--text-mid); padding: 4px 0; padding-left: 14px; position: relative; }
+  .state-locked ul li::before { content: '→'; position: absolute; left: 0; color: var(--emerald); font-size: 12px; }
+  .state-unattended ul li::before { content: '→'; position: absolute; left: 0; color: var(--magenta); font-size: 12px; }
+
+  .prc-note { background: var(--blush); border: 1px solid var(--gold-light); border-radius: 2px; padding: 14px 20px; margin-bottom: 16px; font-size: 13px; color: var(--text-mid); line-height: 1.6; }
+  .prc-note strong { color: var(--diamonds-mid); font-weight: 600; }
+
+  .footer { text-align: center; margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--gold-light); }
+  .footer p { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-style: italic; color: var(--text-soft); }
+
+  @media (max-width: 600px) {
+    .hooks-grid, .states-grid, .connections-grid { grid-template-columns: 1fr; }
+    .spread-grid { grid-template-columns: 1fr; }
+    .spread-cell { border-right: none !important; }
+    .card-title { font-size: 38px; }
+    .output-block { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <span class="suit-tag">Diamonds Suit — Money, Worth & Material Inheritance</span>
+    <div class="card-symbol">♦</div>
+    <h1 class="card-title"><span>Two</span> of Diamonds</h1>
+    <p class="birth-date">January 25th &nbsp;·&nbsp; February 23rd &nbsp;·&nbsp; March 21st &nbsp;·&nbsp; April 19th &nbsp;·&nbsp; May 17th &nbsp;·&nbsp; June 15th<br>July 13th &nbsp;·&nbsp; August 11th &nbsp;·&nbsp; September 9th &nbsp;·&nbsp; October 7th &nbsp;·&nbsp; November 5th &nbsp;·&nbsp; December 3rd</p>
+  </div>
+
+  <div class="section-label">Energy of the Day</div>
+  <div class="output-block energy-block">
+    <div class="output-type">Daily Card Feature</div>
+    <h3>Your gut knows what this is worth. Trust it before the logic catches up.</h3>
+    <p>Two of Diamonds energy is intuitive, value-sharp, and built for the kind of exchange that creates something from connection. Today the frequency is relational and financially alive. The instinct about what something is worth, whether that is a deal, a relationship, or an opportunity, is running clear today. The mistake this card makes is overriding that instinct with anxiety. Today, let the knowing lead.</p>
+    <p>Watch the rut pattern. The Two of Diamonds can get so settled in familiar territory that the forward movement stalls. Today is a good day to notice if comfort has become a substitute for progress.</p>
+    <span class="energy-cta">Today's invitation: follow the instinct before the worry arrives</span>
+  </div>
+
+  <div class="section-label">Report Description</div>
+  <div class="output-block">
+    <div class="output-type">For use inside BABE Signature Reports</div>
+    <h3>The Wheeler Dealer Card</h3>
+
+    <p>The Two of Diamonds carries one of the most practically useful gifts in the entire deck: an innate intuition about value. What things are worth. What people are worth. What an opportunity or a deal or a relationship is actually carrying underneath its surface presentation. This is not general intelligence. It is a specific and calibrated capacity that, when trusted and followed, consistently leads this card toward the right decisions in business, in relationships, and in the reading of situations that matter.</p>
+
+    <p>This card thrives in exchange. In the meeting of people, the making of deals, the negotiation of terms, the building of partnerships that produce something neither party could have reached alone. The Two of Diamonds is not a solo operator by design. It is built for the collaborative space where two parties combine their resources, their intelligence, or their networks toward a shared purpose. The best work comes out of that dynamic and the best financial results tend to follow it.</p>
+
+    <p>The healing capacity in this Birthprint is worth noting. The source material identifies the Two of Diamonds as particularly well-suited for diagnostic work, for the ability to read what is wrong in a situation or in a person with unusual accuracy. Whether this shows up in formal health or medical work, in business diagnosis, or in the reading of relationship dynamics, the underlying gift is the same. There is a precision to how this card assesses what is actually happening beneath what is being presented.</p>
+
+    <p>The rut pattern in close relationships is a specific and recurring theme. The Two of Diamonds can establish a domestic or relational dynamic and then stay in it long past the point where genuine growth is happening. The comfort of the familiar consistently competes with the forward movement the card is also built for. When the monotony is fought without a clear strategy for what is being moved toward, frustration tends to follow. The antidote is the inner guidance that this card has access to, not the anxiety, but the actual knowing underneath it.</p>
+
+    <p>Financial success in real estate is specifically documented for later years. The practical intelligence and the intuitive read on value that this card carries make it particularly well-suited for property and land-based investments. The trading and merchant instincts are strong throughout life. The specific instruction is to establish in one business and stay with it rather than spreading across too many ventures simultaneously.</p>
+
+    <p>There is a mission quality to this Birthprint that often only becomes clear once the card has found genuine partnership. The purpose tends to involve others, tends to require the relational intelligence to be pointed toward something beyond personal gain, and tends to produce the most satisfaction when it is in service of a larger benefit rather than purely individual advancement.</p>
+
+    <div class="states-grid">
+      <div class="state-block state-locked">
+        <span class="state-title">Locked In</span>
+        <ul>
+          <li>Follows the intuitive read on value before anxiety overrides it</li>
+          <li>Establishes in one direction and builds the depth that consistent effort produces</li>
+          <li>Channels the diagnostic and healing capacity deliberately as a professional tool</li>
+          <li>Builds partnerships that serve a purpose beyond personal gain</li>
+          <li>Notices when comfort has become a rut and moves before the stagnation sets in</li>
+        </ul>
+      </div>
+      <div class="state-block state-unattended">
+        <span class="state-title">Unattended</span>
+        <ul>
+          <li>Lets the anxiety about money override the intuitive knowing that actually has the answer</li>
+          <li>Settles into familiar relational and professional dynamics long past the point of genuine growth</li>
+          <li>Spreads across too many ventures and builds nothing to full potential in any of them</li>
+          <li>Lets social obligations drain the health and energy needed for the actual work</li>
+          <li>Loses sight of the mission quality of the Birthprint and reduces everything to personal transaction</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Content Generator</div>
+  <div class="output-block">
+    <div class="output-type">Angles, Hooks & Avatar Connections</div>
+    <h3>Content Angles</h3>
+    <div class="hooks-grid">
+      <div class="hook-item">
+        <span class="hook-label">Hook 1 — The Value Instinct</span>
+        <p>The Two of Diamonds has an innate read on what things are actually worth. Not the price. The worth. That distinction is the whole thing. When this card follows that instinct before the anxiety gets in, it rarely makes the wrong call. The pattern that creates the most problems is overriding the knowing with worry.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 2 — Built for Partnership</span>
+        <p>The Two of Diamonds does not do its best work alone. The best financial returns, the most significant professional results, the most meaningful contributions, all of these tend to happen in genuine partnership. The card is built for cooperative exchange. Solo operations are possible. They are not the fullest expression of what this Birthprint is capable of.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 3 — The Rut in Close Relationships</span>
+        <p>The Two of Diamonds can establish a dynamic and stay in it for years past the point where anything new is happening. That is not commitment. That is comfort masquerading as stability. The inner guidance this card has access to will signal when the rut has become a cage. The question is whether the signal is getting heard.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 4 — The Diagnostic Gift</span>
+        <p>The Two of Diamonds reads what is actually wrong in a situation before anyone else has named it. In business this looks like strategic intelligence. In relationships it looks like perceptiveness. In any domain it is the same underlying capacity: the ability to assess what is genuinely happening beneath what is being presented. Most Two of Diamonds people use this constantly without calling it what it is.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 5 — The Mission That Arrives with Partnership</span>
+        <p>The Two of Diamonds mission in life typically involves others. Once the card finds genuine partnership, something shifts and a purpose that was not previously visible tends to become clear. The mission is not waiting to be discovered in isolation. It tends to reveal itself through the right collaborative relationship.</p>
+      </div>
+      <div class="hook-item">
+        <span class="hook-label">Hook 6 — Twelve Birthdays, One Sharp Frequency</span>
+        <p>January 25th through December 3rd. Twelve dates across every season carrying the same value-sharp, partnership-oriented, intuitively precise Two of Diamonds frequency. Money is never the goal. It is the mirror. The reflection of what is known about worth, what is trusted about value, and whether the inner guidance is actually being followed.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 28px;">
+      <div class="section-label">Avatar Resonance</div>
+      <div class="hooks-grid">
+        <div class="hook-item">
+          <span class="hook-label">Rachel — The Done-the-Work Woman</span>
+          <p>The Two of Diamonds whose diagnostic capacity has been turned entirely on herself for years. She has identified every pattern accurately. The missing piece is not more analysis. It is the partnership, the right collaborative context, through which the mission the card carries tends to become visible. Rachel may need to look outward before the next thing inside becomes clear.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Jade — The Invisible Middle</span>
+          <p>The Two of Diamonds in the rut pattern at its most domestic. Jade has established a dynamic that serves everyone around her and has been in it long enough that genuine growth has quietly stalled. The inner guidance that this card has access to has been signalling this for a while. The question is whether it is being heard through the noise of obligation.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Nicole — The Hollow Success</span>
+          <p>The Two of Diamonds who has been treating business as the mission rather than recognising that the mission involves something larger. Nicole's financial intelligence is real. The hollow is the card's purpose, which consistently involves others and collective benefit, not being part of what the success is being pointed toward.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Carmen — The Woman at 60 Rebuilding</span>
+          <p>The Two of Diamonds in the specific window where real estate success and the full expression of the diagnostic and partnership gifts become most available. Carmen is not starting over. She is arriving at the phase this card has been building toward. The instinct about value is more refined now than it has ever been. This is when the card's financial intelligence tends to produce its most significant returns.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Amara — The Between-Two-Worlds Woman</span>
+          <p>The Two of Diamonds whose capacity for exchange and partnership spans cultures and contexts. The trading and networking instincts this card carries are particularly powerful when applied across cultural boundaries. For Amara, the between-worlds position is not just personal history. It is access to a form of relational and business intelligence that operates in spaces most people cannot reach.</p>
+        </div>
+        <div class="hook-item">
+          <span class="hook-label">Tasha — The Single Mum</span>
+          <p>The Two of Diamonds whose anxiety about money is consistently overriding the intuitive knowing that actually has the answer. Tasha worries about financial security in the specific way this card documents. The pattern says: the knowing is more reliable than the worry. The move is to trust the instinct before the anxiety gets in rather than after.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Life Spread</div>
+  <div class="spread-section">
+    <div class="prc-note">
+      <strong>PRC Note:</strong> Twelve Planetary Ruling Cards apply to this birth card. January 25th — 10 of Diamonds. February 23rd — 8 of Spades. March 21st — 8 of Spades or 6 of Diamonds. April 19th — 6 of Diamonds. May 17th — 8 of Clubs. June 15th — Jack of Spades. July 13th — 4 of Clubs. August 11th — 2 of Diamonds. September 9th — Jack of Spades. October 7th — 8 of Clubs. November 5th — 6 of Diamonds + Ace of Hearts. December 3rd — 4 of Spades.
+    </div>
+    <div class="spread-grid">
+      <div class="spread-cell"><span class="spread-key">Birth Card (BC)</span><span class="spread-val">Two of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Planetary Ruling Card (PRC)</span><span class="spread-val">10♦ / 8♠ / 8♠ or 6♦ / 6♦ / 8♣ / J♠ / 4♣ / 2♦ / J♠ / 8♣ / 6♦+A♥ / 4♠</span></div>
+      <div class="spread-cell"><span class="spread-key">Personality Card</span><span class="spread-val">—</span></div>
+      <div class="spread-cell"><span class="spread-key">Moon</span><span class="spread-val">4 of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Mercury</span><span class="spread-val">Jack of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Venus</span><span class="spread-val">8 of Clubs</span></div>
+      <div class="spread-cell"><span class="spread-key">Mars</span><span class="spread-val">6 of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Jupiter</span><span class="spread-val">4 of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Saturn</span><span class="spread-val">10 of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Uranus</span><span class="spread-val">10 of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Neptune</span><span class="spread-val">8 of Spades</span></div>
+      <div class="spread-cell"><span class="spread-key">Pluto</span><span class="spread-val">Ace of Hearts</span></div>
+      <div class="spread-cell"><span class="spread-key">Result</span><span class="spread-val">Ace of Diamonds</span></div>
+      <div class="spread-cell"><span class="spread-key">Cosmic Lesson</span><span class="spread-val">Queen of Diamonds</span></div>
+    </div>
+  </div>
+
+  <div class="section-label">Connections</div>
+  <div class="connections-grid">
+    <div class="connection-block">
+      <span class="connection-label">Karma Cards</span>
+      <div class="connection-cards">
+        <span class="card-pill">6♣</span>
+        <span class="card-pill">A♦</span>
+      </div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Karma Cousins</span>
+      <div class="connection-cards">
+        <span class="card-pill">8♠</span>
+        <span class="card-pill">A♥</span>
+      </div>
+    </div>
+    <div class="connection-block">
+      <span class="connection-label">Past Life Cards</span>
+      <div class="connection-cards">
+        <span class="card-pill">A♦</span>
+        <span class="card-pill">3♦</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>The MillionHeiress BABE™ Card Library &nbsp;·&nbsp; Internal Reference Document</p>
+  </div>
+
+</div>
+</body>
+</html>
