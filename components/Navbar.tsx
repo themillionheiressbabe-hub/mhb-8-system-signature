@@ -35,10 +35,10 @@ export function Navbar() {
             Shop
           </Link>
           <Link
-            href="/tools/daily-frequency"
+            href="/tools"
             className="text-cream text-sm hover:text-magenta transition-colors hidden md:inline-block"
           >
-            Tools
+            Cosmic Weather
           </Link>
           <Link
             href="/about"

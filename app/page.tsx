@@ -2,18 +2,11 @@ import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Orbit } from "@/components/Orbit";
-import CardArt from "@/components/CardArt";
+import FlipCard from "@/components/FlipCard";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
-const SUIT_DISPLAY: Record<string, { symbol: string; className: string }> = {
-  hearts: { symbol: "♥", className: "text-suit-hearts" },
-  diamonds: { symbol: "♦", className: "text-suit-diamonds" },
-  clubs: { symbol: "♣", className: "text-suit-clubs" },
-  spades: { symbol: "♠", className: "text-suit-spades" },
-  joker: { symbol: "★", className: "text-cream" },
-};
-
 type FeaturedCard = {
+  card_code: string;
   card_name: string;
   suit: string;
   value: string;
@@ -21,6 +14,7 @@ type FeaturedCard = {
   daily_energy_heading: string | null;
   daily_energy_body: string | null;
   daily_energy_cta: string | null;
+  locked_in_summary: string | null;
 };
 
 export default async function Home() {
@@ -40,18 +34,17 @@ export default async function Home() {
     const { data: cardData } = await supabaseAdmin
       .from("card_library")
       .select(
-        "card_name, suit, value, core_theme, daily_energy_heading, daily_energy_body, daily_energy_cta",
+        "card_code, card_name, suit, value, core_theme, daily_energy_heading, daily_energy_body, daily_energy_cta, locked_in_summary",
       )
       .eq("card_code", lookup.card_code)
       .single<FeaturedCard>();
     featuredCard = cardData;
   }
 
-  const cardTitle = featuredCard
+  const featuredTitle = featuredCard
     ? featuredCard.card_name.replace(/\s*\(.*$/, "")
     : null;
-  const suit = featuredCard ? SUIT_DISPLAY[featuredCard.suit] : null;
-  const cardValue = featuredCard
+  const featuredValue = featuredCard
     ? featuredCard.value === "Joker"
       ? "★"
       : featuredCard.value
@@ -167,52 +160,29 @@ export default async function Home() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-[1.4fr_1fr] gap-5">
-              {/* Featured: Card of the Day */}
-              <Link
-                href="/tools/daily-frequency"
-                className="card lift block p-8 bg-gradient-to-br from-[#11172B] to-[#0B1020] border-[1.5px] border-[rgba(181,30,90,0.35)] no-underline min-h-[420px] flex flex-col"
-              >
-                <p className="eyebrow eyebrow-mag mb-4">Card of the Day &middot; Free</p>
-                <h3 className="serif text-[1.85rem] leading-tight mb-3">
-                  Today&apos;s Frequency Read
-                </h3>
-                <p className="muted text-sm leading-relaxed">
-                  A single Cardology pull, three lenses cross-referencing.
-                  Daily, no signup needed.
-                </p>
-
-                {/* Card art preview */}
-                <div className="mt-auto pt-8 flex items-center gap-6 flex-wrap">
-                  {featuredCard && cardValue && suit ? (
-                    <>
-                      <CardArt
-                        value={cardValue}
-                        suit={featuredCard.suit}
-                        size="sm"
-                      />
-                      <div className="flex-1 min-w-[180px]">
-                        <p className={`eyebrow mb-2 ${suit.className}`}>
-                          {featuredCard.suit} &middot; {featuredCard.value}
-                        </p>
-                        {featuredCard.core_theme ? (
-                          <p className="serif-it text-gold text-[22px] leading-tight mb-2.5">
-                            {featuredCard.core_theme}
-                          </p>
-                        ) : null}
-                        {featuredCard.daily_energy_heading ? (
-                          <p className="text-cream/75 text-[13px] leading-snug">
-                            {featuredCard.daily_energy_heading}
-                          </p>
-                        ) : null}
-                      </div>
-                    </>
-                  ) : (
-                    <p className="muted text-sm">
-                      Pull today&apos;s card on the full page.
-                    </p>
-                  )}
+              {/* Featured: Card of the Day flip card */}
+              {featuredCard && featuredValue && featuredTitle ? (
+                <FlipCard
+                  value={featuredValue}
+                  suit={featuredCard.suit}
+                  cardName={featuredTitle}
+                  coreTheme={featuredCard.core_theme ?? ""}
+                  dailyEnergyHeading={featuredCard.daily_energy_heading ?? ""}
+                  dailyEnergyBody={
+                    featuredCard.daily_energy_body ??
+                    featuredCard.locked_in_summary ??
+                    ""
+                  }
+                  dailyEnergyCta={featuredCard.daily_energy_cta ?? ""}
+                  todayCardCode={featuredCard.card_code}
+                />
+              ) : (
+                <div className="card p-8 bg-gradient-to-br from-[#11172B] to-[#0B1020] border-[1.5px] border-[rgba(181,30,90,0.35)] min-h-[320px] flex flex-col items-center justify-center">
+                  <p className="muted text-sm">
+                    Pull today&rsquo;s card on the full page.
+                  </p>
                 </div>
-              </Link>
+              )}
 
               {/* Right column: 2 small cards stacked */}
               <div className="flex flex-col gap-5">
