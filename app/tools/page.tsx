@@ -1,13 +1,37 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Anthropic from "@anthropic-ai/sdk";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { Orbit } from "@/components/Orbit";
 import FlipCard from "@/components/FlipCard";
+import ProseBlock from "@/components/ProseBlock";
+import RealisticMoon from "@/components/ui/RealisticMoon";
 import TransitWheel from "@/components/TransitWheel";
 import TransitInsights from "@/components/TransitInsights";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { getAllPlanets, getMoonData } from "@/lib/astrology/ephemeris";
 import { getDailyNumerology } from "@/lib/astrology/daily-collective";
+import { BABE_SYSTEM_PROMPT } from "@/lib/prompts/system-prompt";
+
+const anthropic = process.env.ANTHROPIC_API_KEY
+  ? new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+  : null;
+
+const SIGN_ELEMENT_LOOKUP: Record<string, string> = {
+  Aries: "fire",
+  Taurus: "earth",
+  Gemini: "air",
+  Cancer: "water",
+  Leo: "fire",
+  Virgo: "earth",
+  Libra: "air",
+  Scorpio: "water",
+  Sagittarius: "fire",
+  Capricorn: "earth",
+  Aquarius: "air",
+  Pisces: "water",
+};
 
 export const metadata: Metadata = {
   title: "Today's Cosmic Energy",
@@ -48,17 +72,6 @@ const UNIVERSAL_DAY_MEANINGS: Record<number, string> = {
   9: "Today carries the energy of completion and release. Something is finishing. Let it. Clear the ground rather than starting something new. Endings today create the space for what the 1 energy wants to begin.",
   11: "Today carries master number energy. Heightened sensitivity, intuition, and spiritual awareness are running high. Trust what arrives without demanding it make logical sense.",
   22: "Today carries master builder energy. What you work on today has the potential to outlast the moment. Think at scale.",
-};
-
-const SUIT_COLLECTIVE_MEANING: Record<string, string> = {
-  hearts:
-    "Hearts cards in the collective spread speak to emotional patterns, relationships, and matters of the heart that are active for everyone today.",
-  clubs:
-    "Clubs cards in the collective spread speak to mental energy, communication, and ideas that are running through the collective consciousness today.",
-  diamonds:
-    "Diamonds cards in the collective spread speak to material patterns, value, and resource questions that are live for the collective today.",
-  spades:
-    "Spades cards in the collective spread speak to action, challenge, and transformation energy that is available to everyone today.",
 };
 
 function getUkDateParts(): {
@@ -136,17 +149,90 @@ export default async function ToolsPage() {
   );
   const universalDayMeaning = UNIVERSAL_DAY_MEANINGS[universalDay] ?? "";
 
-  const collectiveSuitMeaning = card
-    ? SUIT_COLLECTIVE_MEANING[card.suit] ?? null
-    : null;
+  // Synthesis read — cached in daily_reads_cache.synthesis_read, generated on miss.
+  // Wrapped so a missing column or API error degrades to no synthesis section.
+  let synthesisRead: string | null = null;
+  const retrogradeNames = planets
+    .filter((p) => p.isRetrograde)
+    .map((p) => p.name);
+  try {
+    const { data: synth } = await supabaseAdmin
+      .from("daily_reads_cache")
+      .select("synthesis_read")
+      .eq("cache_date", cacheDate)
+      .maybeSingle<{ synthesis_read: string | null }>();
+
+    if (synth?.synthesis_read) {
+      synthesisRead = synth.synthesis_read;
+    } else if (anthropic && card) {
+      const elementCounts: Record<string, number> = {};
+      for (const p of planets) {
+        const el = SIGN_ELEMENT_LOOKUP[p.sign];
+        if (el) elementCounts[el] = (elementCounts[el] ?? 0) + 1;
+      }
+      const dominantElement =
+        Object.entries(elementCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ??
+        "balanced";
+      const sunPlanet = planets.find((p) => p.name === "Sun");
+      const sunSignName = sunPlanet?.sign ?? "Unknown";
+
+      const userPrompt = `TASK: Daily collective synthesis read for the Cosmic Weather page.
+
+Today's date: ${formattedDate}
+Universal Year: 1 (New Beginnings)
+Universal Day: ${universalDay} (${numerology.meaning})
+Moon: ${moon.phase} in ${moon.sign}
+Sun: in ${sunSignName}
+Dominant sky element: ${dominantElement}
+Retrograde planets: ${retrogradeNames.length > 0 ? retrogradeNames.join(", ") : "none"}
+Today's collective Destiny Card: ${cardName} (${card.suit})
+Card core theme: ${card.core_theme ?? ""}
+
+Write one paragraph of 3-4 sentences. This is the synthesis that ties all of these systems together into one coherent read of what today means collectively. Not a list. Not a summary of each system. One flowing read that shows what all the systems are saying together. What is the dominant theme when you look at all of this at once? Second person. Plain prose. BABE voice. No em dashes.`;
+
+      const response = await anthropic.messages.create({
+        model: "claude-sonnet-4-6",
+        max_tokens: 200,
+        system: [
+          {
+            type: "text",
+            text: BABE_SYSTEM_PROMPT,
+            cache_control: { type: "ephemeral" },
+          },
+        ],
+        messages: [{ role: "user", content: userPrompt }],
+      });
+      const block = response.content[0];
+      synthesisRead = block.type === "text" ? block.text.trim() : null;
+
+      // Best-effort cache: succeeds when today's row already exists (cron has run);
+      // silently no-ops otherwise and we will regenerate next load.
+      if (synthesisRead) {
+        await supabaseAdmin
+          .from("daily_reads_cache")
+          .update({ synthesis_read: synthesisRead })
+          .eq("cache_date", cacheDate);
+      }
+    }
+  } catch (err) {
+    console.error("synthesis read failed:", err);
+    synthesisRead = null;
+  }
 
   return (
     <div className="flex-1">
       <Navbar />
 
+      <RealisticMoon phase={moon.phase} size={140} />
+
       <main className="pt-24 pb-24">
-        {/* HERO BAR */}
-        <section className="text-center px-4 mb-12">
+        {/* ORBIT */}
+        <div className="flex justify-center mb-8">
+          <Orbit />
+        </div>
+
+        {/* 1. HERO BAR */}
+        <section className="text-center px-6 pb-8">
           <p className="text-gold uppercase text-xs tracking-widest">
             TODAY&rsquo;S COSMIC ENERGY
           </p>
@@ -158,8 +244,72 @@ export default async function ToolsPage() {
           </p>
         </section>
 
-        {/* SECTION 1 — COLLECTIVE YEAR ENERGY */}
-        <section className="max-w-4xl mx-auto px-4 mb-16">
+        {/* 2. TODAY'S COLLECTIVE READ — synthesis */}
+        {synthesisRead ? (
+          <section className="max-w-4xl mx-auto px-6 mb-12">
+            <div
+              className="border border-gold/40 rounded-[20px] p-8"
+              style={{
+                background:
+                  "linear-gradient(135deg, #0D1220 0%, #0A0E1A 100%)",
+              }}
+            >
+              <p className="text-gold uppercase text-xs tracking-widest mb-3">
+                TODAY&rsquo;S COLLECTIVE READ
+              </p>
+              <ProseBlock text={synthesisRead} />
+
+              <div className="flex flex-wrap gap-2 mt-4">
+                <span className="border border-gold/25 text-white/60 text-xs rounded-full px-3 py-1">
+                  {moon.emoji} {moon.phase}
+                </span>
+                {cardName ? (
+                  <span className="border border-gold/25 text-white/60 text-xs rounded-full px-3 py-1">
+                    {cardName}
+                  </span>
+                ) : null}
+                <span className="border border-gold/25 text-white/60 text-xs rounded-full px-3 py-1">
+                  Day {universalDay}
+                </span>
+                {retrogradeNames.map((name) => (
+                  <span
+                    key={`rx-${name}`}
+                    className="border border-gold/25 text-white/60 text-xs rounded-full px-3 py-1"
+                  >
+                    ⟲ {name} Rx
+                  </span>
+                ))}
+              </div>
+            </div>
+          </section>
+        ) : null}
+
+        {/* 3. TRANSIT WHEEL + INSIGHTS */}
+        <section className="max-w-4xl mx-auto px-6 mb-12">
+          <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
+            <div className="w-full md:w-[280px] md:flex-shrink-0">
+              <TransitWheel
+                planets={planets}
+                moonEmoji={moon.emoji}
+                moonSign={moon.sign}
+              />
+            </div>
+            <div className="flex-1 w-full">
+              <TransitInsights
+                planets={planets}
+                numerologyMeaning={numerology.meaning}
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* SEPARATOR */}
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="border-t border-gold/10 my-12" />
+        </div>
+
+        {/* 4. UNIVERSAL YEAR */}
+        <section className="max-w-4xl mx-auto px-6 mb-8">
           <div className="bg-navy-card border border-gold/30 rounded-2xl p-6 grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-6 items-center">
             <div>
               <p className="text-gold uppercase text-xs tracking-widest">
@@ -198,27 +348,8 @@ export default async function ToolsPage() {
           </div>
         </section>
 
-        {/* TRANSIT WHEEL + INSIGHTS */}
-        <section className="max-w-4xl mx-auto px-4 mb-16">
-          <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
-            <div className="w-full md:w-[280px] md:flex-shrink-0">
-              <TransitWheel
-                planets={planets}
-                moonEmoji={moon.emoji}
-                moonSign={moon.sign}
-              />
-            </div>
-            <div className="flex-1 w-full">
-              <TransitInsights
-                planets={planets}
-                numerologyMeaning={numerology.meaning}
-              />
-            </div>
-          </div>
-        </section>
-
-        {/* SECTION 2 — NUMEROLOGY TODAY */}
-        <section className="max-w-4xl mx-auto px-4 mb-16">
+        {/* 5. UNIVERSAL DAY */}
+        <section className="max-w-4xl mx-auto px-6 mb-12">
           <div className="bg-navy-card border border-gold/20 rounded-2xl p-5 grid grid-cols-1 md:grid-cols-[auto_1fr] gap-6 items-center">
             <div className="text-center md:text-left">
               <p className="serif text-gold text-6xl leading-none">
@@ -236,19 +367,24 @@ export default async function ToolsPage() {
           </div>
         </section>
 
-        {/* DIVIDER — CARD OF THE DAY */}
-        <div className="max-w-2xl mx-auto px-4">
-          <div className="flex items-center gap-4 my-10">
-            <div className="flex-1 h-px bg-gold/30" />
+        {/* SEPARATOR */}
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="border-t border-gold/10 my-12" />
+        </div>
+
+        {/* 6. DIVIDER — CARD OF THE DAY */}
+        <div className="max-w-2xl mx-auto px-6">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="flex-1 h-px bg-gold/15" />
             <span className="text-gold uppercase text-xs tracking-widest">
               CARD OF THE DAY
             </span>
-            <div className="flex-1 h-px bg-gold/30" />
+            <div className="flex-1 h-px bg-gold/15" />
           </div>
         </div>
 
-        {/* CARD OF THE DAY */}
-        <section className="max-w-2xl mx-auto px-4 mb-16">
+        {/* 7. FLIP CARD */}
+        <section className="max-w-xl mx-auto px-6 mb-12">
           {card ? (
             <>
               <FlipCard
@@ -267,20 +403,6 @@ export default async function ToolsPage() {
               <p className="text-white/40 text-xs text-center mt-4">
                 Click to reveal today&rsquo;s full energy read
               </p>
-
-              {collectiveSuitMeaning ? (
-                <details className="mt-6 group">
-                  <summary className="text-gold text-sm cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                    What this card means collectively{" "}
-                    <span className="inline-block transition-transform group-open:rotate-180">
-                      ↓
-                    </span>
-                  </summary>
-                  <div className="mt-3 p-4 bg-navy rounded-xl border border-gold/15 text-white/70 text-sm leading-relaxed">
-                    {collectiveSuitMeaning}
-                  </div>
-                </details>
-              ) : null}
             </>
           ) : (
             <p className="text-gold/70 text-center">
@@ -289,19 +411,19 @@ export default async function ToolsPage() {
           )}
         </section>
 
-        {/* DIVIDER — FREE TOOLS */}
-        <div className="max-w-2xl mx-auto px-4">
-          <div className="flex items-center gap-4 my-10">
-            <div className="flex-1 h-px bg-gold/30" />
+        {/* 8. DIVIDER — FREE TOOLS */}
+        <div className="max-w-2xl mx-auto px-6">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="flex-1 h-px bg-gold/15" />
             <span className="text-gold uppercase text-xs tracking-widest">
               FREE TOOLS
             </span>
-            <div className="flex-1 h-px bg-gold/30" />
+            <div className="flex-1 h-px bg-gold/15" />
           </div>
         </div>
 
-        {/* FREE TOOL CARDS */}
-        <section className="max-w-2xl mx-auto px-4 mb-16">
+        {/* 9. FREE TOOL CARDS */}
+        <section className="max-w-2xl mx-auto px-6 mb-16">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-navy-card border border-gold/30 rounded-xl p-5 flex flex-col">
               <p className="text-gold uppercase text-xs tracking-widest">

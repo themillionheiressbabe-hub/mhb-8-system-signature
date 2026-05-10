@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Orbit } from "@/components/Orbit";
 import FlipCard from "@/components/FlipCard";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
@@ -56,8 +55,27 @@ export default async function Home() {
 
       <main>
         {/* HERO */}
-        <section className="hero min-h-[calc(100vh-76px)] flex items-center pt-20 pb-10 relative">
-          <div className="container text-center">
+        <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ zIndex: 0, objectPosition: "center top" }}
+          >
+            <source src="/videos/Hero-video.mp4" type="video/mp4" />
+          </video>
+
+          <div
+            className="absolute inset-0 bg-[#0A0E1A]/60"
+            style={{ zIndex: 1 }}
+          />
+
+          <div
+            className="relative text-center px-6 max-w-4xl mx-auto"
+            style={{ zIndex: 2 }}
+          >
             <p className="eyebrow mb-5">The MillionHeiress BABE&trade;</p>
             <h1 className="serif text-[clamp(2.75rem,5vw,4.25rem)] leading-[1.06] max-w-[920px] mx-auto mb-6">
               Eight Lenses.{" "}
@@ -70,10 +88,6 @@ export default async function Home() {
               When eight independent systems confirm the same pattern, that is
               not coincidence. That is your Birthprint.
             </p>
-
-            <div className="flex justify-center mb-14">
-              <Orbit />
-            </div>
 
             <div className="flex gap-4 justify-center flex-wrap">
               <Link

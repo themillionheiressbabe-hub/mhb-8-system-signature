@@ -1,6 +1,7 @@
 import Link from "next/link";
 import CardArt from "@/components/CardArt";
 import { CopySeedButton } from "@/components/CopySeedButton";
+import ProseBlock from "@/components/ProseBlock";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import {
   getDailyNumerology,
@@ -66,6 +67,8 @@ type Props = {
   ctaHref?: string;
   ctaLabel?: string;
   showCopySeed?: boolean;
+  bodyOverride?: string | null;
+  seedOverride?: string | null;
 };
 
 export async function DailyCardWidget({
@@ -73,6 +76,8 @@ export async function DailyCardWidget({
   ctaHref = "/tools/daily-frequency",
   ctaLabel = "Open the read",
   showCopySeed = false,
+  bodyOverride = null,
+  seedOverride = null,
 }: Props) {
   const { iso: cacheDate, month, day } = getUkDateParts();
 
@@ -111,7 +116,7 @@ export async function DailyCardWidget({
   const cardValue = card.value === "Joker" ? "★" : card.value;
   const cardName = card.card_name.replace(/\s*\(.*$/, "");
 
-  const seedText = [
+  const defaultSeedText = [
     `Today's card: ${cardName}`,
     card.daily_energy_heading
       ? `Heading: ${card.daily_energy_heading}`
@@ -122,6 +127,7 @@ export async function DailyCardWidget({
   ]
     .filter(Boolean)
     .join("\n");
+  const seedText = seedOverride ?? defaultSeedText;
 
   const slimRow = (
     <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm">
@@ -157,9 +163,10 @@ export async function DailyCardWidget({
                 {card.daily_energy_heading}
               </p>
             ) : null}
-            <p className="text-white/60 text-sm leading-relaxed mt-2">
-              {firstNSentences(card.daily_energy_body, 1)}
-            </p>
+            <ProseBlock
+              text={bodyOverride ?? firstNSentences(card.daily_energy_body, 1)}
+              className="mt-2"
+            />
             <div className="flex flex-wrap items-center gap-3 mt-3">
               <Link
                 href={ctaHref}
@@ -193,9 +200,10 @@ export async function DailyCardWidget({
               {card.daily_energy_heading}
             </h3>
           ) : null}
-          <p className="text-white/80 text-sm leading-relaxed mt-3">
-            {firstNSentences(card.daily_energy_body, 3)}
-          </p>
+          <ProseBlock
+            text={bodyOverride ?? firstNSentences(card.daily_energy_body, 3)}
+            className="mt-3"
+          />
           <div className="flex flex-wrap items-center gap-3 mt-4">
             <Link
               href={ctaHref}

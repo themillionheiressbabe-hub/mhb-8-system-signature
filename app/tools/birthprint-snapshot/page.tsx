@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { Cormorant_Garamond, Outfit } from "next/font/google";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import ProseBlock from "@/components/ProseBlock";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -52,17 +53,6 @@ type SnapshotResult = {
 };
 
 type Status = "idle" | "loading" | "result" | "error";
-
-function paragraphsFrom(text: string): string[] {
-  return text
-    .split(/(?<=[.!?])\s+/)
-    .reduce((acc: string[][], sentence: string, i: number) => {
-      if (i % 2 === 0) acc.push([sentence]);
-      else acc[acc.length - 1].push(sentence);
-      return acc;
-    }, [])
-    .map((group) => group.join(" "));
-}
 
 function SnapshotForm() {
   const searchParams = useSearchParams();
@@ -131,7 +121,6 @@ function SnapshotForm() {
 
   if (status === "result" && result) {
     const suitDisplay = SUIT_DISPLAY[result.suit] ?? SUIT_DISPLAY.joker;
-    const paragraphs = paragraphsFrom(result.snapshot);
 
     return (
       <div className="max-w-2xl mx-auto">
@@ -147,18 +136,7 @@ function SnapshotForm() {
         </h2>
         <hr className="border-0 border-t border-gold/40 my-10" />
 
-        <div className="mb-10">
-          {paragraphs.map((paragraph, index) => (
-            <p
-              key={index}
-              className={`text-white/85 text-base leading-relaxed ${
-                index === paragraphs.length - 1 ? "" : "mb-4"
-              }`}
-            >
-              {paragraph}
-            </p>
-          ))}
-        </div>
+        <ProseBlock text={result.snapshot} className="mb-10" />
 
         <div className="bg-navy border border-gold rounded-2xl p-6 max-w-md mx-auto">
           <p className="text-gold uppercase text-xs tracking-widest text-center mb-4">

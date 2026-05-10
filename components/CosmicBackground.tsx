@@ -1,52 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-
-const SYNODIC_MONTH = 29.53059;
-const KNOWN_NEW_MOON_JD = 2451550.26;
-const UNIX_EPOCH_JD = 2440587.5;
-
-function computeMoonFraction(): number {
-  const days = Date.now() / 86_400_000 + UNIX_EPOCH_JD - KNOWN_NEW_MOON_JD;
-  const cycle = ((days % SYNODIC_MONTH) + SYNODIC_MONTH) % SYNODIC_MONTH;
-  return cycle / SYNODIC_MONTH;
-}
-
-const SHADOW_FILL = "rgba(10, 14, 26, 0.88)";
-
-function MoonShape({ fraction }: { fraction: number }) {
-  if (fraction < 0.03 || fraction >= 0.97) {
-    return <circle cx={35} cy={35} r={32} fill="#E8D5A3" opacity={0.05} />;
-  }
-
-  if (fraction >= 0.48 && fraction <= 0.52) {
-    return <circle cx={35} cy={35} r={32} fill="#E8D5A3" />;
-  }
-
-  const angle = fraction * 2 * Math.PI;
-  const illumination = (1 - Math.cos(angle)) / 2;
-  const delta = illumination * 64;
-  const isWaxing = fraction < 0.5;
-  const shadowCx = isWaxing ? 35 - delta : 35 + delta;
-
-  return (
-    <>
-      <defs>
-        <clipPath id="cosmic-moon-disc">
-          <circle cx={35} cy={35} r={32} />
-        </clipPath>
-      </defs>
-      <circle cx={35} cy={35} r={32} fill="#E8D5A3" />
-      <circle
-        cx={shadowCx}
-        cy={35}
-        r={32}
-        fill={SHADOW_FILL}
-        clipPath="url(#cosmic-moon-disc)"
-      />
-    </>
-  );
-}
+import { useEffect, useRef } from "react";
 
 type Star = {
   x: number;
@@ -72,11 +26,6 @@ const SHOOTER_RGB = "201, 169, 110";
 
 export function CosmicBackground() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [moonFraction, setMoonFraction] = useState<number | null>(null);
-
-  useEffect(() => {
-    setMoonFraction(computeMoonFraction());
-  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -247,25 +196,11 @@ export function CosmicBackground() {
   }, []);
 
   return (
-    <>
-      {moonFraction !== null ? (
-        <svg
-          className="cosmic-moon"
-          width="70"
-          height="70"
-          viewBox="0 0 70 70"
-          aria-hidden="true"
-          focusable="false"
-        >
-          <MoonShape fraction={moonFraction} />
-        </svg>
-      ) : null}
-      <canvas
-        ref={canvasRef}
-        aria-hidden="true"
-        className="fixed inset-0 w-full h-full pointer-events-none"
-        style={{ zIndex: 1 }}
-      />
-    </>
+    <canvas
+      ref={canvasRef}
+      aria-hidden="true"
+      className="fixed inset-0 w-full h-full pointer-events-none"
+      style={{ zIndex: 1 }}
+    />
   );
 }

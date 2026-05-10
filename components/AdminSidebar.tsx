@@ -12,14 +12,21 @@ const NAV: Array<
 > = [
   { kind: "link", href: "/admin", label: "Overview", dot: "gold" },
   { kind: "link", href: "/admin/clients", label: "Clients", dot: "cream" },
+  { kind: "link", href: "/admin/birthprints", label: "Birthprints" },
   { kind: "group", label: "Catalog" },
   { kind: "link", href: "/admin/products", label: "Products" },
   { kind: "group", label: "Activity" },
   { kind: "link", href: "/admin/orders", label: "Orders" },
   { kind: "link", href: "/admin/reports", label: "Reports" },
+  {
+    kind: "link",
+    href: "/admin/reports/new",
+    label: "New Report",
+    dot: "magenta",
+  },
   { kind: "group", label: "Reads" },
   { kind: "link", href: "/admin/cosmic-weather", label: "Cosmic Weather" },
-  { kind: "link", href: "/tools/daily-frequency", label: "Card of the Day" },
+  { kind: "link", href: "/admin/daily-frequency", label: "Daily Frequency" },
   { kind: "group", label: "System" },
   { kind: "link", href: "/", label: "Public site" },
 ];

@@ -49,7 +49,9 @@ Card meaning: ${card.meaning}
 Today's Destiny Card is: ${destinyCardName}
 Today's Destiny Card energy: ${destinyCardEnergyBody}
 
-Write a tarot pull read. 3-4 sentences. How does this card land today specifically given the collective Destiny Card energy? Second person. Plain prose. No em dashes. No bullet points. Breathable. BABE voice.`;
+Write a tarot pull read. 3-4 sentences. How does this card land today specifically given the collective Destiny Card energy? Second person. Plain prose. No em dashes. No bullet points. Breathable. BABE voice.
+
+Write in short paragraphs. Each paragraph is 1-2 sentences maximum. Leave a clear break between each paragraph. Never write a wall of text.`;
 
   let read = "";
   try {

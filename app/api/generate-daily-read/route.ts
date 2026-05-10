@@ -94,7 +94,9 @@ Name each lens once in plain language as you weave it in. Like this:
 
 Then show how the four are in conversation with each other. What are they saying together? Where do they agree? Where is the tension?
 
-Second person. Plain prose. No em dashes. No spiritual brochure language. No guru tone. Short sentences. Breathable paragraphs.`;
+Second person. Plain prose. No em dashes. No spiritual brochure language. No guru tone. Short sentences. Breathable paragraphs.
+
+Write in short paragraphs. Each paragraph is 1-2 sentences maximum. Leave a clear break between each paragraph. Never write a wall of text.`;
 
   let dailyRead = "";
   try {

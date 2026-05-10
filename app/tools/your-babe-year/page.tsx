@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Cormorant_Garamond, Outfit } from "next/font/google";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import ProseBlock from "@/components/ProseBlock";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -26,17 +27,6 @@ type YearResult = {
 };
 
 type Status = "idle" | "loading" | "result" | "error";
-
-function paragraphsFrom(text: string): string[] {
-  return text
-    .split(/(?<=[.!?])\s+/)
-    .reduce((acc: string[][], sentence: string, i: number) => {
-      if (i % 2 === 0) acc.push([sentence]);
-      else acc[acc.length - 1].push(sentence);
-      return acc;
-    }, [])
-    .map((group) => group.join(" "));
-}
 
 export default function YourBabeYearPage() {
   const [dob, setDob] = useState("");
@@ -151,7 +141,6 @@ export default function YourBabeYearPage() {
 }
 
 function YearResultView({ result }: { result: YearResult }) {
-  const paragraphs = paragraphsFrom(result.yearRead);
   const cycleLabel = result.isMaster
     ? "Master Year"
     : `Year ${result.cyclePosition} of 9`;
@@ -174,18 +163,7 @@ function YearResultView({ result }: { result: YearResult }) {
 
       <hr className="border-0 border-t border-gold/40 my-10" />
 
-      <div className="mb-10">
-        {paragraphs.map((paragraph, index) => (
-          <p
-            key={index}
-            className={`text-white/85 text-base leading-relaxed ${
-              index === paragraphs.length - 1 ? "" : "mb-4"
-            }`}
-          >
-            {paragraph}
-          </p>
-        ))}
-      </div>
+      <ProseBlock text={result.yearRead} className="mb-10" />
 
       <hr className="border-0 border-t border-gold/40 my-10" />
 

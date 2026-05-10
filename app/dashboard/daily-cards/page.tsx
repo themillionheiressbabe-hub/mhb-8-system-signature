@@ -7,6 +7,7 @@ import { Cormorant_Garamond, Outfit } from "next/font/google";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import CardArt from "@/components/CardArt";
+import ProseBlock from "@/components/ProseBlock";
 import { drawRandomCard, type TarotCard } from "@/lib/tarot/deck";
 
 const cormorant = Cormorant_Garamond({
@@ -329,9 +330,7 @@ export default function DailyCardsPage() {
                     Reading the pull...
                   </p>
                 ) : tarot.read ? (
-                  <p className="text-white text-base leading-relaxed mt-4">
-                    {tarot.read}
-                  </p>
+                  <ProseBlock text={tarot.read} className="mt-4" />
                 ) : null}
 
                 <button

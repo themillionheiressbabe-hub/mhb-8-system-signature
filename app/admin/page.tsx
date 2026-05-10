@@ -86,6 +86,13 @@ export default async function AdminPage() {
   const today = new Date();
   const dateLabel = `${WEEKDAYS[today.getDay()]} · ${today.getDate()} ${MONTHS[today.getMonth()]}`;
 
+  const todayUKDate = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/London",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(today);
+
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
@@ -98,6 +105,7 @@ export default async function AdminPage() {
     revenueRes,
     attentionRes,
     recentClientsRes,
+    todaysReadRes,
   ] = await Promise.all([
     supabaseAdmin.from("clients").select("*", { count: "exact", head: true }),
     supabaseAdmin.from("orders").select("*", { count: "exact", head: true }),
@@ -129,6 +137,15 @@ export default async function AdminPage() {
       .order("created_at", { ascending: false })
       .limit(5)
       .returns<ClientRow[]>(),
+    supabaseAdmin
+      .from("daily_reads_cache")
+      .select("daily_read, synthesis_read, card_code")
+      .eq("cache_date", todayUKDate)
+      .maybeSingle<{
+        daily_read: string | null;
+        synthesis_read: string | null;
+        card_code: string;
+      }>(),
   ]);
 
   const clientsCount = clientsRes.count ?? 0;
@@ -140,6 +157,7 @@ export default async function AdminPage() {
     revenueRes.data?.reduce((sum, o) => sum + o.amount_pence, 0) ?? 0;
   const attention = attentionRes.data ?? [];
   const recentClients = recentClientsRes.data ?? [];
+  const synthesisRead = todaysReadRes.data?.synthesis_read ?? null;
 
   return (
     <div className="min-h-screen bg-[#111827] grid grid-cols-1 md:grid-cols-[240px_1fr]">
@@ -217,6 +235,8 @@ export default async function AdminPage() {
             ctaHref="/tools/daily-frequency"
             ctaLabel="Open the full read"
             showCopySeed
+            bodyOverride={synthesisRead}
+            seedOverride={synthesisRead}
           />
         </div>
 

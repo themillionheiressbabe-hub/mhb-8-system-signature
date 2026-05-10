@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Cormorant_Garamond } from "next/font/google";
 import CardArt from "@/components/CardArt";
+import ProseBlock from "@/components/ProseBlock";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -146,9 +147,7 @@ export function DayInteractionForm({
               <p className="eyebrow tracking-widest text-xs text-center">
                 How These Two Meet Today
               </p>
-              <p className="text-cream text-base leading-relaxed mt-3">
-                {result.combinedRead}
-              </p>
+              <ProseBlock text={result.combinedRead} className="mt-3" />
             </>
           ) : null}
 

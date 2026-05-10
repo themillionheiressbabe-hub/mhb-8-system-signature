@@ -510,29 +510,18 @@ html {
   position: fixed;
   top: 12%;
   right: 8%;
-  width: 70px;
-  height: 70px;
-  opacity: 0.55;
+  width: 60px;
+  height: 60px;
+  opacity: 0.45;
   z-index: 0;
   pointer-events: none;
-  filter: drop-shadow(0 0 12px rgba(232, 213, 163, 0.5));
   animation: cosmic-moon-drift 20s ease-in-out infinite;
+  filter: drop-shadow(0 0 12px rgba(232,213,163,0.3));
 }
 
 @keyframes cosmic-moon-drift {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .cosmic-moon {
-    animation: none;
-  }
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
 }
 
 @keyframes tarot-reveal {

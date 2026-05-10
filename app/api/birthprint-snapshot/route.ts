@@ -192,7 +192,9 @@ Structure:
 Use her name (${firstName}) once, naturally, in the opening.
 
 Do not name which lens said what. Weave the patterns together. Show the receipts without showing the recipe.
-Second person. Plain prose. No em dashes. No bullet points. No headers. No lens labels.`;
+Second person. Plain prose. No em dashes. No bullet points. No headers. No lens labels.
+
+Write in short paragraphs. Each paragraph is 1-2 sentences maximum. Leave a clear break between each paragraph. Never write a wall of text.`;
 
   let snapshot = "";
   try {

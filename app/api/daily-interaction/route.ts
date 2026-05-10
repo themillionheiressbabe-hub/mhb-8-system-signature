@@ -45,7 +45,9 @@ ${args.threeLensContext}
 
 Birth card energy today: ${args.birthCardEnergyBody}
 
-Today's collective card energy: ${args.todayCardEnergyBody}`,
+Today's collective card energy: ${args.todayCardEnergyBody}
+
+Write in short paragraphs. Each paragraph is 1-2 sentences maximum. Leave a clear break between each paragraph. Never write a wall of text.`,
         },
       ],
     });

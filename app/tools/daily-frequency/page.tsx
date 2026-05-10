@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import CardArt from "@/components/CardArt";
+import ProseBlock from "@/components/ProseBlock";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import {
   getDailyNumerology,
@@ -166,19 +167,11 @@ export default async function DailyFrequencyPage() {
                     </h2>
                   ) : null}
 
-                  {paragraphs.length > 0 ? (
-                    <div className="mt-3">
-                      {paragraphs.map((paragraph, index) => (
-                        <p
-                          key={index}
-                          className={`text-white/80 text-base leading-relaxed ${
-                            index === paragraphs.length - 1 ? "" : "mb-4"
-                          }`}
-                        >
-                          {paragraph}
-                        </p>
-                      ))}
-                    </div>
+                  {card?.daily_energy_body ? (
+                    <ProseBlock
+                      text={card.daily_energy_body}
+                      className="mt-3"
+                    />
                   ) : null}
 
                   <p className="text-gold uppercase text-xs tracking-widest mt-4">

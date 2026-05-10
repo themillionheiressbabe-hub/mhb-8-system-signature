@@ -85,7 +85,31 @@
       "PowerShell(Move-Item -Path \"MHB-CARDOLOGY-CANON-REFERENCE.md\" -Destination \"docs\\\\cardology\\\\\"; Move-Item -Path \"PERSONALITY-CARDS-IMPLEMENTATION-GUIDE.md\" -Destination \"docs\\\\cardology\\\\\"; Remove-Item -Path \"images\\\\\" -Recurse -Force; Write-Output \"moves complete\"; Get-ChildItem -Path \".\" -File | Where-Object { $_.Name -match '\\\\.md$' } | Select-Object Name | Format-Table -AutoSize; Write-Output \"images/ exists:\"; Test-Path \"images\")",
       "Bash(grep -E '^[A-Z]+\\(-[A-Z]+\\)*\\\\.\\(html|md\\)$')",
       "Bash(grep -v -E '^\\(AGENTS|CLAUDE|README\\)\\\\.md$')",
-      "Bash(grep -iE '\\\\.html$|^[A-Z]')"
+      "Bash(grep -iE '\\\\.html$|^[A-Z]')",
+      "Bash(git rev-list *)",
+      "Bash(node -e \"const c = require\\('cheerio'\\); console.log\\('cheerio version:', require\\('cheerio/package.json'\\).version\\);\")",
+      "Bash(grep -oE 'Today the collective energy runs[^\"<]{0,100}' /tmp/tools.html)",
+      "Bash(curl.exe -s -o /dev/null -w \"/tools: %{http_code}\\\\n\" http://localhost:3000/tools --max-time 90)",
+      "Bash(grep -oE 'serif-it text-white text-xl leading-relaxed[^>]*>[^<]{0,300}' /tmp/tools.html)",
+      "Bash(grep -oE 'border-gold/25[^>]*>[^<]{0,40}' /tmp/tools.html)",
+      "PowerShell($out = npx tsc --noEmit 2>&1; Write-Output \"tsc exit: $LASTEXITCODE\")",
+      "PowerShell(New-Item -ItemType Directory -Path \"public\\\\videos\" -Force)",
+      "PowerShell(Move-Item -Path \"Hero-video.mp4\" -Destination \"public\\\\videos\\\\Hero-video.mp4\")",
+      "Bash(awk '{print $5, $9}')",
+      "Bash(curl.exe -s -o /dev/null -w \"/tools/birthprint-snapshot: %{http_code}\\\\n\" http://localhost:3000/tools/birthprint-snapshot --max-time 60)",
+      "Bash(curl.exe -s -o /dev/null -w \"/tools/your-babe-year: %{http_code}\\\\n\" http://localhost:3000/tools/your-babe-year --max-time 60)",
+      "Bash(curl.exe -s -o /dev/null -w \"/tools/daily-frequency: %{http_code}\\\\n\" http://localhost:3000/tools/daily-frequency --max-time 60)",
+      "Bash(git checkout *)",
+      "PowerShell(Move-Item -Path \"moon_phases.jpg\" -Destination \"public\\\\images\\\\moon_phases.jpg\")",
+      "PowerShell(Write-Output \"public/system exists: $\\(Test-Path 'public\\\\system'\\)\"; Write-Output \"public/system/moon_phases.jpg: $\\(Test-Path 'public\\\\system\\\\moon_phases.jpg'\\)\"; Write-Output \"public/images/moon_phases.jpg: $\\(Test-Path 'public\\\\images\\\\moon_phases.jpg'\\)\"; Write-Output \"components/ui exists: $\\(Test-Path 'components\\\\ui'\\)\"; Write-Output \"components/RealisticMoon.tsx: $\\(Test-Path 'components\\\\RealisticMoon.tsx'\\)\")",
+      "PowerShell(New-Item -ItemType Directory -Path \"public\\\\system\" -Force)",
+      "PowerShell(Move-Item -Path \"public\\\\images\\\\moon_phases.jpg\" -Destination \"public\\\\system\\\\moon_phases.jpg\")",
+      "PowerShell(New-Item -ItemType Directory -Path \"components\\\\ui\" -Force)",
+      "PowerShell(if \\(-not \\(Test-Path \"public\\\\images\"\\)\\) { New-Item -ItemType Directory -Path \"public\\\\images\" -Force | Out-Null }; Move-Item -Path \"public\\\\system\\\\moon_phases.jpg\" -Destination \"public\\\\images\\\\moon_phases.jpg\" -Force; Test-Path \"public\\\\images\\\\moon_phases.jpg\"; Test-Path \"public\\\\system\\\\moon_phases.jpg\")",
+      "Bash(node -e \"const {createCanvas, loadImage} = require\\('canvas'\\); loadImage\\('./public/images/moon_phases.jpg'\\).then\\(img => console.log\\(img.width, img.height\\)\\).catch\\(\\(\\) => console.log\\('canvas not available'\\)\\)\")",
+      "PowerShell(Get-Item \"public\\\\images\\\\moon_phases.jpg\" | Select-Object Name, Length; Write-Output '---'; Add-Type -AssemblyName System.Drawing -ErrorAction SilentlyContinue; try { $img = [System.Drawing.Image]::FromFile\\(\\(Resolve-Path \"public\\\\images\\\\moon_phases.jpg\"\\).Path\\); Write-Output \"width: $\\($img.Width\\)\"; Write-Output \"height: $\\($img.Height\\)\"; $img.Dispose\\(\\) } catch { Write-Output \"System.Drawing failed: $_\" })",
+      "PowerShell($out = npx tsc --noEmit 2>&1; \"tsc exit: $LASTEXITCODE`nlines: $\\($out.Count\\)\"; if \\($out.Count -gt 0\\) { $out | Select-Object -First 5 })",
+      "PowerShell(Get-Process -Name \"node\" -ErrorAction SilentlyContinue)"
     ]
   }
 }
