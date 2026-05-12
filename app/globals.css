@@ -11,16 +11,21 @@
   --navy-card: #0D1220;
   --navy-alt: #111827;
   --navy: #0D1B2A;
+  --navy-elev: #1A2140;
 
   /* Magenta family */
   --magenta: #B51E5A;
   --magenta-bright: #D63F7E;
+  --magenta-hover: #D63F7E;
   --magenta-warm: #B5406A;
+  --magenta-glow: rgba(181, 30, 90, 0.5);
 
   /* Gold family */
   --gold: #C9A96E;
   --gold-warm: #C5963A;
   --gold-bright: #E8C988;
+  --gold-light: rgba(201, 169, 110, 0.3);
+  --gold-faint: rgba(201, 169, 110, 0.15);
 
   /* Emerald family */
   --emerald: #2D9B6E;
@@ -39,8 +44,10 @@
   --cream: #F4F1ED;
   --cream-soft: #F0ECE4;
   --grey-mid: #888888;
+  --text: rgba(255, 255, 255, 0.92);
+  --text-soft: rgba(255, 255, 255, 0.68);
   --text-muted: rgba(240, 236, 228, 0.65);
-  --text-faint: rgba(240, 236, 228, 0.40);
+  --text-faint: rgba(255, 255, 255, 0.45);
 
   /* Pure */
   --white: #FFFFFF;
@@ -52,14 +59,19 @@
   --color-navy: var(--navy);
   --color-navy-card: var(--navy-card);
   --color-navy-alt: var(--navy-alt);
+  --color-navy-elev: var(--navy-elev);
 
   --color-magenta: var(--magenta);
   --color-magenta-bright: var(--magenta-bright);
+  --color-magenta-hover: var(--magenta-hover);
   --color-magenta-warm: var(--magenta-warm);
+  --color-magenta-glow: var(--magenta-glow);
 
   --color-gold: var(--gold);
   --color-gold-warm: var(--gold-warm);
   --color-gold-bright: var(--gold-bright);
+  --color-gold-light: var(--gold-light);
+  --color-gold-faint: var(--gold-faint);
 
   --color-emerald: var(--emerald);
   --color-emerald-deep: var(--emerald-deep);
@@ -75,6 +87,10 @@
   --color-cream: var(--cream);
   --color-cream-soft: var(--cream-soft);
   --color-grey-mid: var(--grey-mid);
+  --color-text: var(--text);
+  --color-text-soft: var(--text-soft);
+  --color-text-muted: var(--text-muted);
+  --color-text-faint: var(--text-faint);
   --color-white: var(--white);
 
   /* Fonts (variables set by next/font in app/layout.tsx) */
@@ -630,4 +646,126 @@ html {
   .wheel-star-5 {
     animation: none;
   }
+}
+
+@keyframes orbitSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes drift {
+  0%   { transform: translate(0, 0); opacity: 0.05; }
+  20%  { opacity: 0.25; }
+  50%  { transform: translate(40px, -60px); opacity: 0.18; }
+  80%  { opacity: 0.22; }
+  100% { transform: translate(-30px, 40px); opacity: 0.05; }
+}
+
+/* ============================================================
+   MOCKUP CLASSES — homepage layout primitives translated from
+   the approved styles.css. Used by /app/page.tsx and friends.
+   ============================================================ */
+
+.container-narrow {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0 32px;
+  width: 100%;
+}
+
+.btn-magenta {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border-radius: 999px; padding: 14px 28px;
+  font-family: var(--font-sans); font-weight: 500; font-size: 14px; letter-spacing: 0.04em;
+  border: 1px solid var(--magenta); background: var(--magenta); color: #fff;
+  transition: all 0.25s ease; cursor: pointer; white-space: nowrap;
+}
+.btn-magenta:hover {
+  background: var(--magenta-hover);
+  box-shadow: 0 0 24px var(--magenta-glow);
+  transform: translateY(-1px);
+}
+
+.btn-ghost-gold {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border-radius: 999px; padding: 14px 28px;
+  font-family: var(--font-sans); font-weight: 500; font-size: 14px; letter-spacing: 0.04em;
+  background: transparent; color: var(--gold-bright); border: 1px solid var(--gold);
+  transition: all 0.25s ease; cursor: pointer; white-space: nowrap;
+}
+.btn-ghost-gold:hover {
+  background: rgba(201, 169, 110, 0.08);
+  box-shadow: 0 0 18px rgba(201, 169, 110, 0.25);
+}
+
+.btn-emerald {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border-radius: 999px; padding: 14px 28px;
+  font-family: var(--font-sans); font-weight: 500; font-size: 14px; letter-spacing: 0.04em;
+  background: var(--emerald); color: #fff; border: 1px solid var(--emerald);
+  transition: all 0.25s ease; cursor: pointer; white-space: nowrap;
+}
+.btn-emerald:hover {
+  background: #38b884;
+  box-shadow: 0 0 22px rgba(45, 155, 110, 0.45);
+}
+
+.card-hover {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.45), 0 0 0 1px var(--gold-light);
+}
+
+.grain::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/></svg>");
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+  z-index: 1;
+}
+.grain > * { position: relative; z-index: 2; }
+
+.particles {
+  position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+}
+.particle {
+  position: absolute;
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: var(--gold);
+  opacity: 0.15;
+  animation: drift 22s linear infinite;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.in {
+  opacity: 1;
+  transform: none;
+}
+
+.input {
+  background: var(--navy-card);
+  border: 1px solid var(--gold-light);
+  color: var(--text);
+  padding: 14px 18px;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  min-width: 0;
+}
+.input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-faint);
+}
+
+.pill-emerald {
+  background: rgba(45, 155, 110, 0.16);
+  color: #6cd7a8;
+  border: 1px solid rgba(45, 155, 110, 0.45);
 }

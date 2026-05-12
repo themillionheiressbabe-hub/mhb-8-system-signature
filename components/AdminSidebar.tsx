@@ -10,16 +10,67 @@ const NAV: Array<
   | { kind: "link"; href: string; label: string; dot?: DotColor }
   | { kind: "group"; label: string }
 > = [
-  { kind: "link", href: "/admin", label: "Overview", dot: "gold" },
-  { kind: "link", href: "/admin/clients", label: "Clients", dot: "cream" },
-  { kind: "group", label: "Catalog" },
-  { kind: "link", href: "/admin/products", label: "Products" },
-  { kind: "group", label: "Activity" },
-  { kind: "link", href: "/admin/orders", label: "Orders" },
-  { kind: "link", href: "/admin/reports", label: "Reports" },
-  { kind: "group", label: "Reads" },
-  { kind: "link", href: "/admin/cosmic-weather", label: "Cosmic Weather" },
-  { kind: "link", href: "/tools/daily-frequency", label: "Card of the Day" },
+  { kind: "group", label: "Overview" },
+  { kind: "link", href: "/admin", label: "Dashboard", dot: "gold" },
+  { kind: "link", href: "/admin/today", label: "Today" },
+  { kind: "link", href: "/admin/calendar", label: "Calendar" },
+  { kind: "link", href: "/admin/tasks", label: "Tasks" },
+  { kind: "link", href: "/admin/notes", label: "Notes" },
+
+  { kind: "group", label: "Orders" },
+  { kind: "link", href: "/admin/orders", label: "All Orders" },
+  { kind: "link", href: "/admin/orders/intake", label: "Pending Intake" },
+  { kind: "link", href: "/admin/orders/processing", label: "Processing" },
+
+  { kind: "group", label: "Clients" },
+  { kind: "link", href: "/admin/clients", label: "All Clients", dot: "cream" },
+  { kind: "link", href: "/admin/clients/new", label: "New Client" },
+
+  { kind: "group", label: "Reports" },
+  {
+    kind: "link",
+    href: "/admin/reports/new",
+    label: "New Report",
+    dot: "magenta",
+  },
+  { kind: "link", href: "/admin/reports", label: "All Reports" },
+  { kind: "link", href: "/admin/reports/qc", label: "QC Queue" },
+
+  { kind: "group", label: "Birthprints" },
+  { kind: "link", href: "/admin/birthprints", label: "All Birthprints" },
+  { kind: "link", href: "/admin/birthprints/calc", label: "Calculator" },
+
+  { kind: "group", label: "Engines" },
+  { kind: "link", href: "/admin/engines/1", label: "Engine 1 · Passive" },
+  { kind: "link", href: "/admin/engines/2", label: "Engine 2 · Personal" },
+  { kind: "link", href: "/admin/engines/3", label: "Engine 3 · Business" },
+  { kind: "link", href: "/admin/engines/4", label: "Engine 4 · Bond" },
+  {
+    kind: "link",
+    href: "/admin/engines/5",
+    label: "Engine 5 · Subscription",
+  },
+  { kind: "link", href: "/admin/engines/6", label: "Engine 6 · Timing" },
+  { kind: "link", href: "/admin/engines/7", label: "Engine 7 · Journey" },
+
+  { kind: "group", label: "Content" },
+  {
+    kind: "link",
+    href: "/admin/daily-frequency",
+    label: "Daily Frequency",
+  },
+  {
+    kind: "link",
+    href: "/admin/content-intelligence",
+    label: "Content Intelligence",
+  },
+
+  { kind: "group", label: "Admin" },
+  { kind: "link", href: "/admin/settings", label: "Settings" },
+  { kind: "link", href: "/admin/audit", label: "Audit Log" },
+  { kind: "link", href: "/admin/sop", label: "SOP Reference" },
+  { kind: "link", href: "/admin/files", label: "Files" },
+
   { kind: "group", label: "System" },
   { kind: "link", href: "/", label: "Public site" },
 ];

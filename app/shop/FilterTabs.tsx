@@ -5,12 +5,13 @@ import { useState } from "react";
 
 const TAB_COLOURS: Record<string, { hex: string; rgb: string }> = {
   all: { hex: "#B51E5A", rgb: "181,30,90" },
-  "try-first": { hex: "#2D9B6E", rgb: "45,155,110" },
-  "start-here": { hex: "#C9A96E", rgb: "201,169,110" },
-  signatures: { hex: "#B51E5A", rgb: "181,30,90" },
-  "go-deeper": { hex: "#A78BFA", rgb: "167,139,250" },
-  daily: { hex: "#C9A96E", rgb: "201,169,110" },
-  journey: { hex: "#C9A96E", rgb: "201,169,110" },
+  "engine-1": { hex: "#C9A96E", rgb: "201,169,110" },
+  "engine-2": { hex: "#B51E5A", rgb: "181,30,90" },
+  "engine-3": { hex: "#2D9B6E", rgb: "45,155,110" },
+  "engine-4": { hex: "#A78BFA", rgb: "167,139,250" },
+  "engine-5": { hex: "#C9A96E", rgb: "201,169,110" },
+  "engine-6": { hex: "#B51E5A", rgb: "181,30,90" },
+  "engine-7": { hex: "#A78BFA", rgb: "167,139,250" },
 };
 
 interface Tab {
