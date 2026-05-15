@@ -85,7 +85,16 @@
       "PowerShell(Move-Item -Path \"MHB-CARDOLOGY-CANON-REFERENCE.md\" -Destination \"docs\\\\cardology\\\\\"; Move-Item -Path \"PERSONALITY-CARDS-IMPLEMENTATION-GUIDE.md\" -Destination \"docs\\\\cardology\\\\\"; Remove-Item -Path \"images\\\\\" -Recurse -Force; Write-Output \"moves complete\"; Get-ChildItem -Path \".\" -File | Where-Object { $_.Name -match '\\\\.md$' } | Select-Object Name | Format-Table -AutoSize; Write-Output \"images/ exists:\"; Test-Path \"images\")",
       "Bash(grep -E '^[A-Z]+\\(-[A-Z]+\\)*\\\\.\\(html|md\\)$')",
       "Bash(grep -v -E '^\\(AGENTS|CLAUDE|README\\)\\\\.md$')",
-      "Bash(grep -iE '\\\\.html$|^[A-Z]')"
+      "Bash(grep -iE '\\\\.html$|^[A-Z]')",
+      "PowerShell($out = npx tsc --noEmit 2>&1; Write-Output \"tsc exit: $LASTEXITCODE\"; if \\($LASTEXITCODE -ne 0\\) { $out | Where-Object { $_ -match '\\\\.tsx?' -or $_ -match 'error TS' } | Select-Object -First 20 })",
+      "PowerShell($out = npx tsc --noEmit 2>&1; Write-Output \"tsc exit: $LASTEXITCODE\"; if \\($LASTEXITCODE -ne 0\\) { $out | Where-Object { $_ -match '\\\\.tsx?' -or $_ -match 'error TS' } | Select-Object -First 30 })",
+      "PowerShell($out = npx tsc --noEmit 2>&1; Write-Output \"tsc exit: $LASTEXITCODE\")",
+      "Bash(curl.exe -s http://localhost:3000/shop -o /tmp/shop.html)",
+      "Bash(grep -oE 'Engine [0-9] ·[^\"<]{0,30}' /tmp/shop.html)",
+      "Bash(curl.exe -s -o /dev/null -w \"/tools: %{http_code}\\\\n\" \"http://localhost:3000/tools?bust=$\\(date +%s\\)\" --max-time 60)",
+      "Bash(curl.exe -s -X POST -H \"Authorization: Bearer babe_cron_4f8c2a91d6e3b7059c1a8f4d2b6e9c7a3f5d8b1e4c7a2f6d9b3e5c8a1f4d7b2e\" http://localhost:3000/api/generate-daily-read --max-time 120)",
+      "Bash(supabase migration *)",
+      "Bash(npx supabase *)"
     ]
   }
 }

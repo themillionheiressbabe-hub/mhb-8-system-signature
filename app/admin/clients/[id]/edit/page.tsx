@@ -1,146 +1,171 @@
-import { Outfit } from "next/font/google";
+import type { Metadata } from "next";
 import Link from "next/link";
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+import { AdminSidebar } from "@/components/AdminSidebar";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import {
+  EditClientForm,
+  type EditClientPayload,
+} from "@/components/admin/clients/EditClientForm";
 
-const outfit = Outfit({ subsets: ["latin"] });
+export const metadata: Metadata = {
+  title: "Edit Client · BABE HQ",
+};
+
+const EYEBROW =
+  "font-sans uppercase text-[10.5px] tracking-[0.35em] text-gold font-semibold";
 
 type ClientRow = {
   id: string;
   full_name: string;
+  chosen_name?: string | null;
+  email?: string | null;
   date_of_birth: string;
   time_of_birth: string | null;
   place_of_birth: string | null;
+  notes: string | null;
 };
-
-async function updateClient(id: string, formData: FormData) {
-  "use server";
-
-  const fullName = String(formData.get("full_name") ?? "").trim();
-  const dateOfBirth = String(formData.get("date_of_birth") ?? "");
-  const timeOfBirth = String(formData.get("time_of_birth") ?? "");
-  const placeOfBirth = String(formData.get("place_of_birth") ?? "").trim();
-
-  const { error } = await supabaseAdmin
-    .from("clients")
-    .update({
-      full_name: fullName,
-      date_of_birth: dateOfBirth,
-      time_of_birth: timeOfBirth || null,
-      place_of_birth: placeOfBirth || null,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", id);
-
-  if (error) {
-    redirect(
-      `/admin/clients/${id}/edit?error=${encodeURIComponent(error.message)}`,
-    );
-  }
-
-  revalidatePath("/admin/clients");
-  redirect("/admin/clients");
-}
 
 type Props = {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ error?: string }>;
 };
 
-export default async function EditClientPage({ params, searchParams }: Props) {
+export default async function EditClientPage({ params }: Props) {
   const { id } = await params;
-  const { error } = await searchParams;
+
+  async function updateClientAction(
+    payload: EditClientPayload,
+  ): Promise<{ ok: true } | { ok: false; error: string }> {
+    "use server";
+    if (
+      !payload.full_name.trim() ||
+      !payload.email.trim() ||
+      !payload.date_of_birth ||
+      !payload.place_of_birth.trim()
+    ) {
+      return { ok: false, error: "Missing required fields." };
+    }
+    const isJoker = payload.date_of_birth.endsWith("-12-31");
+    const { error } = await supabaseAdmin
+      .from("clients")
+      .update({
+        full_name: payload.full_name.trim(),
+        email: payload.email.trim(),
+        chosen_name: payload.chosen_name.trim() || null,
+        date_of_birth: payload.date_of_birth,
+        time_of_birth: payload.time_unknown
+          ? null
+          : payload.time_of_birth || null,
+        place_of_birth: payload.place_of_birth.trim(),
+        notes: payload.notes.trim() || null,
+        is_joker: isJoker,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", id);
+    if (error) return { ok: false, error: error.message };
+    revalidatePath(`/admin/clients/${id}`);
+    revalidatePath("/admin/clients");
+    redirect(`/admin/clients/${id}`);
+  }
 
   const { data: client } = await supabaseAdmin
     .from("clients")
-    .select("id, full_name, date_of_birth, time_of_birth, place_of_birth")
+    .select(
+      "id, full_name, date_of_birth, time_of_birth, place_of_birth, notes",
+    )
     .eq("id", id)
     .maybeSingle<ClientRow>();
 
-  if (!client) {
-    redirect("/admin/clients");
+  if (client) {
+    const { data: extras } = await supabaseAdmin
+      .from("clients")
+      .select("chosen_name, email")
+      .eq("id", id)
+      .maybeSingle<{
+        chosen_name: string | null;
+        email: string | null;
+      }>();
+    if (extras) {
+      client.chosen_name = extras.chosen_name;
+      client.email = extras.email;
+    }
   }
 
-  return (
-    <div
-      className={`${outfit.className} flex flex-1 flex-col items-center bg-transparent text-gold px-6 py-16`}
-    >
-      <div className="w-full max-w-xl">
-        <Link
-          href="/admin/clients"
-          className="text-gold text-sm underline mb-6 inline-block"
+  if (!client) {
+    return (
+      <div className="min-h-screen bg-[#0A0E1A] grid grid-cols-1 md:grid-cols-[240px_1fr]">
+        <AdminSidebar />
+        <main
+          className="mx-auto w-full"
+          style={{ maxWidth: "1200px", padding: "28px 36px" }}
         >
-          &larr; Back to clients
-        </Link>
-
-        <h1 className="text-magenta text-4xl font-semibold mb-8">
-          Edit client
-        </h1>
-
-        {error ? (
-          <p className="text-magenta text-sm mb-4">{error}</p>
-        ) : null}
-
-        <form
-          action={updateClient.bind(null, client.id)}
-          className="flex flex-col gap-4"
-        >
-          <label className="flex flex-col gap-1.5">
-            <span className="text-sm">Full name</span>
-            <input
-              type="text"
-              name="full_name"
-              required
-              defaultValue={client.full_name}
-              className="bg-transparent border border-gold text-gold rounded px-3 py-2.5 text-base font-[inherit]"
-            />
-          </label>
-
-          <label className="flex flex-col gap-1.5">
-            <span className="text-sm">Date of birth</span>
-            <input
-              type="date"
-              name="date_of_birth"
-              required
-              defaultValue={client.date_of_birth}
-              className="bg-transparent border border-gold text-gold rounded px-3 py-2.5 text-base font-[inherit]"
-            />
-          </label>
-
-          <label className="flex flex-col gap-1.5">
-            <span className="text-sm">Time of birth</span>
-            <input
-              type="time"
-              name="time_of_birth"
-              defaultValue={client.time_of_birth?.slice(0, 5) ?? ""}
-              className="bg-transparent border border-gold text-gold rounded px-3 py-2.5 text-base font-[inherit]"
-            />
-          </label>
-
-          <label className="flex flex-col gap-1.5">
-            <span className="text-sm">Place of birth</span>
-            <input
-              type="text"
-              name="place_of_birth"
-              defaultValue={client.place_of_birth ?? ""}
-              className="bg-transparent border border-gold text-gold rounded px-3 py-2.5 text-base font-[inherit]"
-            />
-          </label>
-
-          <p className="text-gold text-xs">
-            Time of birth is required for full chart calculation. If unknown,
-            leave blank and note this in the report.
-          </p>
-
-          <button
-            type="submit"
-            className="bg-magenta text-bg rounded-full px-6 py-2 text-sm font-semibold mt-2 cursor-pointer self-start"
-          >
-            Save client
-          </button>
-        </form>
+          <div className="flex flex-col items-center justify-center py-24 px-4 text-center">
+            <p className={EYEBROW}>Not found</p>
+            <h1 className="serif-it text-gold text-3xl leading-tight mt-3">
+              This client does not exist.
+            </h1>
+            <Link
+              href="/admin/clients"
+              className="bg-magenta text-cream rounded-full px-5 py-2.5 hover:bg-magenta-bright transition-colors uppercase tracking-[0.2em] mt-6"
+              style={{
+                fontFamily: "var(--font-sans)",
+                fontSize: "12px",
+                fontWeight: 500,
+              }}
+            >
+              Back to Clients
+            </Link>
+          </div>
+        </main>
       </div>
+    );
+  }
+
+  const initial: EditClientPayload = {
+    full_name: client.full_name,
+    email: client.email ?? "",
+    chosen_name: client.chosen_name ?? "",
+    date_of_birth: client.date_of_birth,
+    time_of_birth: client.time_of_birth ? client.time_of_birth.slice(0, 5) : "",
+    time_unknown: !client.time_of_birth,
+    place_of_birth: client.place_of_birth ?? "",
+    notes: client.notes ?? "",
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0A0E1A] grid grid-cols-1 md:grid-cols-[240px_1fr]">
+      <AdminSidebar />
+      <main
+        className="mx-auto w-full"
+        style={{ maxWidth: "1200px", padding: "28px 36px" }}
+      >
+        <div className="mx-auto" style={{ maxWidth: "680px" }}>
+          <Link
+            href={`/admin/clients/${id}`}
+            className="text-gold hover:text-gold-bright transition-colors inline-flex items-center gap-2 mb-6"
+            style={{
+              fontFamily: "var(--font-sans)",
+              fontSize: "13px",
+              fontWeight: 500,
+            }}
+          >
+            <span aria-hidden="true">&larr;</span>
+            Back to client
+          </Link>
+          <div className="mb-6">
+            <p className={EYEBROW}>Edit Client</p>
+            <h1 className="serif-it text-gold text-[2rem] leading-none mt-2">
+              {client.full_name}
+            </h1>
+          </div>
+          <EditClientForm
+            clientId={id}
+            initial={initial}
+            updateClient={updateClientAction}
+          />
+        </div>
+      </main>
     </div>
   );
 }

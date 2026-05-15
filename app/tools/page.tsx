@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import FlipCard from "@/components/FlipCard";
+import ProseBlock from "@/components/ProseBlock";
 import TransitWheel from "@/components/TransitWheel";
 import TransitInsights from "@/components/TransitInsights";
 import { supabaseAdmin } from "@/lib/supabase-admin";
@@ -48,17 +49,6 @@ const UNIVERSAL_DAY_MEANINGS: Record<number, string> = {
   9: "Today carries the energy of completion and release. Something is finishing. Let it. Clear the ground rather than starting something new. Endings today create the space for what the 1 energy wants to begin.",
   11: "Today carries master number energy. Heightened sensitivity, intuition, and spiritual awareness are running high. Trust what arrives without demanding it make logical sense.",
   22: "Today carries master builder energy. What you work on today has the potential to outlast the moment. Think at scale.",
-};
-
-const SUIT_COLLECTIVE_MEANING: Record<string, string> = {
-  hearts:
-    "Hearts cards in the collective spread speak to emotional patterns, relationships, and matters of the heart that are active for everyone today.",
-  clubs:
-    "Clubs cards in the collective spread speak to mental energy, communication, and ideas that are running through the collective consciousness today.",
-  diamonds:
-    "Diamonds cards in the collective spread speak to material patterns, value, and resource questions that are live for the collective today.",
-  spades:
-    "Spades cards in the collective spread speak to action, challenge, and transformation energy that is available to everyone today.",
 };
 
 function getUkDateParts(): {
@@ -135,10 +125,6 @@ export default async function ToolsPage() {
     today.getDate() + (today.getMonth() + 1) + today.getFullYear(),
   );
   const universalDayMeaning = UNIVERSAL_DAY_MEANINGS[universalDay] ?? "";
-
-  const collectiveSuitMeaning = card
-    ? SUIT_COLLECTIVE_MEANING[card.suit] ?? null
-    : null;
 
   return (
     <div className="flex-1">
@@ -264,23 +250,23 @@ export default async function ToolsPage() {
                 todayCardCode={card.card_code}
                 hideBackLink
               />
-              <p className="text-white/40 text-xs text-center mt-4">
-                Click to reveal today&rsquo;s full energy read
-              </p>
-
-              {collectiveSuitMeaning ? (
+              {cached?.daily_read ? (
                 <details className="mt-6 group">
-                  <summary className="text-gold text-sm cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                    What this card means collectively{" "}
+                  <summary className="text-gold text-sm cursor-pointer list-none [&::-webkit-details-marker]:hidden text-center">
+                    Click to reveal today&rsquo;s full energy read{" "}
                     <span className="inline-block transition-transform group-open:rotate-180">
                       ↓
                     </span>
                   </summary>
-                  <div className="mt-3 p-4 bg-navy rounded-xl border border-gold/15 text-white/70 text-sm leading-relaxed">
-                    {collectiveSuitMeaning}
+                  <div className="mt-4 p-6 bg-navy rounded-xl border border-gold/15">
+                    <ProseBlock text={cached.daily_read} />
                   </div>
                 </details>
-              ) : null}
+              ) : (
+                <p className="text-white/40 text-xs text-center mt-4">
+                  Today&rsquo;s full energy read is being prepared
+                </p>
+              )}
             </>
           ) : (
             <p className="text-gold/70 text-center">

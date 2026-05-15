@@ -128,9 +128,13 @@ const CY = 250;
 function pointAt(longitude: number, r: number) {
   const svgAngle = 180 - longitude;
   const rad = (svgAngle * Math.PI) / 180;
+  // Round to integers. SVG is 500x500 so sub-pixel precision is invisible,
+  // and integer values stringify identically on server and client (avoids
+  // a hydration mismatch where Math.cos/sin emit different trailing digits
+  // in the SSR HTML vs the client-rendered DOM).
   return {
-    x: CX + r * Math.cos(rad),
-    y: CY + r * Math.sin(rad),
+    x: Math.round(CX + r * Math.cos(rad)),
+    y: Math.round(CY + r * Math.sin(rad)),
   };
 }
 

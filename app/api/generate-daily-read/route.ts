@@ -29,7 +29,10 @@ function getUkDateParts(): { iso: string; month: number; day: number; formatted:
   return { iso, month, day, formatted };
 }
 
-export async function POST(request: Request) {
+// Shared cron handler used by both POST (admin "Regenerate Today" /
+// "Trigger Now" buttons) and GET (Vercel scheduled cron invocation, which
+// always uses GET). The CRON_SECRET is required on both paths.
+async function handleGenerateDailyRead(request: Request) {
   const secret = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "")
     ?? request.headers.get("x-cron-secret");
   if (!process.env.CRON_SECRET || secret !== process.env.CRON_SECRET) {
@@ -143,4 +146,12 @@ Second person. Plain prose. No em dashes. No spiritual brochure language. No gur
   }
 
   return NextResponse.json({ generated: true, cacheDate });
+}
+
+export function GET(request: Request) {
+  return handleGenerateDailyRead(request);
+}
+
+export function POST(request: Request) {
+  return handleGenerateDailyRead(request);
 }

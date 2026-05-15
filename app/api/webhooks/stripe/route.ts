@@ -49,6 +49,38 @@ export async function POST(request: Request) {
         console.error("orders insert failed", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
       }
+
+      // Best-effort admin notification. Lookups are non-fatal.
+      let productName = productSlug ?? "an order";
+      let clientName = customerEmail ?? "a client";
+      if (productSlug) {
+        const { data: product } = await supabaseAdmin
+          .from("products")
+          .select("name")
+          .eq("slug", productSlug)
+          .maybeSingle<{ name: string | null }>();
+        if (product?.name) productName = product.name;
+      }
+      if (userId) {
+        const { data: profile } = await supabaseAdmin
+          .from("profiles")
+          .select("full_name, email")
+          .eq("id", userId)
+          .maybeSingle<{ full_name: string | null; email: string | null }>();
+        if (profile?.full_name) clientName = profile.full_name;
+        else if (profile?.email) clientName = profile.email;
+      }
+
+      const { error: notifError } = await supabaseAdmin
+        .from("admin_notifications")
+        .insert({
+          type: "new_order",
+          title: `New order: ${productName} from ${clientName}`,
+          link: "/admin/orders",
+        });
+      if (notifError) {
+        console.error("admin_notifications insert failed", notifError);
+      }
       break;
     }
 

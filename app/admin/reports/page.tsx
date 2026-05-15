@@ -1,141 +1,280 @@
-import { Outfit } from "next/font/google";
-import Link from "next/link";
+import type { Metadata } from "next";
+import { revalidatePath } from "next/cache";
+import { AdminSidebar } from "@/components/AdminSidebar";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import {
+  ReportsBoard,
+  type EnrichedReport,
+  type ReportSectionShape,
+  type ReportStatus,
+} from "@/components/admin/reports/ReportsBoard";
 
-const outfit = Outfit({ subsets: ["latin"] });
+export const metadata: Metadata = {
+  title: "Reports · BABE HQ",
+};
 
-const MONTHS = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
+const SECTION_COUNT_BY_SLUG: Record<string, number> = {
+  "babe-signature": 22,
+};
+const DEFAULT_SECTION_COUNT = 8;
+
+const SLA_DAYS_BY_SLUG: Record<string, number> = {
+  "babe-signature": 21,
+  "bond-lens": 14,
+  "business-lens": 14,
+};
+const DEFAULT_SLA_DAYS = 14;
+
+const BABE_SIGNATURE_TITLES = [
+  "Identity",
+  "Power Pattern",
+  "Shadow Pattern",
+  "Voice and Worth",
+  "Love and Connection",
+  "Work and Purpose",
+  "Money and Value",
+  "Body and Safety",
+  "Creative Current",
+  "Insight and Clarity",
+  "Boundaries and Capacity",
+  "Inherited Patterns",
+  "Relationship to Authority",
+  "The Wound and the Gift",
+  "Current Activation",
+  "What is Ending",
+  "What is Beginning",
+  "The 90-Day Window",
+  "Integration Practice",
+  "Your Pattern in One Page",
+  "Compliance and Close",
+  "Personalised Affirmations",
 ];
 
-const REPORT_STATUSES = ["draft", "in_review", "delivered"] as const;
-type ReportStatus = (typeof REPORT_STATUSES)[number];
-
-const STATUS_PILL_CLASSES: Record<ReportStatus, string> = {
-  draft: "border border-gold text-gold",
-  in_review: "border border-magenta text-magenta",
-  delivered: "border border-emerald text-emerald",
+const VALID_TRANSITIONS: Record<ReportStatus, ReportStatus | null> = {
+  draft: "in_review",
+  in_review: "approved",
+  approved: "delivered",
+  delivered: null,
 };
 
 type ReportRow = {
   id: string;
+  order_id: string;
+  client_id: string;
   product_slug: string;
-  status: ReportStatus;
+  status: ReportStatus | null;
+  content: { sections?: ReportSectionShape[] } | null;
+  delivered_at: string | null;
   created_at: string;
-  clients: { full_name: string } | null;
+  updated_at: string;
 };
 
-function formatCreatedAt(iso: string) {
-  const d = new Date(iso);
-  const day = String(d.getUTCDate()).padStart(2, "0");
-  const month = MONTHS[d.getUTCMonth()];
-  const year = d.getUTCFullYear();
-  return `${day} ${month} ${year}`;
+type ClientRow = {
+  id: string;
+  full_name: string;
+};
+
+type OrderRow = {
+  id: string;
+};
+
+type ProductRow = {
+  slug: string;
+  name: string | null;
+  engine: number | null;
+};
+
+function reportNumber(id: string): string {
+  return `RPT-${id.replace(/-/g, "").slice(-4).toUpperCase()}`;
 }
 
-type Props = {
-  searchParams: Promise<{ status?: string }>;
-};
+function defaultTitlesFor(slug: string, count: number): string[] {
+  if (slug === "babe-signature" || count === 22) {
+    return BABE_SIGNATURE_TITLES.slice(0, count);
+  }
+  return Array.from({ length: count }, (_, i) => `Section ${i + 1}`);
+}
 
-export default async function AdminReportsPage({ searchParams }: Props) {
-  const { status } = await searchParams;
-  const statusFilter = (REPORT_STATUSES as readonly string[]).includes(
-    status ?? "",
-  )
-    ? (status as ReportStatus)
-    : null;
+async function moveStageAction(id: string, newStatus: ReportStatus) {
+  "use server";
 
-  let query = supabaseAdmin
+  // Validate transition against the current row to honour the allowed
+  // forward path: draft -> in_review -> approved -> delivered.
+  const { data: current } = await supabaseAdmin
     .from("reports")
-    .select("id, product_slug, status, created_at, clients(full_name)")
-    .order("created_at", { ascending: false });
+    .select("id, status, client_id, product_slug")
+    .eq("id", id)
+    .maybeSingle<{
+      id: string;
+      status: ReportStatus | null;
+      client_id: string;
+      product_slug: string;
+    }>();
 
-  if (statusFilter) {
-    query = query.eq("status", statusFilter);
+  if (!current) return;
+
+  const expectedNext = current.status
+    ? VALID_TRANSITIONS[current.status]
+    : null;
+  if (current.status !== newStatus && expectedNext !== newStatus) {
+    // The Move Stage menu can pick any stage; only allow the forward
+    // transitions called out in the spec.
+    return;
   }
 
-  const { data: reports } = await query.returns<ReportRow[]>();
+  const patch: {
+    status: ReportStatus;
+    updated_at: string;
+    delivered_at?: string | null;
+  } = {
+    status: newStatus,
+    updated_at: new Date().toISOString(),
+  };
+  if (newStatus === "delivered") {
+    patch.delivered_at = new Date().toISOString();
+  }
 
-  const selectedPill =
-    "bg-magenta text-bg rounded-full px-4 py-1.5 text-xs font-semibold inline-block";
-  const unselectedPill =
-    "border border-magenta text-magenta rounded-full px-4 py-1.5 text-xs font-semibold inline-block";
+  await supabaseAdmin.from("reports").update(patch).eq("id", id);
 
-  const filters: { label: string; value: ReportStatus | null; href: string }[] = [
-    { label: "All", value: null, href: "/admin/reports" },
-    { label: "Draft", value: "draft", href: "/admin/reports?status=draft" },
-    { label: "In Review", value: "in_review", href: "/admin/reports?status=in_review" },
-    { label: "Delivered", value: "delivered", href: "/admin/reports?status=delivered" },
-  ];
+  if (newStatus === "delivered") {
+    // Best-effort lookups for the notification copy.
+    let productName = current.product_slug;
+    let clientName = "a client";
+    const [{ data: prod }, { data: client }] = await Promise.all([
+      supabaseAdmin
+        .from("products")
+        .select("name")
+        .eq("slug", current.product_slug)
+        .maybeSingle<{ name: string | null }>(),
+      supabaseAdmin
+        .from("clients")
+        .select("full_name")
+        .eq("id", current.client_id)
+        .maybeSingle<{ full_name: string | null }>(),
+    ]);
+    if (prod?.name) productName = prod.name;
+    if (client?.full_name) clientName = client.full_name;
+
+    await supabaseAdmin.from("admin_notifications").insert({
+      type: "report_delivered",
+      title: `Report delivered: ${productName} for ${clientName}`,
+      link: "/admin/reports",
+    });
+  }
+
+  revalidatePath("/admin/reports");
+  revalidatePath("/admin/orders/processing");
+}
+
+async function deleteReportAction(id: string) {
+  "use server";
+  await supabaseAdmin.from("reports").delete().eq("id", id);
+  revalidatePath("/admin/reports");
+  revalidatePath("/admin/orders/processing");
+}
+
+export default async function AdminReportsPage() {
+  const { data: rawReports } = await supabaseAdmin
+    .from("reports")
+    .select(
+      "id, order_id, client_id, product_slug, status, content, delivered_at, created_at, updated_at",
+    )
+    .order("created_at", { ascending: false })
+    .returns<ReportRow[]>();
+
+  const reports = rawReports ?? [];
+
+  const clientIds = Array.from(new Set(reports.map((r) => r.client_id)));
+  const orderIds = Array.from(new Set(reports.map((r) => r.order_id)));
+  const productSlugs = Array.from(new Set(reports.map((r) => r.product_slug)));
+
+  const [clientsRes, ordersRes, productsRes] = await Promise.all([
+    clientIds.length > 0
+      ? supabaseAdmin
+          .from("clients")
+          .select("id, full_name")
+          .in("id", clientIds)
+          .returns<ClientRow[]>()
+      : Promise.resolve({ data: [] as ClientRow[] }),
+    orderIds.length > 0
+      ? supabaseAdmin
+          .from("orders")
+          .select("id")
+          .in("id", orderIds)
+          .returns<OrderRow[]>()
+      : Promise.resolve({ data: [] as OrderRow[] }),
+    productSlugs.length > 0
+      ? supabaseAdmin
+          .from("products")
+          .select("slug, name, engine")
+          .in("slug", productSlugs)
+          .returns<ProductRow[]>()
+      : Promise.resolve({ data: [] as ProductRow[] }),
+  ]);
+
+  const clientById = new Map<string, ClientRow>();
+  for (const c of clientsRes.data ?? []) clientById.set(c.id, c);
+
+  const orderIdSet = new Set<string>();
+  for (const o of ordersRes.data ?? []) orderIdSet.add(o.id);
+
+  const productBySlug = new Map<string, ProductRow>();
+  for (const p of productsRes.data ?? []) productBySlug.set(p.slug, p);
+
+  const enriched: EnrichedReport[] = reports.map((r) => {
+    const product = productBySlug.get(r.product_slug);
+    const client = clientById.get(r.client_id);
+    const sectionCount =
+      SECTION_COUNT_BY_SLUG[r.product_slug] ?? DEFAULT_SECTION_COUNT;
+    const titles = defaultTitlesFor(r.product_slug, sectionCount);
+    const contentSections = Array.isArray(r.content?.sections)
+      ? r.content!.sections
+      : [];
+    const sectionTitles = titles.map(
+      (t, i) =>
+        (typeof contentSections[i]?.title === "string"
+          ? (contentSections[i]!.title as string)
+          : t) || t,
+    );
+    const sectionCompletes = titles.map(
+      (_, i) => !!contentSections[i]?.complete,
+    );
+    const completedSections = sectionCompletes.filter(Boolean).length;
+    return {
+      id: r.id,
+      reportNumber: reportNumber(r.id),
+      orderId: orderIdSet.has(r.order_id) ? r.order_id : r.order_id,
+      clientId: r.client_id,
+      clientName: client?.full_name ?? "Unknown client",
+      productSlug: r.product_slug,
+      productName: product?.name ?? "",
+      engine: product?.engine ?? null,
+      status: (r.status ?? "draft") as ReportStatus,
+      slaDays: SLA_DAYS_BY_SLUG[r.product_slug] ?? DEFAULT_SLA_DAYS,
+      createdAt: r.created_at,
+      updatedAt: r.updated_at,
+      deliveredAt: r.delivered_at,
+      sectionCount,
+      completedSections,
+      sectionTitles,
+      sectionCompletes,
+    };
+  });
 
   return (
-    <div
-      className={`${outfit.className} flex flex-1 flex-col items-center bg-transparent text-gold px-6 py-16`}
-    >
-      <div className="w-full max-w-3xl">
-        <h1 className="text-magenta text-4xl font-semibold mb-6">Reports</h1>
+    <div className="min-h-screen bg-[#0A0E1A] grid grid-cols-1 md:grid-cols-[240px_1fr]">
+      <AdminSidebar activeHref="/admin/reports" />
 
-        <div className="flex flex-wrap gap-2 mb-8">
-          {filters.map((f) => (
-            <Link
-              key={f.label}
-              href={f.href}
-              className={statusFilter === f.value ? selectedPill : unselectedPill}
-            >
-              {f.label}
-            </Link>
-          ))}
-        </div>
-
-        {!reports || reports.length === 0 ? (
-          <p className="text-gold text-lg">No reports yet</p>
-        ) : (
-          <ul className="flex flex-col gap-3">
-            {reports.map((report) => (
-              <li
-                key={report.id}
-                className="bg-navy border border-gold rounded p-4 flex flex-col sm:flex-row sm:items-center gap-3"
-              >
-                <div className="flex-1 flex items-center gap-3 flex-wrap">
-                  <span className="text-white font-semibold">
-                    {report.clients?.full_name ?? "Unknown client"}
-                  </span>
-                  <span className="text-gold text-sm">
-                    {report.product_slug}
-                  </span>
-                  <span
-                    className={`${STATUS_PILL_CLASSES[report.status]} rounded-full px-2 py-0.5 text-xs uppercase tracking-wide`}
-                  >
-                    {report.status.replace("_", " ")}
-                  </span>
-                  <span className="text-gold text-sm">
-                    {formatCreatedAt(report.created_at)}
-                  </span>
-                </div>
-                <div className="flex gap-2">
-                  <Link
-                    href={`/admin/reports/${report.id}`}
-                    className="border border-gold text-gold rounded-full px-3 py-1 text-xs inline-block"
-                  >
-                    View
-                  </Link>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      <main
+        className="mx-auto w-full"
+        style={{ maxWidth: "1280px", padding: "28px 36px" }}
+      >
+        <ReportsBoard
+          reports={enriched}
+          moveStage={moveStageAction}
+          deleteReport={deleteReportAction}
+        />
+      </main>
     </div>
   );
 }

@@ -1,20 +1,32 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
 
 interface ParticlesProps {
   count?: number;
 }
 
+type Dot = {
+  left: number;
+  top: number;
+  delay: number;
+  dur: number;
+  size: number;
+};
+
 export function Particles({ count = 40 }: ParticlesProps) {
-  const dots = useMemo(() => {
-    return Array.from({ length: count }, () => ({
-      left: Math.random() * 100,
-      top: Math.random() * 100,
-      delay: -Math.random() * 22,
-      dur: 18 + Math.random() * 16,
-      size: 2 + Math.random() * 2.5,
-    }));
+  const [dots, setDots] = useState<Dot[]>([]);
+
+  useEffect(() => {
+    setDots(
+      Array.from({ length: count }, () => ({
+        left: Math.random() * 100,
+        top: Math.random() * 100,
+        delay: -Math.random() * 22,
+        dur: 18 + Math.random() * 16,
+        size: 2 + Math.random() * 2.5,
+      })),
+    );
   }, [count]);
 
   return (

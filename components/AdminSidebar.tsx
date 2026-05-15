@@ -34,11 +34,14 @@ const NAV: Array<
     dot: "magenta",
   },
   { kind: "link", href: "/admin/reports", label: "All Reports" },
-  { kind: "link", href: "/admin/reports/qc", label: "QC Queue" },
+  { kind: "link", href: "/admin/qc", label: "QC Queue" },
+
+  { kind: "group", label: "Catalog" },
+  { kind: "link", href: "/admin/products", label: "Products" },
 
   { kind: "group", label: "Birthprints" },
   { kind: "link", href: "/admin/birthprints", label: "All Birthprints" },
-  { kind: "link", href: "/admin/birthprints/calc", label: "Calculator" },
+  { kind: "link", href: "/admin/birthprints/calculator", label: "Calculator" },
 
   { kind: "group", label: "Engines" },
   { kind: "link", href: "/admin/engines/1", label: "Engine 1 · Passive" },
@@ -77,7 +80,7 @@ const NAV: Array<
 
 export function AdminSidebar({ activeHref }: Props) {
   return (
-    <aside className="bg-[#0D1220] border-r border-[rgba(201,169,110,0.15)] py-7 px-[18px] md:sticky md:top-0 md:h-screen md:overflow-y-auto">
+    <aside className="bg-[#0D1220] border-r border-[rgba(201,169,110,0.15)] pt-7 pb-8 px-[18px] md:sticky md:top-0 md:h-screen md:overflow-y-auto">
       <div className="serif italic text-cream text-lg mb-6 px-3">
         BABE <span className="text-magenta">HQ</span>
       </div>
